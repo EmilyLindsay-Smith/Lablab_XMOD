@@ -36,13 +36,13 @@ public class FontWindow extends ExperimentWindow{
      */
     public FontWindow(){
         super(); // calls ExperimentWindow constructor
-        this.pcs = new PropertyChangeSupport(this);
+        pcs = new PropertyChangeSupport(this);
         
         // Handle closure behaviour
         this.f.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE); // hide this window if closed by standard buttons
         this.f.addWindowListener(new WindowAdapter(){
             public void windowClosing(WindowEvent windowEvent){
-                this.undoChanges(); // undo changes
+                undoChanges(); // undo changes
             }
         });
         
@@ -51,7 +51,7 @@ public class FontWindow extends ExperimentWindow{
         this.original_size = ScreenWords.getDefaultSize();
 
         // Create Componenets
-        this.generateExtraWindowContents()
+        this.generateExtraWindowContents();
     }
     
     /**
@@ -81,7 +81,7 @@ public class FontWindow extends ExperimentWindow{
 
     /** So main instance can list for call to update the font  */
     public void addObserver(PropertyChangeListener l){
-        this.pcs.addPropertyChangeListener(Actions.UPDATE_FONT, l);
+        pcs.addPropertyChangeListener(Actions.UPDATE_FONT, l);
     }
 
     /**
@@ -94,6 +94,7 @@ public class FontWindow extends ExperimentWindow{
         this.fontChooser.setSelectedItem(this.current_font_name);
         this.sizeChooser.setSelectedItem(this.current_size);
         this.f.repaint();
+        return;
     }
     /**
      * Creates the font chooser drop down 
@@ -150,7 +151,7 @@ public class FontWindow extends ExperimentWindow{
         this.okButton.addActionListener((e)->{
             this.original_font_name = this.current_font_name;
             this.original_size = this.current_size;
-            this.pcs.firePropertyChange(Actions.UPDATE_FONT, false, true);
+            pcs.firePropertyChange(Actions.UPDATE_FONT, false, true);
         });
         return;
     }
@@ -181,7 +182,7 @@ public class FontWindow extends ExperimentWindow{
         int key = e.getKeyCode();
         if (key == KeyEvent.VK_ESCAPE){
             System.out.println("Escape!");
-            this.pcs.firePropertyChange(Actions.UPDATE_FONT, false, true);
+            pcs.firePropertyChange(Actions.UPDATE_FONT, false, true);
         }
     }
 

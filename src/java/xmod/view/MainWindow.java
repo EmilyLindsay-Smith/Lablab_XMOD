@@ -66,10 +66,10 @@ public class MainWindow{
         this.setAppearance();
 
         //Set up listener to respond to button changes 
-        this.pcs = new PropertyChangeSupport(this);
+        pcs = new PropertyChangeSupport(this);
         this.f.addWindowListener(new WindowAdapter(){
             public void windowClosing(WindowEvent windowEvent){
-                this.pcs.firePropertyChange(Actions.OPERATION, "", Operations.CLOSE_XMOD);
+                pcs.firePropertyChange(Actions.OPERATION, "", Operations.CLOSE_XMOD);
             }
         });
         // Set closing operation to hide and send property change to main Xmod class to handle shutdown
@@ -241,9 +241,9 @@ public class MainWindow{
      * i.e. so the buttons can trigger different actions
      */
     public void addObserver(PropertyChangeListener l){
-        this.pcs.addPropertyChangeListener(Actions.OPERATION, l);
+        pcs.addPropertyChangeListener(Actions.OPERATION, l);
     }
     private void handleOperation(String operation){
-       this.pcs.firePropertyChange(Actions.OPERATION, "", operation);
+       pcs.firePropertyChange(Actions.OPERATION, "", operation);
     }
 }
