@@ -1,7 +1,7 @@
 package xmod.status;
 
-public final class ReportLabels{
-    private ReportLabels(){
+public final class ReportLabel{
+    private ReportLabel(){
         //restrict instantiation
     }
     public static final String STATUS = "Status";

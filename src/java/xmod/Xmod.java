@@ -12,13 +12,19 @@ import java.beans.PropertyChangeEvent;
 public class Xmod implements PropertyChangeListener{
     /*Windows*/
     MainWindow mainWindow;
-
+    /*Objects*/
+    Reporter reporter;
      /**
      * Constructor
      */
-    Xmod(MainWindow mainWindow){
+    Xmod(MainWindow mainWindow, Reporter reporter){
         //Initialise window variables
         this.mainWindow = mainWindow;
+
+        // Initialise Objects
+        this.reporter = reporter;
+        // Set MainWindow Report
+        updateWindowText(); 
     }
 
      /** Main function to run xmod */
@@ -27,7 +33,10 @@ public class Xmod implements PropertyChangeListener{
             public void run(){
                 // Instantiate GUI Windows
                 MainWindow mainWindow = new MainWindow();
-                Xmod t = new Xmod(mainWindow);
+
+                //Instantiate Objects
+                Reporter reporter = new Reporter();
+                Xmod t = new Xmod(mainWindow, reporter);
                 // Add observers to respond to buttons/key strokes
                 mainWindow.addObserver(t);
                 // Show main Window
@@ -66,7 +75,26 @@ public class Xmod implements PropertyChangeListener{
     private void operationControllerInfo(){};
     private void operationCheckFont(){};
  
+    /******************** METHODS RELATED TO UPDATING THE WINDOWS/TEXT/FONT ************/
     
+    /**
+     * Updates the Reporter
+     */
+    private void updateStatus(String ReportLabel, String ReportMessage, Boolean replace){
+        this.reporter.updateValues(ReportLabel, ReportMessage, replace);
+        return;
+    }
+
+
+    /**
+     * Updates the central text box on MainWindow
+     */
+    private void updateWindowText(){
+        String newText = this.reporter.convertToString();
+        this.mainWindow.text.setText(newText);
+        this.mainWindow.f.repaint();
+    }
+
     /******************** METHODS RELATED TO SHUTTING DOWN THE APPLICATION ************/
 
    /**
