@@ -58,7 +58,6 @@ public class Reporter{
      * @param category the name of the category
      * @param newValue the string to add to the category status
      * @param replace if true, delete previous status and replace wtih newValue; if false add to existing status
-     * Note overloaded function, see alternative signature below
      */
     public void updateValues(String category, String newValue, Boolean replace){
         if (null == category || null == newValue){
