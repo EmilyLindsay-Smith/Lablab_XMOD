@@ -224,15 +224,12 @@ public class MainWindow{
      * @return string filename of chosen file
      * Note this is called in Xmod.java when a button is called, but method is in this class as it relates to the main window components
      */
-    public String chooseFile(String descriptor, String extension){
+    public String chooseFile(){
         JFileChooser fileChooser = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
-        
-        //fileChooser.setFileFilter()
+        // Ensure only .tms files can be selected
         fileChooser.setAcceptAllFileFilterUsed(false);
-        if (descriptor != "none"){
-            FileNameExtensionFilter filter = new FileNameExtensionFilter(descriptor, extension);
-            fileChooser.addChoosableFileFilter(filter);
-           }
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("TMS Files", "tms");
+        fileChooser.addChoosableFileFilter(filter);
         int choice = fileChooser.showOpenDialog(null);
         if (choice == JFileChooser.APPROVE_OPTION){
             return fileChooser.getSelectedFile().getAbsolutePath();
