@@ -219,8 +219,6 @@ public class MainWindow{
     }
 
     /** Popup to select a file
-     * @param descriptor label for purpose of choosing files
-     * @param extension acceptable extensions for chosen file
      * @return string filename of chosen file
      * Note this is called in Xmod.java when a button is called, but method is in this class as it relates to the main window components
      */
