@@ -1,3 +1,4 @@
 Installation Notes:
-    - acquire jSerialComm
+    - acquire jSerialComm jar
+    - acquire junit jar
     - ensure run.sh has permission to execute
