@@ -3,6 +3,7 @@ package xmod;
 import xmod.view.*;
 import xmod.constants.*;
 import xmod.status.*;
+import xmod.serial.*;
 
 import java.awt.event.*;
 import javax.swing.*;
@@ -14,15 +15,17 @@ public class Xmod implements PropertyChangeListener{
     MainWindow mainWindow;
     /*Objects*/
     Reporter reporter;
+    Serial serialPort;
      /**
      * Constructor
      */
-    Xmod(MainWindow mainWindow, Reporter reporter){
+    Xmod(MainWindow mainWindow, Reporter reporter, Serial serialPort){
         //Initialise window variables
         this.mainWindow = mainWindow;
 
         // Initialise Objects
         this.reporter = reporter;
+        this.serialPort = serialPort;
         // Set MainWindow Report
         updateWindowText(); 
     }
@@ -36,9 +39,11 @@ public class Xmod implements PropertyChangeListener{
 
                 //Instantiate Objects
                 Reporter reporter = new Reporter();
-                Xmod t = new Xmod(mainWindow, reporter);
-                // Add observers to respond to buttons/key strokes
+                Serial serialPort = new Serial();
+                Xmod t = new Xmod(mainWindow, reporter, serialPort);
+                // Add observers to respond to buttons/key strokes/error reports
                 mainWindow.addObserver(t);
+                serialPort.addObserver(t);
                 // Show main Window
                 mainWindow.show();
             }    
