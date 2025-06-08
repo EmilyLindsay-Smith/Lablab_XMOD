@@ -1,6 +1,7 @@
 package xmod.serial;
 
 import xmod.utils.*;
+import xmod.constants.*;
 import com.fazecast.jSerialComm.*;
 
 // For reporting errors to GUI
@@ -49,9 +50,8 @@ public class Serial
 
     /**Constructor to connect to serial port */
     public Serial(){
-        connectToPort();
-
         pcs = new PropertyChangeSupport(this);
+        connectToPort();
     }
 
     /**
@@ -90,13 +90,19 @@ public class Serial
             public void serialEvent(SerialPortEvent serialPortEvent){
                 if (serialPortEvent.getEventType() == SerialPort.LISTENING_EVENT_PORT_DISCONNECTED){
                     close(); // close port 
-                    this.pcs.firePropertyChange(Actions.ERROR, "", "Serial Port Disconnected");
+                    notifyDisconnect();
                     connectToPort(5);
                 }
             }
         });
     }
 
+    /**
+     * Notify main Xmod of disconnection
+     */
+    private void notifyDisconnect(){
+        pcs.firePropertyChange(Actions.ERROR, "", "Serial Port Disconnected <br/> Attempting to reconnect...");
+    }
     /**
      * Connect to serial port and set up timeouts and parameters without cycling if no connection
      */
@@ -111,13 +117,19 @@ public class Serial
     private void connectToPort(int repeatInt){
         selectPort();
         if (this.serialPort == null){
-            this.pcs.firePropertyChange(Actions.ERROR, "", "Serial Port Unavailable: Could not connect to control box");
+            String errorMessage = "Serial Port Unavailable: Could not connect to control box.";
             if (repeatInt > 0){
+                errorMessage = errorMessage + "<br/>Retrying in " + (this.WAIT_DURATION/1000) + "s ... (" + repeatInt + " automatic connection attempts remaining...)";
+                pcs.firePropertyChange(Actions.ERROR, "", errorMessage);
                 Utils.pause(this.WAIT_DURATION);
                 connectToPort(--repeatInt); //pre-increment reduces repeatInt by 1 before calling method
                 return;
+            }else{
+                errorMessage = errorMessage + "<br/>Please connect to the control box then click the 'CHECK CONNECTION' button";
+                pcs.firePropertyChange(Actions.ERROR, "", errorMessage);
+                return;
             }
-            return;
+
         }
     
         // Open the port if not open
@@ -131,10 +143,16 @@ public class Serial
             this.serialConnected = true;
             System.out.println("Serial Port successfully set up");
         }else{
-            this.pcs.firePropertyChange(Actions.ERROR, "", "Serial Port Unavailable: Could not open connection to control box");
+            String errorMessage = "Serial Port Unavailable: Could not open connection to control box.";
             if (repeatInt > 0){
+                errorMessage = errorMessage + "<br/>Retrying in " + (this.WAIT_DURATION/1000) + "s ... (" + repeatInt + " automatic connection attempts remaining...)";
+                pcs.firePropertyChange(Actions.ERROR, "", errorMessage);
                 Utils.pause(this.WAIT_DURATION);
                 connectToPort(--repeatInt); //pre-increment reduces repeatInt by 1 before calling method
+                return;
+            }else{
+                errorMessage = errorMessage + "<br/>Please connect to the control box then click the 'CHECK CONNECTION' button";
+                pcs.firePropertyChange(Actions.ERROR, "", errorMessage);
             }
         }
     }
@@ -167,7 +185,7 @@ public class Serial
         }catch(Exception e){
             e.printStackTrace();
         }
-        this.pcs.firePropertyChange(Actions.ERROR, "", "Serial Port Unavailable: Could not retrieve controller info");
+        pcs.firePropertyChange(Actions.ERROR, "", "Serial Port Unavailable: Could not retrieve controller info");
         return "";
     }
 
@@ -178,7 +196,7 @@ public class Serial
         try{
             send(this.ADJUST_ON);
         }catch(Exception e){
-            System.out.println("Exception occurred: " + e.getMessage());
+            pcs.firePropertyChange(Actions.ERROR, "", "Serial Port Error: could not turn on monitor");
         }
     }
 
