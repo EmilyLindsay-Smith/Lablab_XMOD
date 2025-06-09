@@ -1,10 +1,10 @@
 package xmod.constants;
 
 /**
- * Constants defining behaviour and label of the buttons in the main GUI
+ * Constants defining behaviour and label of the buttons in the main GUI.
  */
-public final class Operations{
-    private Operations(){
+public final class Operations {
+    private Operations() {
         //restrict instantiation
     }
 
