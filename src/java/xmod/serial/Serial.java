@@ -15,9 +15,9 @@ import java.beans.PropertyChangeSupport;
  * @author ELS
  * @version 1.0
  * @since 2025-06-09
- * KNOWN BUGS:
- *
- *  */
+ * KNOWN BUGS: 
+ */
+
 public class Serial {
     public PropertyChangeSupport pcs;
 
@@ -118,7 +118,7 @@ public class Serial {
      * @param repeatInt integer: number of items to check
      * If no port available, try again
      */
-    private void connectToPort(final int repeatInt) {
+    private void connectToPort(int repeatInt) {
         selectPort();
         if (this.serialPort == null) { // if port not identified yet
             String errorMessage = "Serial Port Unavailable: "
@@ -267,7 +267,7 @@ public class Serial {
                                 final int tMonitorOnByte,
                                 final int tMonitorOffByte) {
         try {
-            static final int HIGH_LOW_BYTE_SEPARATOR = 256;
+            final int HIGH_LOW_BYTE_SEPARATOR = 256;
             int tOnLowByte = tMonitorOnByte % HIGH_LOW_BYTE_SEPARATOR;
             int tOnHighByte = tMonitorOnByte / HIGH_LOW_BYTE_SEPARATOR;
             int tOffLowByte = tMonitorOffByte % HIGH_LOW_BYTE_SEPARATOR;
@@ -294,7 +294,6 @@ public class Serial {
             // tell controller to enable external interrupr
             // this isaudio trigger to start exp run
             send(this.ENABLE_EXT_INT0);
-
         } catch (Exception e) {
             String stackTrace = Utils.getStackTrace(e);
             String errorMessage = "Serial Port : Could not send timings to "
