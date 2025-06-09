@@ -4,4 +4,4 @@
 
 javac ./src/java/xmod/Xmod.java src/java/xmod/*/*.java -cp "lib/*" -d bin/ \
 	 && cd bin \
-	 && java -classpath .:../lib/jSerialComm-2.11.0.jar xmod.Xmod 
+     && java -classpath .:../lib/jSerialComm-2.11.0.jar xmod.Xmod 

@@ -1,9 +1,11 @@
 package xmod.constants;
 
-public final class Actions{
-    private Actions(){
+public final class Actions {
+    private Actions() {
         //restrict instantiation
     }
+    public static final String ERROR = "ERROR";
+    public static final String UPDATE_CONNECTION = "UPDATE_CONNECTION";
     public static final String OPERATION = "OPERATION";
     public static final String ABORT_EXPERIMENT = "ABORT_EXPERIMENT";
     public static final String UPDATE_FONT = "UPDATE_FONT";
