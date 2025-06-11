@@ -31,28 +31,30 @@ public class ReporterTest{
     @DisplayName("Initialise Reporter")
     @Test
     public void test_reporterInitialised(){
-        Assertions.assertEquals(false, this.reporter.status == null, "Reporter should not be null"); 
+        Assertions.assertEquals(false, this.reporter == null,
+         "Reporter should not be null");
     };
 
     @DisplayName("Check status not empty")
     @Test
     public void test_reporterInitialised2(){
-        Assertions.assertEquals(false, this.reporter.status.isEmpty(), "Reporter should not be empty"); 
+        Assertions.assertEquals(false, this.reporter.isEmpty(),
+         "Reporter should not be empty");
     };
 
     @DisplayName("Check correct number of keys")
     @Test
     public void test_correctNumberOfKeys(){
         int numKeys = ReportLabel.values().length;
-        Assertions.assertEquals(numKeys, this.reporter.status.size(),
-         "Reporter should have " + numKeys + " keys"); 
+        Assertions.assertEquals(numKeys, this.reporter.size(),
+         "Reporter should have " + numKeys + " keys");
     }
 
     private static Stream<Arguments> reporterInitialValues(){
         return Stream.of(
             Arguments.of(ReportLabel.STATUS, Responses.WELCOME),
             Arguments.of(ReportLabel.TMS, Responses.NO_FILE_SELECTED),
-            Arguments.of(ReportLabel.AUDIO, Responses.NO_FILE_SELECTED)      
+            Arguments.of(ReportLabel.AUDIO, Responses.NO_FILE_SELECTED)
         );
     }
 
@@ -60,26 +62,26 @@ public class ReporterTest{
     @ParameterizedTest
     @MethodSource("reporterInitialValues")
     public void test_initialEntries(ReportLabel key, String value){
-        ArrayList<String> realValues = this.reporter.status.get(key)
-                                        .report.get(ReportCategory.MESSAGE);
-        Assertions.assertEquals(1, realValues.size(), 
+        ArrayList<String> realValues = this.reporter.get(key)
+                                        .get(ReportCategory.MESSAGE);
+        Assertions.assertEquals(1, realValues.size(),
                                 "there should only be one item in the values");
         String realValue = realValues.get(0);
-        Assertions.assertEquals(value, realValue, 
+        Assertions.assertEquals(value, realValue,
                                     "Expected value and real value do not match");
     }
 
 
     @DisplayName("Check correct empty initial entries")
     @ParameterizedTest
-    @EnumSource(value = ReportLabel.class, 
+    @EnumSource(value = ReportLabel.class,
                 names = {"CONNECTION", "FONT", "MONITORS"})
     public void test_emptyInitialEntries(ReportLabel key){
-        //ObjectReport realValues = this.reporter.status.get(key);
+        //ObjectReport realValues = this.reporter.get(key);
         for(Map.Entry<ReportCategory, ArrayList<String>> e:
-            this.reporter.status.get(key).report.entrySet()) {
+            this.reporter.get(key).report.entrySet()) {
                 ArrayList<String> value = e.getValue(); // get values
-                Assertions.assertEquals(0, value.size(), 
+                Assertions.assertEquals(0, value.size(),
                 "There should be no initial values");
             }
     }
@@ -89,7 +91,7 @@ public class ReporterTest{
         return Stream.of(
             Arguments.of(ReportLabel.CONNECTION, Responses.SERIAL_UNCONNECTED),
             Arguments.of(ReportLabel.FONT, "Font changed to Helvetica"),
-            Arguments.of(ReportLabel.MONITORS, Responses.MONITORS_ON)      
+            Arguments.of(ReportLabel.MONITORS, Responses.MONITORS_ON)
         );
     }
 
@@ -100,12 +102,12 @@ public class ReporterTest{
         //Create objectreport for new data
         ObjectReport reportUpdate = new ObjectReport(category);
         reportUpdate.updateValues(ReportCategory.STATUS, newValue);
-        
+
         //Add to this.reporter
         this.reporter.updateValues(category, reportUpdate);
         //Check what is added
-        ArrayList<String> realValues = this.reporter.status.get(category)
-                                            .report.get(ReportCategory.STATUS);
+        ArrayList<String> realValues = this.reporter.get(category)
+                                            .get(ReportCategory.STATUS);
         Assertions.assertEquals(newValue, realValues.get(0),
         "The new value was not corrected added");
     }
@@ -117,14 +119,14 @@ public class ReporterTest{
         //Create objectreport for new data
         ObjectReport reportUpdate = new ObjectReport(category);
         reportUpdate.updateValues(ReportCategory.STATUS, newValue);
-        
+
         //Add to this.reporter twice
         this.reporter.updateValues(category, reportUpdate);
         this.reporter.updateValues(category, reportUpdate);
-        
+
         //Check what is added
-        ArrayList<String> realValues = this.reporter.status.get(category)
-                                            .report.get(ReportCategory.STATUS);
+        ArrayList<String> realValues = this.reporter.get(category)
+                                            .get(ReportCategory.STATUS);
         Assertions.assertEquals(newValue, realValues.get(0),
         "The new value was not corrected added");
         Assertions.assertEquals(1, realValues.size(),
@@ -144,16 +146,16 @@ public class ReporterTest{
         //Add to this.reporter twice
         this.reporter.updateValues(category, reportUpdate);
         this.reporter.updateValues(category, reportUpdate2);
-        
+
         //Check what is added
-        ArrayList<String> realValues = this.reporter.status.get(category)
-                                            .report.get(ReportCategory.MESSAGE);
+        ArrayList<String> realValues = this.reporter.get(category)
+                                            .get(ReportCategory.MESSAGE);
         Assertions.assertEquals(2, realValues.size(),
             "The newValue should have two items in it");
         Assertions.assertEquals(newValue, realValues.get(0),
             "The first new value was not corrected added");
         Assertions.assertEquals("second message", realValues.get(1),
-            "The second new value was not corrected added"); 
+            "The second new value was not corrected added");
     }
 
     @DisplayName("Updating full values correctly with status change")
@@ -172,14 +174,14 @@ public class ReporterTest{
         //Add to this.reporter twice
         this.reporter.updateValues(category, reportUpdate);
         this.reporter.updateValues(category, reportUpdate2);
-        
+
         //Check what is added
-        ArrayList<String> realValues = this.reporter.status.get(category)
-                                            .report.get(ReportCategory.MESSAGE);
+        ArrayList<String> realValues = this.reporter.get(category)
+                                            .get(ReportCategory.MESSAGE);
         Assertions.assertEquals(1, realValues.size(),
             "The newValue should have one item in it");
         Assertions.assertEquals("second message", realValues.get(0),
-            "The second new value was not corrected added"); 
+            "The second new value was not corrected added");
     }
 
     @DisplayName("Updating full values correctly without status change")
@@ -197,16 +199,16 @@ public class ReporterTest{
         //Add to this.reporter twice
         this.reporter.updateValues(category, reportUpdate);
         this.reporter.updateValues(category, reportUpdate2);
-        
+
         //Check what is added
-        ArrayList<String> realValues = this.reporter.status.get(category)
-                                            .report.get(ReportCategory.MESSAGE);
+        ArrayList<String> realValues = this.reporter.get(category)
+                                            .get(ReportCategory.MESSAGE);
         Assertions.assertEquals(2, realValues.size(),
             "The newValue should have two items in it");
         Assertions.assertEquals(newValue, realValues.get(0),
             "The first new value was not corrected added");
         Assertions.assertEquals("second message", realValues.get(1),
-            "The second new value was not corrected added"); 
+            "The second new value was not corrected added");
     }
 
 }

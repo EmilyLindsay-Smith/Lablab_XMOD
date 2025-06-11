@@ -12,16 +12,25 @@ public class ObjectReport {
      */
     public ObjectReport(ReportLabel className){
         this.name = className;
-        int initialCapacity = 6; //Number of categories + 1/3 
+        int initialCapacity = 6; //Number of categories + 1/3
         float loadFactor = (float) 0.75;
-        // To prints keys in insertion order not recent access order 
-        Boolean accessOrder = false; 
+        // To prints keys in insertion order not recent access order
+        Boolean accessOrder = false;
 
         this.report = new LinkedHashMap<ReportCategory, ArrayList<String>>(
-            initialCapacity, loadFactor, accessOrder);      
+            initialCapacity, loadFactor, accessOrder);
         initialiseValues();
     }
 
+
+   /**
+     * Returns ArrayList<String> for given label in report
+     * @param label ReportCategory for the category
+     * @return ArrayList<String> stored at that label
+     */
+    public ArrayList<String> get(ReportCategory label){
+        return this.report.get(label);
+    }
     /**
      * Returns this.name.
      * Mostly useful for testing
@@ -29,7 +38,7 @@ public class ObjectReport {
     public String getName() {
         return this.name.getValue();
     }
-    /** 
+    /**
      * Initialise report map values.
      */
     private void initialiseValues() {
@@ -40,9 +49,9 @@ public class ObjectReport {
         ArrayList<String> stackTraceInitialValue = new ArrayList<String>();
 
         // Add to report map
-        this.report.put(ReportCategory.STATUS, statusInitialValue); 
+        this.report.put(ReportCategory.STATUS, statusInitialValue);
         this.report.put(ReportCategory.MESSAGE, messageInitialValue);
-        this.report.put(ReportCategory.ADVICE, adviceInitialValue); 
+        this.report.put(ReportCategory.ADVICE, adviceInitialValue);
         this.report.put(ReportCategory.STACKTRACE, stackTraceInitialValue);
 
         return;
@@ -54,7 +63,7 @@ public class ObjectReport {
      * @param newValues ArrayList of multiple new values
      * For each value in newValues, it calls the overloaded function below
      */
-    public void updateValues(ReportCategory category, 
+    public void updateValues(ReportCategory category,
                                 ArrayList<String> newValues) {
 
         if (null == category || null == newValues) {
@@ -74,9 +83,9 @@ public class ObjectReport {
      * Update single string report map values.
      * @param category ReportCategory enum (Status, Message, Advice, StackTrace)
      * @param newValue single new value string
-     * Adds newValue 
+     * Adds newValue
      */
-    public void updateValues(ReportCategory category, 
+    public void updateValues(ReportCategory category,
                                 String newValue) {
         if (null == category || null == newValue) {
             return;
@@ -144,7 +153,7 @@ public class ObjectReport {
 
     public Boolean isEmpty(){
         Boolean empty = true;
-        for(Map.Entry<ReportCategory, ArrayList<String>> e: 
+        for(Map.Entry<ReportCategory, ArrayList<String>> e:
                 this.report.entrySet()){
             ReportCategory key = e.getKey(); //get name of key
             List<String> values = e.getValue(); // get values

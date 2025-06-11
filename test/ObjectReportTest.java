@@ -25,32 +25,32 @@ public class ObjectReportTest {
     @DisplayName("Check ObjectReport name")
     @Test
     public void test_objectReportName() {
-        Assertions.assertEquals(true, 
-            this.objectReport.getName() == this.objectReportName.getValue(), 
-            "ObjectReport name should equal " 
-            + this.objectReportName.getValue()); 
+        Assertions.assertEquals(true,
+            this.objectReport.getName() == this.objectReportName.getValue(),
+            "ObjectReport name should equal "
+            + this.objectReportName.getValue());
     };
 
     @DisplayName("Initialise ObjectReport")
     @Test
     public void test_objectReportInitialised() {
-        Assertions.assertEquals(false, this.objectReport.report == null, 
-        "ObjectReport should not be null"); 
+        Assertions.assertEquals(false, this.objectReport.report == null,
+        "ObjectReport should not be null");
     };
 
     @DisplayName("Check report not empty")
     @Test
     public void test_objectReportInitialised2() {
-        Assertions.assertEquals(false, this.objectReport.report.isEmpty(), 
-        "ObjectReport should not be empty"); 
+        Assertions.assertEquals(false, this.objectReport.report.isEmpty(),
+        "ObjectReport should not be empty");
     };
 
     @DisplayName("Check correct number of keys")
     @Test
     public void test_correctNumberOfKeys() {
         int numKeys = ReportCategory.values().length;
-        Assertions.assertEquals(numKeys, this.objectReport.report.size(), 
-        "ObjectReport should have " + numKeys + " keys"); 
+        Assertions.assertEquals(numKeys, this.objectReport.report.size(),
+        "ObjectReport should have " + numKeys + " keys");
     }
 
 
@@ -67,7 +67,7 @@ public class ObjectReportTest {
     @ParameterizedTest
     @MethodSource("objectReportInitialValues")
     public void test_initialEntries(ReportCategory key) {
-        ArrayList<String> realValues = this.objectReport.report.get(key);
+        ArrayList<String> realValues = this.objectReport.get(key);
         Assertions.assertEquals(0, realValues.size(),
          "there should no items in the values");
     }
@@ -80,18 +80,18 @@ public class ObjectReportTest {
             Arguments.of(ReportCategory.ADVICE,
                 "Please reconnect then click the CHECK CONNECTION button"),
             Arguments.of(ReportCategory.STACKTRACE,
-                "Lengthy stack trace here")   
+                "Lengthy stack trace here")
         );
     }
 
     @DisplayName("Updating previously empty values correctly")
     @ParameterizedTest
     @MethodSource("updatingObjectReportValues1")
-    public void test_updatingValues2(ReportCategory category, 
+    public void test_updatingValues2(ReportCategory category,
     String newValue) {
         this.objectReport.updateValues(category, newValue);
-        ArrayList<String> realValues = this.objectReport.report.get(category);
-        Assertions.assertEquals(newValue, realValues.get(0), 
+        ArrayList<String> realValues = this.objectReport.get(category);
+        Assertions.assertEquals(newValue, realValues.get(0),
         "The new value was not corrected added");
     }
 
@@ -105,7 +105,7 @@ public class ObjectReportTest {
             Arguments.of(ReportCategory.ADVICE,
                 "Connect to Control Box", ""),
             Arguments.of(ReportCategory.STACKTRACE,
-                "Lengthy stack trace", "")   
+                "Lengthy stack trace", "")
         );
     }
 
@@ -113,7 +113,7 @@ public class ObjectReportTest {
     @ParameterizedTest
     @MethodSource("updatingObjectReportValues2")
     public void test_updatingValues3(
-        ReportCategory category, 
+        ReportCategory category,
         String newValue,
         String newValue2
         ) {
@@ -122,12 +122,12 @@ public class ObjectReportTest {
         //Second Update
         this.objectReport.updateValues(category, newValue2);
         //Get current Values
-        ArrayList<String> realValues = this.objectReport.report.get(category);
+        ArrayList<String> realValues = this.objectReport.get(category);
         Assertions.assertEquals(false, 0 == realValues.size(),
         "realValues should not be empty");
-        Assertions.assertEquals(newValue, realValues.get(0), 
+        Assertions.assertEquals(newValue, realValues.get(0),
         "The first new value should not be overwritten");
-        Assertions.assertEquals(newValue2, realValues.get(1), 
+        Assertions.assertEquals(newValue2, realValues.get(1),
         "The second new value should be at index 2");
     }
 
@@ -135,7 +135,7 @@ public class ObjectReportTest {
     @ParameterizedTest
     @MethodSource("updatingObjectReportValues2")
     public void test_updatingValues4(
-        ReportCategory category, 
+        ReportCategory category,
         String newValue,
         String newValue2
         ) {
@@ -145,12 +145,12 @@ public class ObjectReportTest {
         this.objectReport.clearValues(category);
         this.objectReport.updateValues(category, newValue2);
         //Get current Values
-        ArrayList<String> realValues = this.objectReport.report.get(category);
+        ArrayList<String> realValues = this.objectReport.get(category);
         Assertions.assertEquals(false, 0 == realValues.size(),
         "realValues should not be empty");
-        Assertions.assertEquals(false, newValue == realValues.get(0), 
+        Assertions.assertEquals(false, newValue == realValues.get(0),
         "The first new value should be overwritten");
-        Assertions.assertEquals(newValue2, realValues.get(0), 
+        Assertions.assertEquals(newValue2, realValues.get(0),
         "The second new value should be at index 1");
     }
 
@@ -158,12 +158,12 @@ public class ObjectReportTest {
     @DisplayName("Clearing previously present values correctly")
     @ParameterizedTest
     @MethodSource("updatingObjectReportValues1")
-    public void test_clearingValues(ReportCategory category, 
+    public void test_clearingValues(ReportCategory category,
     String newValue) {
         this.objectReport.updateValues(category, newValue);
-        ArrayList<String> realValues = this.objectReport.report.get(category);
+        ArrayList<String> realValues = this.objectReport.get(category);
         this.objectReport.clearValues(category);
-        ArrayList<String> realValues2 = this.objectReport.report.get(category);
+        ArrayList<String> realValues2 = this.objectReport.get(category);
         Assertions.assertEquals(0, realValues.size(),
          "there should no items in the values");
     }
@@ -176,14 +176,12 @@ public class ObjectReportTest {
                                         update);
         String output = this.objectReport.toString();
 
-        String expectedOutput  = "<span style=\"font-weight:bold\">"
-        + this.objectReportName + "</span><br/>";
-        expectedOutput +=  "<span style="
-                        + "\"display:inline-block;"
-                        + "margin-left:40px;\">"
-                        + "<u>"
-                        + "Status"
-                        + ":</u></span><br/>";
+        String expectedOutput =  "<span style="
+                                + "\"display:inline-block;"
+                                + "margin-left:40px;\">"
+                                + "<u>"
+                                + "Status"
+                                + ":</u></span><br/>";
         expectedOutput += "<p style="
                         + "\"display:inline-block;"
                         + "margin-left:40px;\">"
@@ -191,7 +189,7 @@ public class ObjectReportTest {
                         + "<br/><br/>";
         expectedOutput += "</p>";
 
-        Assertions.assertEquals(expectedOutput, output, 
-        "The conversion to string is not correct");           
+        Assertions.assertEquals(expectedOutput, output,
+        "The conversion to string is not correct");
     }
 }
