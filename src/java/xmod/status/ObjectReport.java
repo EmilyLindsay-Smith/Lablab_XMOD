@@ -1,16 +1,16 @@
 package xmod.status;
 
 import java.util.*;
+import xmod.status.ReportCategory;
 
 public class ObjectReport {
-    public enum ReportCategory { STATUS , MESSAGE, ADVICE, STACKTRACE };
     public Map<ReportCategory, ArrayList<String>> report;
-    private String name;
+    private ReportLabel name;
     /**
      * Constructor.
      * @param className name of category e.g. audio, tms, connection etc.
      */
-    public ObjectReport(String className){
+    public ObjectReport(ReportLabel className){
         this.name = className;
         int initialCapacity = 6; //Number of categories + 1/3 
         float loadFactor = (float) 0.75;
@@ -27,7 +27,7 @@ public class ObjectReport {
      * Mostly useful for testing
      */
     public String getName() {
-        return this.name;
+        return this.name.getValue();
     }
     /** 
      * Initialise report map values.
@@ -56,6 +56,7 @@ public class ObjectReport {
      */
     public void updateValues(ReportCategory category, 
                                 ArrayList<String> newValues) {
+
         if (null == category || null == newValues) {
             return;
         }
@@ -81,6 +82,10 @@ public class ObjectReport {
             return;
         }
         if (!this.report.containsKey(category)) { // if cateogry label not found
+            return;
+        }
+        //Check for duplication
+        if(this.report.get(category).contains(newValue)){
             return;
         }
         // append new value
@@ -109,14 +114,10 @@ public class ObjectReport {
      * html used to format here
      * @return htmlstring representation of report
      */
-    public String convertToString(){
+    public String toString(){
         String output = "";
 
-        //Add Category Name 
-        output += "<span style=\"font-weight:bold\">"
-                + this.name 
-                + "</span><br/>";
-
+        //No need for Category Name - this is handled in Reporter
         for(Map.Entry<ReportCategory, ArrayList<String>> e: this.report.entrySet()){
             ReportCategory key = e.getKey(); //get name of key
             List<String> values = e.getValue(); // get values
@@ -125,7 +126,7 @@ public class ObjectReport {
                         + "\"display:inline-block;"
                         + "margin-left:40px;\">"
                         + "<u>"
-                        + getCategoryName(key) 
+                        + key.getValue()
                         + ":</u></span><br/>";
                 output += "<p style="
                         + "\"display:inline-block;"
@@ -139,20 +140,18 @@ public class ObjectReport {
             }
         }
         return output;
-
     }
 
-    /**
-     * Return string representation of ReportCategory category.
-     * @param category ReportCategory enum
-     */
-    private String getCategoryName(ReportCategory category){  
-        switch(category) {
-            case STATUS : return "Status";
-            case MESSAGE : return "Message";
-            case ADVICE : return "Advice";
-            case STACKTRACE : return "Stack Trace";
-            default: return "";
+    public Boolean isEmpty(){
+        Boolean empty = true;
+        for(Map.Entry<ReportCategory, ArrayList<String>> e: 
+                this.report.entrySet()){
+            ReportCategory key = e.getKey(); //get name of key
+            List<String> values = e.getValue(); // get values
+            if (null != values && !values.isEmpty()){
+                empty = false;
+            }
         }
+        return empty;
     }
 }

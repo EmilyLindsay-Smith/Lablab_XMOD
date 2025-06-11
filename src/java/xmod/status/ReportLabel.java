@@ -1,13 +1,30 @@
 package xmod.status;
 
+/*
 public final class ReportLabel{
     private ReportLabel(){
         //restrict instantiation
     }
-    public static final String STATUS = "Status";
-    public static final String TMS = "TMS";
-    public static final String AUDIO = "Audio";
-    public static final String CONNECTION = "Connection";
-    public static final String FONT = "Font";
-    public static final String MONITORS = "Monitors";
-}
+*/
+    public enum ReportLabel {
+        STATUS ("Status"),
+        TMS ("TMS"),
+        AUDIO ("AUDIO"),
+        CONNECTION ("CONNECTION"),
+        FONT ("FONT"),
+        MONITORS ("MONITORS");
+        
+        private final String value;
+
+        ReportLabel(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return this.value;
+        }
+        };
+
+
+
+//}

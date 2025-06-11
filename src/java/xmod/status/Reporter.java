@@ -1,6 +1,9 @@
 package xmod.status;
 
 import java.util.*;
+import xmod.status.ObjectReport;
+import xmod.status.ReportLabel;
+import xmod.status.ReportCategory;
 /**
  * Representation of status
  * @author ELS
@@ -11,8 +14,7 @@ import java.util.*;
  *  */
 
 public class Reporter{
-    Map<String, ArrayList<String>> status;
-    
+    Map<ReportLabel, ObjectReport> status;
     /**
      * Constructor
      * creates the the status hashmap to hold status information and initialises its values
@@ -20,9 +22,11 @@ public class Reporter{
     public Reporter(){
         int initialCapacity = 8; //Number of categories + 1/3 
         float loadFactor = (float) 0.75;
-        Boolean accessOrder = false; // so it prints keys in insertion order not recent access order 
+        // so it prints keys in insertion order not recent access order 
+        Boolean accessOrder = false; 
 
-        this.status = new LinkedHashMap<String, ArrayList<String>>(initialCapacity, loadFactor, accessOrder); // initial capacity, load factor, accessOrder        
+        this.status = new LinkedHashMap<ReportLabel, ObjectReport>(
+            initialCapacity, loadFactor, accessOrder);      
         initialiseValues();
     }
 
@@ -31,18 +35,27 @@ public class Reporter{
      */
     private void initialiseValues(){
         // Initialise initial value arraylists        
-        ArrayList<String> statusInitialValue = new ArrayList<String>();
-        statusInitialValue.add(Responses.WELCOME);
+        ObjectReport statusInitialValue = new ObjectReport(
+                                                ReportLabel.STATUS);
+        statusInitialValue.updateValues(ReportCategory.MESSAGE,
+                                        Responses.WELCOME);
 
-        ArrayList<String> tmsInitialValue = new ArrayList<String>();
-        tmsInitialValue.add(Responses.NO_FILE_SELECTED);
+        ObjectReport tmsInitialValue = new ObjectReport(
+                                            ReportLabel.TMS);
+        tmsInitialValue.updateValues(ReportCategory.MESSAGE,
+                                    Responses.NO_FILE_SELECTED);
 
-        ArrayList<String> audioInitialValue = new ArrayList<String>();
-        audioInitialValue.add(Responses.NO_FILE_SELECTED);
+        ObjectReport audioInitialValue = new ObjectReport(
+                                            ReportLabel.AUDIO);
+        audioInitialValue.updateValues(ReportCategory.MESSAGE,
+                                        Responses.NO_FILE_SELECTED);
 
-        ArrayList<String> connectionInitialValue = new ArrayList<String>();
-        ArrayList<String> fontInitialValue = new ArrayList<String>();
-        ArrayList<String> monitorInitialValue = new ArrayList<String>();
+        ObjectReport connectionInitialValue = new ObjectReport(
+                                            ReportLabel.CONNECTION);
+        ObjectReport fontInitialValue = new ObjectReport(
+                                            ReportLabel.FONT);
+        ObjectReport monitorInitialValue = new ObjectReport(
+                                            ReportLabel.MONITORS);
          
         // Add to status hashmap: categoryName, initialValue
         this.status.put(ReportLabel.STATUS, statusInitialValue);
@@ -54,45 +67,63 @@ public class Reporter{
     }
 
     /**
-     * Updates the status for a given category
-     * @param category the name of the category
-     * @param newValue the string to add to the category status
-     * @param replace if true, delete previous status and replace wtih newValue; if false add to existing status
+     * Updates the status for a given category.
+     * @param category the ReportLabel of the category
+     * @param newValues the ObjectReport to merge in
+     * If the ReportCategory STATUS is different, the existing content will be
+     * removed; if it is the same, it will just append
      */
-    public void updateValues(String category, String newValue, Boolean replace){
-        if (null == category || null == newValue){
-            return;
-        }
-        if (!this.status.containsKey(category)){ // if category not found
-            return;
-        }
+    public void updateValues(ReportLabel category, ObjectReport newValues){
+        Boolean clearOldValues = false;
+        // If ReportCategory.STATUS is not null and has changed,
+        // If the ReportCategory.STATUS has not changed
 
-        if (replace){ //remove existing value
-            this.status.get(category).clear();
+        ArrayList<String> oldStatus = this.status.get(category)
+                                        .report.get(ReportCategory.STATUS);
+        ArrayList<String> newStatus =newValues.report.get(ReportCategory.STATUS);
+
+        if (! newStatus.equals(oldStatus)){
+            clearOldValues = true;
+        }else{
+            clearOldValues = false;
         }
-        // append new value 
-        this.status.get(category).add(newValue);
-    };
+         
+        System.out.println("clearOldValues: " + clearOldValues);
+        System.out.println("Initial Status: " + oldStatus);
+        System.out.println("New Status: " + newStatus);
+        //For each ReportCategory in the ObjectReport
+        for(Map.Entry<ReportCategory, ArrayList<String>> e:
+            newValues.report.entrySet()) {
+                ReportCategory key = e.getKey(); // get key
+                ArrayList<String> value = e.getValue(); // get values
+                // Clear array if replace == true
+                if (clearOldValues){
+                    this.status.get(category).clearValues(key);
+                }
+                //If old value equals new value, do nothing
+                this.status.get(category).updateValues(key, value);
+        }
+ 
+    }
 
     /**
      * Creates a string representation of the status to be used in the displaying to user
      * To control the visuals, html is used here
      * @return htmlstring representation of the status
      */
-    public String convertToString(){
+    public String toString(){
         String output = "";
 
-        for(Map.Entry<String, ArrayList<String>> e: this.status.entrySet()){
-            String key = e.getKey(); //get name of key
-            List<String> values = e.getValue(); // get values
+        for(Map.Entry<ReportLabel, ObjectReport> e: this.status.entrySet()){
+            ReportLabel key = e.getKey(); //get name of key
+            ObjectReport values = e.getValue(); // get values
             if (null != values && !values.isEmpty()){ // check if no values are set
-                output = output + "<span style=\"font-weight:bold\">"+ key + "</span><br/>";
-                output = output + "<p style=\"display:inline-block;margin-left:40px;\">";
-                for (String value: values){ //add each on a separate line
-                    if (value != ""){
-                        output = output + value + "<br/><br/>";
-                    }
-                }
+                output += "<span style=\"font-weight:bold\">"
+                        + key.getValue() 
+                        + "</span><br/>";
+                output += "<p style=\"display:inline-block;"
+                        + "margin-left:40px;\">";
+                output += values.toString();
                 output = output + "</p>";
             }
         }

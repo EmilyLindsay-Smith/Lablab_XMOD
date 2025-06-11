@@ -6,13 +6,19 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.api.Test;
 
 import java.util.stream.Stream;
 import java.util.*;
+
+import xmod.status.ObjectReport;
+import xmod.status.ReportCategory;
+import xmod.status.ReportLabel;
+
 
 public class ReporterTest{
     Reporter reporter;
@@ -37,9 +43,10 @@ public class ReporterTest{
     @DisplayName("Check correct number of keys")
     @Test
     public void test_correctNumberOfKeys(){
-        Assertions.assertEquals(6, this.reporter.status.size(), "Reporter should have 6 keys"); 
+        int numKeys = ReportLabel.values().length;
+        Assertions.assertEquals(numKeys, this.reporter.status.size(),
+         "Reporter should have " + numKeys + " keys"); 
     }
-
 
     private static Stream<Arguments> reporterInitialValues(){
         return Stream.of(
@@ -52,20 +59,31 @@ public class ReporterTest{
     @DisplayName("Check correct initial entries")
     @ParameterizedTest
     @MethodSource("reporterInitialValues")
-    public void test_initialEntries(String key, String value){
-        ArrayList<String> realValues = this.reporter.status.get(key);
-        Assertions.assertEquals(1, realValues.size(), "there should only be one item in the values");
+    public void test_initialEntries(ReportLabel key, String value){
+        ArrayList<String> realValues = this.reporter.status.get(key)
+                                        .report.get(ReportCategory.MESSAGE);
+        Assertions.assertEquals(1, realValues.size(), 
+                                "there should only be one item in the values");
         String realValue = realValues.get(0);
-        Assertions.assertEquals(value, realValue, "Expected value and real value do not match");
+        Assertions.assertEquals(value, realValue, 
+                                    "Expected value and real value do not match");
     }
+
 
     @DisplayName("Check correct empty initial entries")
     @ParameterizedTest
-    @ValueSource(strings = {"Connection", "Font", "Monitors"})
-    public void test_emptyInitialEntries(String key){
-        ArrayList<String> realValues = this.reporter.status.get(key);
-        Assertions.assertEquals(0, realValues.size(), "There should be no initial values");
+    @EnumSource(value = ReportLabel.class, 
+                names = {"CONNECTION", "FONT", "MONITORS"})
+    public void test_emptyInitialEntries(ReportLabel key){
+        //ObjectReport realValues = this.reporter.status.get(key);
+        for(Map.Entry<ReportCategory, ArrayList<String>> e:
+            this.reporter.status.get(key).report.entrySet()) {
+                ArrayList<String> value = e.getValue(); // get values
+                Assertions.assertEquals(0, value.size(), 
+                "There should be no initial values");
+            }
     }
+
 
     private static Stream<Arguments> updatingReporterValues1(){
         return Stream.of(
@@ -78,78 +96,117 @@ public class ReporterTest{
     @DisplayName("Updating previously empty values correctly - adding")
     @ParameterizedTest
     @MethodSource("updatingReporterValues1")
-    public void test_updatingValues(String category, String newValue){
-        this.reporter.updateValues(category, newValue, false);
-        ArrayList<String> realValues = this.reporter.status.get(category);
-        Assertions.assertEquals(newValue, realValues.get(0), "The new value was not corrected added");
+    public void test_updatingValues(ReportLabel category, String newValue){
+        //Create objectreport for new data
+        ObjectReport reportUpdate = new ObjectReport(category);
+        reportUpdate.updateValues(ReportCategory.STATUS, newValue);
+        
+        //Add to this.reporter
+        this.reporter.updateValues(category, reportUpdate);
+        //Check what is added
+        ArrayList<String> realValues = this.reporter.status.get(category)
+                                            .report.get(ReportCategory.STATUS);
+        Assertions.assertEquals(newValue, realValues.get(0),
+        "The new value was not corrected added");
     }
 
-    @DisplayName("Updating previously empty values correctly - replacing")
+    @DisplayName("Updating previously full values correctly - no duplication")
     @ParameterizedTest
     @MethodSource("updatingReporterValues1")
-    public void test_updatingValues2(String category, String newValue){
-        this.reporter.updateValues(category, newValue, true);
-        ArrayList<String> realValues = this.reporter.status.get(category);
-        Assertions.assertEquals(newValue, realValues.get(0), "The new value was not corrected added");
+    public void test_updatingValues2(ReportLabel category, String newValue){
+        //Create objectreport for new data
+        ObjectReport reportUpdate = new ObjectReport(category);
+        reportUpdate.updateValues(ReportCategory.STATUS, newValue);
+        
+        //Add to this.reporter twice
+        this.reporter.updateValues(category, reportUpdate);
+        this.reporter.updateValues(category, reportUpdate);
+        
+        //Check what is added
+        ArrayList<String> realValues = this.reporter.status.get(category)
+                                            .report.get(ReportCategory.STATUS);
+        Assertions.assertEquals(newValue, realValues.get(0),
+        "The new value was not corrected added");
+        Assertions.assertEquals(1, realValues.size(),
+        "The newValue should only have one item in it");
     }
 
-    private static Stream<Arguments> updatingReporterValues2(){
-        return Stream.of(
-            Arguments.of(ReportLabel.TMS, Responses.FILE_LOAD_SUCCESS),
-            Arguments.of(ReportLabel.AUDIO, Responses.FILE_LOAD_FAILURE)      
-        );
-    }
-
-    @DisplayName("Updating previously present values correctly - adding")
+    @DisplayName("Updating previously full values correctly with second message")
     @ParameterizedTest
-    @MethodSource("updatingReporterValues2")
-    public void test_updatingValues3(String category, String newValue){
-        String originalValue = this.reporter.status.get(category).get(0);
-        this.reporter.updateValues(category, newValue, false);
-        ArrayList<String> realValues = this.reporter.status.get(category);
-        Assertions.assertEquals(originalValue, realValues.get(0), "The original value was not preserved");
-        Assertions.assertEquals(newValue, realValues.get(1), "The new value was not corrected added");
+    @MethodSource("updatingReporterValues1")
+    public void test_updatingValues3(ReportLabel category, String newValue){
+        //Create objectreport for new data
+        ObjectReport reportUpdate = new ObjectReport(category);
+        reportUpdate.updateValues(ReportCategory.MESSAGE, newValue);
+        ObjectReport reportUpdate2 = new ObjectReport(category);
+        reportUpdate2.updateValues(ReportCategory.MESSAGE, "second message");
+
+        //Add to this.reporter twice
+        this.reporter.updateValues(category, reportUpdate);
+        this.reporter.updateValues(category, reportUpdate2);
+        
+        //Check what is added
+        ArrayList<String> realValues = this.reporter.status.get(category)
+                                            .report.get(ReportCategory.MESSAGE);
+        Assertions.assertEquals(2, realValues.size(),
+            "The newValue should have two items in it");
+        Assertions.assertEquals(newValue, realValues.get(0),
+            "The first new value was not corrected added");
+        Assertions.assertEquals("second message", realValues.get(1),
+            "The second new value was not corrected added"); 
     }
 
-    @DisplayName("Updating previously present values correctly - replacing")
+    @DisplayName("Updating full values correctly with status change")
     @ParameterizedTest
-    @MethodSource("updatingReporterValues2")
-    public void test_updatingValues4(String category, String newValue){
-        String originalValue = this.reporter.status.get(category).get(0);
-        this.reporter.updateValues(category, newValue, true);
-        ArrayList<String> realValues = this.reporter.status.get(category);
-        Assertions.assertEquals(newValue, realValues.get(0), "The new value was not corrected added");
+    @MethodSource("updatingReporterValues1")
+    public void test_updatingValues4(ReportLabel category, String newValue){
+        System.out.println("TEST OF INTEREST");
+        //Create objectreport for new data
+        ObjectReport reportUpdate = new ObjectReport(category);
+        reportUpdate.updateValues(ReportCategory.STATUS, "first status");
+        reportUpdate.updateValues(ReportCategory.MESSAGE, newValue);
+        ObjectReport reportUpdate2 = new ObjectReport(category);
+        reportUpdate2.updateValues(ReportCategory.STATUS, "second status");
+        reportUpdate2.updateValues(ReportCategory.MESSAGE, "second message");
+
+        //Add to this.reporter twice
+        this.reporter.updateValues(category, reportUpdate);
+        this.reporter.updateValues(category, reportUpdate2);
+        
+        //Check what is added
+        ArrayList<String> realValues = this.reporter.status.get(category)
+                                            .report.get(ReportCategory.MESSAGE);
+        Assertions.assertEquals(1, realValues.size(),
+            "The newValue should have one item in it");
+        Assertions.assertEquals("second message", realValues.get(0),
+            "The second new value was not corrected added"); 
     }
 
-    @DisplayName("Checking not present categories")
+    @DisplayName("Updating full values correctly without status change")
     @ParameterizedTest
-    @ValueSource(strings={"AUDIO", "AuDio", "Tms", "tms", "", "Test"})
-    public void test_absentCategories(String category){
-        String newValue = "testValue";
-        this.reporter.updateValues(category, newValue, true);
-        Boolean categoryPresent = this.reporter.status.containsKey(category);
-        Assertions.assertEquals(false, categoryPresent, "The category should not be present");
-    }
+    @MethodSource("updatingReporterValues1")
+    public void test_updatingValue5(ReportLabel category, String newValue){
+        //Create objectreport for new data
+        ObjectReport reportUpdate = new ObjectReport(category);
+        reportUpdate.updateValues(ReportCategory.STATUS, "first status");
+        reportUpdate.updateValues(ReportCategory.MESSAGE, newValue);
+        ObjectReport reportUpdate2 = new ObjectReport(category);
+        reportUpdate2.updateValues(ReportCategory.STATUS, "first status");
+        reportUpdate2.updateValues(ReportCategory.MESSAGE, "second message");
 
-    @DisplayName("Checking string output")
-    @Test
-    public void test_conversionToString(){
-        String output = this.reporter.convertToString();
-
-        String expectedOutput  = "<span style=\"font-weight:bold\">"+ ReportLabel.STATUS + "</span><br/>";
-        expectedOutput = expectedOutput + "<p style=\"display:inline-block;margin-left:40px;\">";
-        expectedOutput = expectedOutput + Responses.WELCOME + "<br/><br/>";
-        expectedOutput = expectedOutput + "</p>";
-        expectedOutput = expectedOutput +"<span style=\"font-weight:bold\">"+ ReportLabel.TMS + "</span><br/>";
-        expectedOutput = expectedOutput + "<p style=\"display:inline-block;margin-left:40px;\">";
-        expectedOutput = expectedOutput + Responses.NO_FILE_SELECTED + "<br/><br/>";
-        expectedOutput = expectedOutput + "</p>";
-        expectedOutput = expectedOutput +"<span style=\"font-weight:bold\">"+ ReportLabel.AUDIO + "</span><br/>";
-        expectedOutput = expectedOutput + "<p style=\"display:inline-block;margin-left:40px;\">";
-        expectedOutput = expectedOutput + Responses.NO_FILE_SELECTED + "<br/><br/>";
-        expectedOutput = expectedOutput + "</p>";   
-        Assertions.assertEquals(expectedOutput, output, "The conversion to string is not correct");
-                
+        //Add to this.reporter twice
+        this.reporter.updateValues(category, reportUpdate);
+        this.reporter.updateValues(category, reportUpdate2);
+        
+        //Check what is added
+        ArrayList<String> realValues = this.reporter.status.get(category)
+                                            .report.get(ReportCategory.MESSAGE);
+        Assertions.assertEquals(2, realValues.size(),
+            "The newValue should have two items in it");
+        Assertions.assertEquals(newValue, realValues.get(0),
+            "The first new value was not corrected added");
+        Assertions.assertEquals("second message", realValues.get(1),
+            "The second new value was not corrected added"); 
     }
 
 }
