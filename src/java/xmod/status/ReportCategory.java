@@ -1,17 +1,19 @@
 package xmod.status;
+
 public enum ReportCategory {
-    STATUS ("Status"),
-    MESSAGE ("Message"),
-    ADVICE ("Advice"),
-    STACKTRACE ("Stacktrace");
+    /**Categories used in ObjectReport */
+    STATUS("Status"),
+    MESSAGE("Message"),
+    ADVICE("Advice"),
+    STACKTRACE("Stacktrace");
 
     private final String value;
 
-    ReportCategory(String value){
-        this.value = value;
+    ReportCategory(final String stringValue) {
+        this.value = stringValue;
     }
-    
-    public String getValue(){
+
+    public String getValue() {
         return this.value;
     }
 };

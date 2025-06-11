@@ -79,7 +79,7 @@ public class ReporterTest{
     public void test_emptyInitialEntries(ReportLabel key){
         //ObjectReport realValues = this.reporter.get(key);
         for(Map.Entry<ReportCategory, ArrayList<String>> e:
-            this.reporter.get(key).report.entrySet()) {
+            this.reporter.get(key).entrySet()) {
                 ArrayList<String> value = e.getValue(); // get values
                 Assertions.assertEquals(0, value.size(),
                 "There should be no initial values");

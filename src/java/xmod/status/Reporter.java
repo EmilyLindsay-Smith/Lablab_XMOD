@@ -1,7 +1,8 @@
 package xmod.status;
 
-import java.util.*;
-
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /** Representation of status.
  * @author ELS
@@ -12,7 +13,7 @@ import java.util.*;
  *  */
 
 public class Reporter {
-    /**Contains ObjectReport for each label */
+    /**Contains ObjectReport for each label. */
     private Map<ReportLabel, ObjectReport> status;
     /**
      * Constructor.
@@ -30,27 +31,27 @@ public class Reporter {
     }
 
     /**
-     * Returns ObjectReport for given label in status
+     * Returns ObjectReport for given label in status.
      * @param label ReportLabel for the category
      * @return ObjectReport stored at that label
      */
-    public ObjectReport get(ReportLabel label){
+    public ObjectReport get(final ReportLabel label) {
         return this.status.get(label);
     }
 
     /**
-     * Returns size of status
+     * Returns size of status.
      * @return int number of entries in status
      */
-    public int size(){
+    public int size() {
         return this.status.size();
     }
 
     /**
-     * Returns whether status is empty
+     * Returns whether status is empty.
      * @return Boolean emptiness
      */
-    public Boolean isEmpty(){
+    public Boolean isEmpty() {
         return this.status.isEmpty();
     }
 
@@ -104,9 +105,9 @@ public class Reporter {
         // If the ReportCategory.STATUS has not changed
 
         ArrayList<String> oldStatus = this.status.get(category)
-                                        .report.get(ReportCategory.STATUS);
+                                        .get(ReportCategory.STATUS);
         ArrayList<String> newStatus = newValues
-                                        .report.get(ReportCategory.STATUS);
+                                        .get(ReportCategory.STATUS);
 
         if (!newStatus.equals(oldStatus)) {
             clearOldValues = true;
@@ -119,7 +120,7 @@ public class Reporter {
         System.out.println("New Status: " + newStatus);
         //For each ReportCategory in the ObjectReport
         for (Map.Entry<ReportCategory, ArrayList<String>> e
-            :newValues.report.entrySet()) {
+            :newValues.entrySet()) {
                 ReportCategory key = e.getKey(); // get key
                 ArrayList<String> value = e.getValue(); // get values
                 // Clear array if replace == true

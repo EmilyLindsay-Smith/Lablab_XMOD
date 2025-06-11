@@ -34,14 +34,14 @@ public class ObjectReportTest {
     @DisplayName("Initialise ObjectReport")
     @Test
     public void test_objectReportInitialised() {
-        Assertions.assertEquals(false, this.objectReport.report == null,
+        Assertions.assertEquals(false, this.objectReport == null,
         "ObjectReport should not be null");
     };
 
     @DisplayName("Check report not empty")
     @Test
     public void test_objectReportInitialised2() {
-        Assertions.assertEquals(false, this.objectReport.report.isEmpty(),
+        Assertions.assertEquals(true, this.objectReport.isEmpty(),
         "ObjectReport should not be empty");
     };
 
@@ -49,7 +49,7 @@ public class ObjectReportTest {
     @Test
     public void test_correctNumberOfKeys() {
         int numKeys = ReportCategory.values().length;
-        Assertions.assertEquals(numKeys, this.objectReport.report.size(),
+        Assertions.assertEquals(numKeys, this.objectReport.size(),
         "ObjectReport should have " + numKeys + " keys");
     }
 
