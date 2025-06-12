@@ -20,6 +20,7 @@ public class Xmod implements PropertyChangeListener{
      * Constructor
      */
     Xmod(MainWindow mainWindow, Reporter reporter, Serial serialPort){
+
         //Initialise window variables
         this.mainWindow = mainWindow;
 
@@ -86,7 +87,7 @@ public class Xmod implements PropertyChangeListener{
      * Updates the Reporter
      */
     private void updateStatus(String ReportLabel, String ReportMessage, Boolean replace){
-        this.reporter.updateValues(ReportLabel, ReportMessage, replace);
+      //This needs updating
         return;
     }
 
@@ -95,7 +96,7 @@ public class Xmod implements PropertyChangeListener{
      * Updates the central text box on MainWindow
      */
     private void updateWindowText(){
-        String newText = this.reporter.convertToString();
+        String newText = this.reporter.toString();
         this.mainWindow.text.setText(newText);
         this.mainWindow.f.repaint();
     }

@@ -32,3 +32,4 @@ These commands check that the control box can receive and send bytes. E2E testin
 if in doubt, create a short experiment of 3 items to confirm it is working as expected.
 
 EMILY: INCLUDE SAMPLE EXPERIMENT AS A TESTER
+

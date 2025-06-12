@@ -1,13 +1,35 @@
 package xmod.status;
 
-public final class ReportLabel{
-    private ReportLabel(){
-        //restrict instantiation
+/**
+ * Enum to handle different labels for reporting status to user.
+ */
+public enum ReportLabel {
+    /** Overall experiment status. */
+    STATUS("Status"),
+    /** TMS file to control experiment run. */
+    TMS("TMS"),
+    /** Audio file to play during experiment. */
+    AUDIO("AUDIO"),
+    /** Connection to control box via serial port. */
+    CONNECTION("CONNECTION"),
+    /** Font (changed). */
+    FONT("FONT"),
+    /** Monitors (On/Off). */
+    MONITORS("MONITORS");
+
+    /** String value of enum.
+     */
+    private final String value;
+
+    ReportLabel(final String stringValue) {
+        this.value = stringValue;
     }
-    public static final String STATUS = "Status";
-    public static final String TMS = "TMS";
-    public static final String AUDIO = "Audio";
-    public static final String CONNECTION = "Connection";
-    public static final String FONT = "Font";
-    public static final String MONITORS = "Monitors";
-}
+
+    /** Returns string representation of the enum to show to the user.
+     * @return value of enum
+    */
+    public String getValue() {
+        return this.value;
+    }
+    };
+
