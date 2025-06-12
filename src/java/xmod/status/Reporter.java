@@ -15,13 +15,14 @@ import java.util.Map;
 public class Reporter {
     /**Contains ObjectReport for each label. */
     private Map<ReportLabel, ObjectReport> status;
+
     /**
      * Constructor.
      * creates the the status hashmap  and initialises its values
      */
     public Reporter() {
-        int initialCapacity = 8; //Number of categories + 1/3
-        float loadFactor = (float) 0.75;
+        final int initialCapacity = 8; //Number of categories + 1/3
+        final float loadFactor = (float) 0.75;
         // so it prints keys in insertion order not recent access order
         Boolean accessOrder = false;
 

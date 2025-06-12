@@ -5,9 +5,14 @@ import java.util.Map;
 import java.util.LinkedHashMap;
 import java.util.Set;
 
+/** Class to manage reports on status of a REport Category.
+ * Used by Reporter to handle overall state
+ * Used by other classes to format updates to send to Reporter
+ */
 public class ObjectReport {
+    /**Map to hold info for each ReportCategory. */
     private Map<ReportCategory, ArrayList<String>> report;
-    //ame of category e.g. audio, tms, connection etc.
+    /** Name of category e.g. audio, tms, connection etc. */
     private ReportLabel name;
     /**
      * Constructor.
@@ -15,8 +20,8 @@ public class ObjectReport {
      */
     public ObjectReport(final ReportLabel className) {
         this.name = className;
-        int initialCapacity = 6; //Number of categories + 1/3
-        float loadFactor = (float) 0.75;
+        final int initialCapacity = 6; //Number of categories + 1/3
+        final float loadFactor = (float) 0.75;
         // To prints keys in insertion order not recent access order
         Boolean accessOrder = false;
 
