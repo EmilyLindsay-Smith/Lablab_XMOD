@@ -1,5 +1,6 @@
 package xmod.status;
 
+
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -28,10 +29,12 @@ public class Reporter {
 
         this.status = new LinkedHashMap<ReportLabel, ObjectReport>(
             initialCapacity, loadFactor, accessOrder);
+
         initialiseValues();
     }
 
     /**
+
      * Returns ObjectReport for given label in status.
      * @param label ReportLabel for the category
      * @return ObjectReport stored at that label

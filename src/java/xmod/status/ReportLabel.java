@@ -1,4 +1,5 @@
 package xmod.status;
+
 /**
  * Enum to handle different labels for reporting status to user.
  */
@@ -31,3 +32,4 @@ public enum ReportLabel {
         return this.value;
     }
     };
+

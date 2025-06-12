@@ -6,14 +6,17 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
+
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
+
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.api.Test;
 
 import java.util.stream.Stream;
 import java.util.*;
+
 
 import xmod.status.ObjectReport;
 import xmod.status.ReportCategory;
@@ -50,7 +53,7 @@ public class ReporterTest{
          "Reporter should have " + numKeys + " keys");
     }
 
-    private static Stream<Arguments> reporterInitialValues(){
+  private static Stream<Arguments> reporterInitialValues(){
         return Stream.of(
             Arguments.of(ReportLabel.STATUS, Responses.WELCOME),
             Arguments.of(ReportLabel.TMS, Responses.NO_FILE_SELECTED),
@@ -86,12 +89,12 @@ public class ReporterTest{
             }
     }
 
-
     private static Stream<Arguments> updatingReporterValues1(){
         return Stream.of(
             Arguments.of(ReportLabel.CONNECTION, Responses.SERIAL_UNCONNECTED),
             Arguments.of(ReportLabel.FONT, "Font changed to Helvetica"),
             Arguments.of(ReportLabel.MONITORS, Responses.MONITORS_ON)
+
         );
     }
 
@@ -212,3 +215,5 @@ public class ReporterTest{
     }
 
 }
+}
+
