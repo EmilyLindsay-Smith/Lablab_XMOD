@@ -215,5 +215,3 @@ public class ReporterTest{
     }
 
 }
-}
-
