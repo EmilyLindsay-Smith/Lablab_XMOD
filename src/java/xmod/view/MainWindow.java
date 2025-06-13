@@ -76,7 +76,7 @@ public class MainWindow {
     /** Retrieve info about controller box via serial port button. */
     private JButton buttonControllerInfo;
     /** Button to trigger FontWindow GUI to adjust font for experiments. */
-    private Button buttonCheckFont;
+    private JButton buttonCheckFont;
 
     /** Property Change Support. */
     private PropertyChangeSupport pcs;
