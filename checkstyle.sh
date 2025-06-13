@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ $# -ne 1]; then
+if [ $# -ne 1 ]; then
     echo "Usage: checkstyle.sh directory"
     echo "e.g. ./checkstyle.sh test"
     echo "e.g. ./checkstyle.sh serial"
