@@ -1,8 +1,17 @@
 package xmod.serial;
 
-import xmod.constants.*;
-import xmod.utils.*;
-import com.fazecast.jSerialComm.*;
+import xmod.constants.Actions;
+import xmod.constants.Operations;
+
+import xmod.utils.Utils;
+import xmod.status.ObjectReport;
+import xmod.status.ReportCategory;
+import xmod.status.ReportLabel;
+import xmod.status.Responses;
+
+import com.fazecast.jSerialComm.SerialPort;
+import com.fazecast.jSerialComm.SerialPortEvent;
+import com.fazecast.jSerialComm.SerialPortDataListener;
 
 // For reporting errors to GUI
 import java.beans.PropertyChangeListener;
@@ -15,39 +24,64 @@ import java.beans.PropertyChangeSupport;
  * @author ELS
  * @version 1.0
  * @since 2025-06-09
- * KNOWN BUGS: 
+ * KNOWN BUGS:
  */
 
 public class Serial {
-    public PropertyChangeSupport pcs;
-
+    /** PCS to handle sending updates. */
+    private PropertyChangeSupport pcs;
+    /** Is application connected to the controller box. */
     private Boolean serialConnected = false;
+    /** Serial port connection to controller box. */
     private SerialPort serialPort = null;
-    //duration of waiting for control box bytesAvailable() > 0
+    /** duration of waiting for control box bytesAvailable() > 0. */
     private static final int PAUSE_DURATION = 40;
-     //duration of pause being looking for serial to connect to
+    /** duration of pause being looking for serial to connect to. */
     private static final int WAIT_DURATION = 1000;
-    //Port Parameters
+    /** Port Parameters: Baud Rate. */
     private static final int BAUD_RATE = 19200;
+    /** Port Parameters: Data bits. */
     private static final int DATA_BITS = 8;
+    /** Port Parameters: Stop bots. */
     private static final int STOP_BITS = SerialPort.ONE_STOP_BIT;
+    /** Port Parameters: Parity. */
     private static final int PARITY = SerialPort.NO_PARITY;
-    //time in ms to wait for data from control box
+    /** time in ms to wait for data from control box. */
     private static final int TIMEOUT = 0;
 
-    //Constants for commands to send to the control box;
-    // variable names are same as method names in control box software;
+    /** High -low byte separator. */
+    private static final int HIGH_LOW_BYTE_SEPARATOR = 256;
+    /** Second in Milliseconds. */
+    private static final int SECONDS_IN_MILLISECONDS = 1000;
+    /** Number of attempts to automatically reconnect to serial port. */
+    private static final int NUM_REATTEMPTS = 5;
+
+
+    // Constants for commands to send to the control box.
+    // Note variable names are same as method names in control box software;
+    /** Send timeouts for each trial to controller box.  */
     private static final int MAIL_TOUT = Integer.parseInt("01", 16);
+    /** Send external interrupt trigger for each trial to controller box.  */
     private static final int ENABLE_EXT_INT0 = Integer.parseInt("02", 16);
+    /** Request info about control box: source to controller box.  */
     private static final int GET_SOURCE = Integer.parseInt("07", 16);
+    /** Request info about control box: source to controller box.  */
     private static final int GET_VERSION = Integer.parseInt("08", 16);
+    /** Request info about control box: source to controller box.  */
     private static final int GET_CREATED = Integer.parseInt("09", 16);
+    /** Request info about control box: source to controller box.  */
     private static final int GET_MODIFIED = Integer.parseInt("0A", 16);
+    /** Request info about control box: source to controller box.  */
     private static final int GET_BOXES = Integer.parseInt("0B", 16);
+    /** Request info about control box: source to controller box.  */
     private static final int GET_KEYS = Integer.parseInt("0C", 16);
+    /** Send request to turn off monitors to controller box.  */
     private static final int ADJUST_OFF = Integer.parseInt("0F", 16);
+    /** Send request to turn on monitors  to controller box.  */
     private static final int ADJUST_ON = Integer.parseInt("12", 16);
+    /** Request flashing leds to controller box.  */
     private static final int FLASH_LED = Integer.parseInt("10", 16);
+    /** Send experiment start to controller box.  */
     private static final int CROSSMODEL = Integer.parseInt("20", 16);
 
 
@@ -73,8 +107,7 @@ public class Serial {
                 if (portName.contains("usbserial")) {
                     this.serialPort = availablePorts[i];
                     addPortListener();
-                    pcs.firePropertyChange(Actions.UPDATE_CONNECTION, "",
-                    "Connected");
+                    updateStatus(Responses.SERIAL_CONNECTED, "", "", "");
                     return;
                 }
             }
@@ -99,7 +132,7 @@ public class Serial {
                     == SerialPort.LISTENING_EVENT_PORT_DISCONNECTED) {
                     close(); // close port
                     notifyDisconnect();
-                    connectToPort(5);
+                    connectToPort(NUM_REATTEMPTS);
                 }
             }
         });
@@ -118,25 +151,26 @@ public class Serial {
      * @param repeatInt integer: number of items to check
      * If no port available, try again
      */
-    private void connectToPort(int repeatInt) {
+    private void connectToPort(final int repeatInt) {
         selectPort();
         if (this.serialPort == null) { // if port not identified yet
-            String errorMessage = "Serial Port Unavailable: "
-            + "Could not connect to control box.";
             if (repeatInt > 0) {
-                errorMessage = errorMessage
-                + "<br/>Retrying in " + (this.WAIT_DURATION / 1000) + "s ... ("
-                + repeatInt + "automatic connection attempts remaining...)";
-                pcs.firePropertyChange(Actions.ERROR, "", errorMessage);
+                String updateMsg = "Retrying in "
+                    + (this.WAIT_DURATION / this.SECONDS_IN_MILLISECONDS)
+                    + "s ... ("
+                    + repeatInt + "automatic connection attempts remaining...)";
+                updateStatus(Responses.SERIAL_UNCONNECTED,
+                    updateMsg, "", "");
                 Utils.pause(this.WAIT_DURATION);
-                //pre-increment reduces repeatInt by 1 before calling method
-                connectToPort(--repeatInt);
+                int decrementedRepeatInt = repeatInt - 1;
+                connectToPort(decrementedRepeatInt);
                 return;
              } else {
-                errorMessage = errorMessage
-                + "<br/>Please connect to the control box then"
-                + "click the 'CHECK CONNECTION' button";
-                pcs.firePropertyChange(Actions.ERROR, "", errorMessage);
+                String updateMsg = "Failed to connect to the controller box";
+                String updateAdv = "Please check connection then press the"
+                    + Operations.CHECK_CONNECTION + " button to reconnect";
+                updateStatus(Responses.SERIAL_UNCONNECTED,
+                    updateMsg, updateAdv, "");
                 return;
             }
         }
@@ -157,27 +191,28 @@ public class Serial {
                 | SerialPort.TIMEOUT_WRITE_BLOCKING,
                 this.TIMEOUT, 0);
             this.serialConnected = true; //only update here as mark of success
-            System.out.println("Serial Port successfully set up");
          } else {
             String errorMessage = "Serial Port Unavailable: "
             + "Could not open connection to control box.";
             if (repeatInt > 0) {
-                errorMessage = errorMessage
-                + "<br/>Retrying in "
-                + (this.WAIT_DURATION / 1000) + "s ... ("
-                + repeatInt
-                + "automatic connection attempts remaining...)";
-
-                pcs.firePropertyChange(Actions.ERROR, "", errorMessage);
+                String updateMsg = "Retrying in "
+                    + (this.WAIT_DURATION / this.SECONDS_IN_MILLISECONDS)
+                    + "s ... ("
+                    + repeatInt + "automatic connection attempts remaining...)";
+                updateStatus(Responses.SERIAL_UNCONNECTED,
+                    updateMsg, "", "");
                 Utils.pause(this.WAIT_DURATION);
-                //pre-increment reduces repeatInt by 1 before calling method
-                connectToPort(--repeatInt);
+                int decrementedRepeatInt = repeatInt - 1;
+                connectToPort(decrementedRepeatInt);
                 return;
              } else {
-                errorMessage = errorMessage
-                + "<br/>Please connect to the control box then"
-                + " click the 'CHECK CONNECTION' button";
-                pcs.firePropertyChange(Actions.ERROR, "", errorMessage);
+                String updateMsg = "Failed to open connection "
+                                    + " to the controller box";
+                String updateAdv = "Please check connection then press the"
+                    + Operations.CHECK_CONNECTION + " button to reconnect";
+                updateStatus(Responses.SERIAL_UNCONNECTED,
+                    updateMsg, updateAdv, "");
+                return;
             }
         }
     }
@@ -200,9 +235,7 @@ public class Serial {
                 this.send(this.FLASH_LED);
             } catch (Exception e) {
             String stackTrace = Utils.getStackTrace(e);
-            String errorMessage = "Serial Port : Could not flash LEDs as <br/>"
-            + stackTrace;
-            pcs.firePropertyChange(Actions.ERROR, "", errorMessage);
+            updateStatus("", "Could not flash LEDs", "", stackTrace);
             }
         }
         return;
@@ -222,9 +255,8 @@ public class Serial {
             return serialInfo;
         } catch (Exception e) {
             String stackTrace = Utils.getStackTrace(e);
-            String errorMessage = "Serial Port: Could not retrieve controller "
-            + " info because <br/>" + stackTrace;
-            pcs.firePropertyChange(Actions.ERROR, "", errorMessage);
+            updateStatus("", "Could not retrieve controller info",
+                        "", stackTrace);
             return "";
         }
     }
@@ -237,9 +269,7 @@ public class Serial {
             send(this.ADJUST_ON);
         } catch (Exception e) {
             String stackTrace = Utils.getStackTrace(e);
-            String errorMessage = "Serial Port: Could not turn on monitor <br/>"
-            + stackTrace;
-            pcs.firePropertyChange(Actions.ERROR, "", errorMessage);
+            updateStatus("", "Could not turn on monitor", "", stackTrace);
         }
     }
 
@@ -251,29 +281,29 @@ public class Serial {
             send(this.ADJUST_OFF);
         } catch (Exception e) {
             String stackTrace = Utils.getStackTrace(e);
-            String errorMessage = "Serial Port: Could not turn on monitor <br/>"
-            + stackTrace;
-            pcs.firePropertyChange(Actions.ERROR, "", errorMessage);
+            updateStatus("", "Could not turn off monitor", "", stackTrace);
         }
     }
 
     /**
      * Sends timeout, on and off bytes to controller.
      * @param tReactionTimeoutByte : byte for timeout timings
-     * @param tMonitorOnByte: byte for monitor on timings
-     * @param tMonitorOffByte: byte for monitor off timings
+     * @param tMonitorOnByte byte for monitor on timings
+     * @param tMonitorOffByte byte for monitor off timings
      */
     public void sendTrialTimings(final int tReactionTimeoutByte,
                                 final int tMonitorOnByte,
                                 final int tMonitorOffByte) {
         try {
-            final int HIGH_LOW_BYTE_SEPARATOR = 256;
-            int tOnLowByte = tMonitorOnByte % HIGH_LOW_BYTE_SEPARATOR;
-            int tOnHighByte = tMonitorOnByte / HIGH_LOW_BYTE_SEPARATOR;
-            int tOffLowByte = tMonitorOffByte % HIGH_LOW_BYTE_SEPARATOR;
-            int tOffHighByte = tMonitorOffByte / HIGH_LOW_BYTE_SEPARATOR;
-            int tOutLowByte = tReactionTimeoutByte % HIGH_LOW_BYTE_SEPARATOR;
-            int tOutHighByte = tReactionTimeoutByte / HIGH_LOW_BYTE_SEPARATOR;
+
+            int tOnLowByte = tMonitorOnByte % this.HIGH_LOW_BYTE_SEPARATOR;
+            int tOnHighByte = tMonitorOnByte / this.HIGH_LOW_BYTE_SEPARATOR;
+            int tOffLowByte = tMonitorOffByte % this.HIGH_LOW_BYTE_SEPARATOR;
+            int tOffHighByte = tMonitorOffByte / this.HIGH_LOW_BYTE_SEPARATOR;
+            int tOutLowByte = tReactionTimeoutByte
+                                % this.HIGH_LOW_BYTE_SEPARATOR;
+            int tOutHighByte = tReactionTimeoutByte
+                                / this.HIGH_LOW_BYTE_SEPARATOR;
 
             // tell controller two timeout-bytes are coming;
             send(this.MAIL_TOUT);
@@ -296,9 +326,7 @@ public class Serial {
             send(this.ENABLE_EXT_INT0);
         } catch (Exception e) {
             String stackTrace = Utils.getStackTrace(e);
-            String errorMessage = "Serial Port : Could not send timings to "
-            + " control box because <br/>" + stackTrace;
-            pcs.firePropertyChange(Actions.ERROR, "", errorMessage);
+            updateStatus("", "Could not send trial timings", "", stackTrace);
         }
         return;
     }
@@ -364,15 +392,17 @@ public class Serial {
         //returns number of bytes received
         int received = this.serialPort.readBytes(inbuffer, inbuffer.length);
         //Check no error has occured (error response from jSerialComm)
-        if (received == -1) {
-            String errorMessage = "Serial Port : Reading error (-1)"
-            + "has occured in receiving bytes from the control box";
-            pcs.firePropertyChange(Actions.ERROR, "", errorMessage);
+        final int serialReadingError = -1;
+        final int serialBuffersizeError = -1;
+        if (received == serialReadingError) {
+            String updateMsg = "Reading Error (-1) occurred while"
+                + " receiving bytes from controller box";
+            updateStatus("", updateMsg, "", "");
         }
-        if (received == -2) {
-            String errorMessage = "Serial Port : Buffersize error (-2)"
-            + "has occured in receiving bytes from the control box";
-            pcs.firePropertyChange(Actions.ERROR, "", errorMessage);
+        if (received == serialBuffersizeError) {
+            String updateMsg = "Buffersize Error (-2) occurred while"
+                + " receiving bytes from controller box";
+            updateStatus("", updateMsg, "", "");
         }
         return inbuffer;
     }
@@ -393,9 +423,29 @@ public class Serial {
      * Notify main Xmod of disconnection.
      */
     private void notifyDisconnect() {
-        pcs.firePropertyChange(Actions.UPDATE_CONNECTION, "", "Disconnected");
-        pcs.firePropertyChange(Actions.ERROR, "",
-        "Serial Port Disconnected <br/> Attempting to reconnect...");
+        updateStatus(Responses.SERIAL_DISCONNECTED,
+                         "Attempting to reconnect...", "", "");
+        return;
+    }
+
+    private void updateStatus(final String newStatus,
+                                final String newMessage,
+                                final String newAdvice,
+                                final String newStackTrace) {
+        ObjectReport report = new ObjectReport(ReportLabel.CONNECTION);
+        if (newStatus != "") {
+            report.updateValues(ReportCategory.STATUS, newStatus);
+        }
+        if (newMessage != "") {
+            report.updateValues(ReportCategory.MESSAGE, newMessage);
+        }
+        if (newAdvice != "") {
+            report.updateValues(ReportCategory.ADVICE, newAdvice);
+        }
+        if (newStackTrace != "") {
+            report.updateValues(ReportCategory.STACKTRACE, newStackTrace);
+        }
+        pcs.firePropertyChange(Actions.UPDATE, null, report);
         return;
     }
 
@@ -404,7 +454,6 @@ public class Serial {
      * @param l listener i.e. Xmod.java
      */
     public void addObserver(final PropertyChangeListener l) {
-        pcs.addPropertyChangeListener(Actions.ERROR, l);
-        pcs.addPropertyChangeListener(Actions.UPDATE_CONNECTION, l);
+        pcs.addPropertyChangeListener(Actions.UPDATE, l);
     }
 }

@@ -1,40 +1,55 @@
 package xmod;
 
-import xmod.view.*;
-import xmod.constants.*;
-import xmod.status.*;
-import xmod.serial.*;
+import xmod.view.MainWindow;
 
-import java.awt.event.*;
-import javax.swing.*;
+import xmod.constants.Actions;
+import xmod.constants.Operations;
+
+import xmod.serial.Serial;
+
+import xmod.status.ObjectReport;
+import xmod.status.Reporter;
+import xmod.status.ReportLabel;
+
+
+import javax.swing.SwingUtilities;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
 
-public class Xmod implements PropertyChangeListener{
-    /*Windows*/
-    MainWindow mainWindow;
-    /*Objects*/
-    Reporter reporter;
-    Serial serialPort;
+public class Xmod implements PropertyChangeListener {
+    /** Windows.*/
+    private MainWindow mainWindow;
+    // Objects.
+    /** Reporter to manage status. */
+    private Reporter reporter;
+    /** SerialPort for communication to Controller Box. */
+    private Serial serialPort;
      /**
-     * Constructor
+     * Constructor.
+     * @param aMainWindow MainWindow object
+     * @param aReporter Reporter Object
+     * @param aSerialPort Serial Object
      */
-    Xmod(MainWindow mainWindow, Reporter reporter, Serial serialPort){
+    Xmod(final MainWindow aMainWindow,
+        final Reporter aReporter,
+        final Serial aSerialPort) {
 
         //Initialise window variables
-        this.mainWindow = mainWindow;
+        this.mainWindow = aMainWindow;
 
         // Initialise Objects
-        this.reporter = reporter;
-        this.serialPort = serialPort;
+        this.reporter = aReporter;
+        this.serialPort = aSerialPort;
         // Set MainWindow Report
-        updateWindowText(); 
+        updateWindowText();
     }
 
-     /** Main function to run xmod */
-    public static void main(String[] args){
-        SwingUtilities.invokeLater(new Runnable(){
-            public void run(){
+     /** Main function to run xmod.
+      * @param args default for main main
+      */
+    public static void main(final String[] args) {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
                 // Instantiate GUI Windows
                 MainWindow mainWindow = new MainWindow();
 
@@ -47,66 +62,81 @@ public class Xmod implements PropertyChangeListener{
                 serialPort.addObserver(t);
                 // Show main Window
                 mainWindow.show();
-            }    
+            }
         });
     }
 
     /**
-     * Handles actions on receiving a property change event
+     * Handles actions on receiving a property change event.
+     * @param evt PropertyChangeEvent sent by the pcs
      */
-    public void propertyChange(PropertyChangeEvent evt){
+    public void propertyChange(final PropertyChangeEvent evt) {
         String actionType = (String) evt.getPropertyName();
-        if (actionType == Actions.OPERATION){
+        if (actionType == Actions.OPERATION) {
             String action = (String) evt.getNewValue();
-            switch(action){
-                case Operations.RUN_EXP : operationRunExp(); break;
-                case Operations.LOAD_TMS: operationLoadTMS(); break;
-                //case Operations.LOAD_WAV: operationLoadWAV(); break;
-                case Operations.MONITOR_ON: operationMonitorOn(); break;
-                case Operations.MONITOR_OFF: operationMonitorOff(); break;
-                case Operations.CHECK_CONNECTION: operationCheckConnection(); break;
-                case Operations.CONTROLLER_INFO : operationControllerInfo(); break;
-                case Operations.CHECK_FONT: operationCheckFont(); break;
-                case Operations.CLOSE_XMOD: operationCloseXmod();
+            switch (action) {
+                case Operations.RUN_EXP:
+                    operationRunExp(); break;
+                case Operations.LOAD_TMS:
+                    operationLoadTMS(); break;
+                case Operations.MONITOR_ON:
+                    operationMonitorOn(); break;
+                case Operations.MONITOR_OFF:
+                    operationMonitorOff(); break;
+                case Operations.CHECK_CONNECTION:
+                    operationCheckConnection(); break;
+                case Operations.CONTROLLER_INFO:
+                    operationControllerInfo(); break;
+                case Operations.CHECK_FONT:
+                    operationCheckFont(); break;
+                case Operations.CLOSE_XMOD:
+                    operationCloseXmod();
                 default: break;
            }
+        } else if (actionType == Actions.UPDATE) {
+            // Send the ObjectReport to reporter to update the status
+            ObjectReport action = (ObjectReport) evt.getNewValue();
+            updateStatus(action);
+            updateWindowText();
         }
     }
 
-    private void operationLoadTMS(){};
-    private void operationRunExp(){};
-    private void operationMonitorOn(){};
-    private void operationMonitorOff(){};
-    private void operationCheckConnection(){};
-    private void operationControllerInfo(){};
-    private void operationCheckFont(){};
- 
-    /******************** METHODS RELATED TO UPDATING THE WINDOWS/TEXT/FONT ************/
-    
+    private void operationLoadTMS() { };
+    private void operationRunExp() { };
+    private void operationMonitorOn() { };
+    private void operationMonitorOff() { };
+    private void operationCheckConnection() { };
+    private void operationControllerInfo() { };
+    private void operationCheckFont() { };
+
+    /* ***** METHODS RELATED TO UPDATING THE WINDOWS/TEXT/FONT ************/
+
     /**
-     * Updates the Reporter
+     * Updates the Reporter.
+     * @param report ObjectReport containing the updates
      */
-    private void updateStatus(String ReportLabel, String ReportMessage, Boolean replace){
-      //This needs updating
-        return;
+    private void updateStatus(final ObjectReport report) {
+      this.reporter.updateValues(ReportLabel.valueOf(report.getName()),
+                                report);
+      return;
     }
 
 
     /**
-     * Updates the central text box on MainWindow
+     * Updates the central text box on MainWindow.
      */
-    private void updateWindowText(){
+    private void updateWindowText() {
         String newText = this.reporter.toString();
         this.mainWindow.text.setText(newText);
         this.mainWindow.f.repaint();
     }
 
-    /******************** METHODS RELATED TO SHUTTING DOWN THE APPLICATION ************/
+    /* ******* METHODS RELATED TO SHUTTING DOWN THE APPLICATION ************/
 
    /**
-     * Handles cleanup on shutting down application
+     * Handles cleanup on shutting down application.
      */
-    private void operationCloseXmod(){
+    private void operationCloseXmod() {
         System.out.println("Closing Xmod...");
         System.exit(0);
         System.out.println("XmodClosed...");

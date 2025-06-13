@@ -31,6 +31,8 @@ public final class Responses {
     public static final String EXPERIMENT_COMPLETE = "Experiment run success";
     /** No connection established to control box via serial port. */
     public static final String SERIAL_UNCONNECTED = "Not connected";
+    /** Disconnection to control box via serial port. */
+    public static final String SERIAL_DISCONNECTED = "Not connected";
     /** Successful connection to control box via serial port. */
     public static final String SERIAL_CONNECTED = "Connected to";
     /** Error retrieving information from the control box. */
