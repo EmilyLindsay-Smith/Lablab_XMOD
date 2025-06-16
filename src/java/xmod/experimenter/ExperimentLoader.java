@@ -34,27 +34,27 @@ public class ExperimentLoader {
     /** tmsFilePath for where the tms file is. */
     private String tmsFilePath;
     /** Whether the tms file has been loaded. */
-    private Boolean tmsLoaded = false;
+    public Boolean tmsLoaded = false;
     /** Base file name for tmsFile. */
-    private String tmsFileName;
+    public String tmsFileName;
     /** Codehead from the tms file. */
-    private String codehead;
+    public String codehead;
 
     /** timeout from RT start. */
-    private int[] tReactionTimeout;
+    public int[] tReactionTimeout;
     /** offset from start to start recording RT. */
-    private int[] tReactionOffset;
+    public int[] tReactionOffset;
     /** time to turn monitor on from bleep. */
-    private int[] tMonitorOn;
+    public int[] tMonitorOn;
     /** time to turn monitor off from bleep. */
-    private int[] tMonitorOff;
+    public int[] tMonitorOff;
     /**  contains code text fields. */
-    private String[] codingArray;
+    public String[] codingArray;
     /**  array of visual trial items. */
-    private String[] screenItems;
+    public String[] screenItems;
 
     /** list of lines in the tms file. */
-    private ArrayList<String> tmsFileLines;
+    public ArrayList<String> tmsFileLines;
 
     /** time in ms reserved for communication with controller.
      * Note why this is 400ms is unknown - but was set in Xmod 1.0
@@ -62,7 +62,7 @@ public class ExperimentLoader {
     private final int tcommreserve = 400;
 
 
-    /** Constructor
+    /** Constructor.
     **/
     public ExperimentLoader() {
         pcs = new PropertyChangeSupport(this);
@@ -253,7 +253,12 @@ public class ExperimentLoader {
         return;
     }
 
-    /** Send update to Xmod.java to send to reporter */
+    /** Send update to Xmod.java to send to reporter.
+     * @param newStatus : update for Status
+     * @param newMessage : update for Message
+     * @param newAdvice : update for advice
+     * @param newStackTrace any stack trace to report
+     */
     private void updateStatus(final String newStatus,
                                 final String newMessage,
                                 final String newAdvice,
@@ -274,19 +279,23 @@ public class ExperimentLoader {
         pcs.firePropertyChange(Actions.UPDATE, null, report);
         return;
     }
+
     /**
      * Used in Xmod.java to allow the controller to listen for pcs.
      * @param l listener i.e. Xmod.java
      */
+
     public void addObserver(final PropertyChangeListener l) {
         pcs.addPropertyChangeListener(Actions.UPDATE, l);
     }
 }
 
-/** Custom Exception to stop parsing if errors occur */
+/** Custom Exception to stop parsing if errors occur. */
 class ExperimentLoaderException extends Exception {
-    /** Constructor */
-    public ExperimentLoaderException(String msg) {
+    /** Constructor.
+     * @param msg message to use in the exception report
+    */
+    ExperimentLoaderException(final String msg) {
         super(msg);
     }
 
