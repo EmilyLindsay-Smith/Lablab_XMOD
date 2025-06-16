@@ -62,15 +62,10 @@ public class ExperimentLoader {
     private final int tcommreserve = 400;
 
 
-    /** Constructor requires file name of tms file.
-     * @param filepath string representation of file and its path to be loaded
+    /** Constructor
     **/
-    public ExperimentLoader(final String filepath) {
+    public ExperimentLoader() {
         pcs = new PropertyChangeSupport(this);
-        Boolean loaded = loadFile(filepath);
-        if(loaded) {
-            parseFile();
-        }
     }
 
     /**
