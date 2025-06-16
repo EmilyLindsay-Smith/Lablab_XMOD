@@ -27,7 +27,9 @@ import java.beans.PropertyChangeSupport;
  * KNOWN BUGS:
  */
 
+
 public class Serial extends Thread {
+
     /** PCS to handle sending updates. */
     private PropertyChangeSupport pcs;
     /** Is application connected to the controller box. */
@@ -55,6 +57,7 @@ public class Serial extends Thread {
     private static final int SECONDS_IN_MILLISECONDS = 1000;
     /** Number of attempts to automatically reconnect to serial port. */
     private static final int NUM_REATTEMPTS = 5;
+
     /** Advice on reconnecting to controller box via serial port. */
     private final String updateAdv = "Please check connection then press the "
                     + Operations.CHECK_CONNECTION + " button to reconnect";
@@ -180,6 +183,7 @@ public class Serial extends Thread {
 
                 updateStatus(Responses.SERIAL_UNCONNECTED,
                     updateMsg, this.updateAdv, "");
+
                 return;
             }
         }
@@ -208,6 +212,7 @@ public class Serial extends Thread {
                     + (this.WAIT_DURATION / this.SECONDS_IN_MILLISECONDS)
                     + " s ... ("
                     + repeatInt + " automatic connection attempts left...)";
+
                 updateStatus(Responses.SERIAL_UNCONNECTED,
                     updateMsg, "", "");
                 Utils.pause(this.WAIT_DURATION);
@@ -219,6 +224,7 @@ public class Serial extends Thread {
                                     + " to the controller box";
                 updateStatus(Responses.SERIAL_UNCONNECTED,
                     updateMsg, this.updateAdv, "");
+
                 return;
             }
         }
@@ -245,6 +251,7 @@ public class Serial extends Thread {
             String stackTrace = Utils.getStackTrace(e);
             updateStatus("", "Could not " + description + " due to error",
                          "", stackTrace);
+
             }
         } else {
             String updateMsg = "Could not " + description

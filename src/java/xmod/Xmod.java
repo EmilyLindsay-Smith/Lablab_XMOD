@@ -129,6 +129,7 @@ public class Xmod implements PropertyChangeListener {
         String info = this.serialPort.getControllerInfo();
         // OBJECT REPORT HERE
     };
+
     private void operationCheckFont() { };
 
     /* ***** METHODS RELATED TO UPDATING THE WINDOWS/TEXT/FONT ************/
