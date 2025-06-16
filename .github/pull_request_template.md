@@ -14,7 +14,7 @@
 How has this been tested? 
 
 # Checklist
-- [ ] I have run the checkstyle linter with both sun_checks.xml and google_checks.xml and corrected any issues
+- [ ] I have run the checkstyle linter with sun_checks.xml and corrected any issues
 - [ ] I have performed a self-review of my code
 - [ ] I have commented my code
 - [ ] I have updated the documentation
