@@ -27,7 +27,7 @@ import java.beans.PropertyChangeSupport;
  * KNOWN BUGS:
  */
 
-public class Serial {
+public class Serial extends Thread {
     /** PCS to handle sending updates. */
     private PropertyChangeSupport pcs;
     /** Is application connected to the controller box. */
@@ -55,7 +55,9 @@ public class Serial {
     private static final int SECONDS_IN_MILLISECONDS = 1000;
     /** Number of attempts to automatically reconnect to serial port. */
     private static final int NUM_REATTEMPTS = 5;
-
+    /** Advice on reconnecting to controller box via serial port. */
+    private final String updateAdv = "Please check connection then press the "
+                    + Operations.CHECK_CONNECTION + " button to reconnect";
 
     // Constants for commands to send to the control box.
     // Note variable names are same as method names in control box software;
@@ -88,7 +90,13 @@ public class Serial {
     /**Constructor to connect to serial port. */
     public Serial() {
         pcs = new PropertyChangeSupport(this);
-        connectToPort();
+
+        new Thread(new Runnable() {
+            public void run() {
+                connectToPort(NUM_REATTEMPTS);
+            };
+        }, "SerialPortConnection").start();
+
     }
 
     /**
@@ -146,6 +154,8 @@ public class Serial {
         connectToPort(0);
     }
 
+
+
     /**
      * Connect to serial port and set up timeouts and parameters.
      * @param repeatInt integer: number of items to check
@@ -167,10 +177,9 @@ public class Serial {
                 return;
              } else {
                 String updateMsg = "Failed to connect to the controller box";
-                String updateAdv = "Please check connection then press the"
-                    + Operations.CHECK_CONNECTION + " button to reconnect";
+
                 updateStatus(Responses.SERIAL_UNCONNECTED,
-                    updateMsg, updateAdv, "");
+                    updateMsg, this.updateAdv, "");
                 return;
             }
         }
@@ -197,8 +206,8 @@ public class Serial {
             if (repeatInt > 0) {
                 String updateMsg = "Retrying in "
                     + (this.WAIT_DURATION / this.SECONDS_IN_MILLISECONDS)
-                    + "s ... ("
-                    + repeatInt + "automatic connection attempts remaining...)";
+                    + " s ... ("
+                    + repeatInt + " automatic connection attempts left...)";
                 updateStatus(Responses.SERIAL_UNCONNECTED,
                     updateMsg, "", "");
                 Utils.pause(this.WAIT_DURATION);
@@ -208,10 +217,8 @@ public class Serial {
              } else {
                 String updateMsg = "Failed to open connection "
                                     + " to the controller box";
-                String updateAdv = "Please check connection then press the"
-                    + Operations.CHECK_CONNECTION + " button to reconnect";
                 updateStatus(Responses.SERIAL_UNCONNECTED,
-                    updateMsg, updateAdv, "");
+                    updateMsg, this.updateAdv, "");
                 return;
             }
         }
@@ -226,17 +233,38 @@ public class Serial {
         return this.serialConnected;
     }
 
+    /** Wrapper method to send commands to controller box and handle errors.
+     * @param command integer command to send to the controller box
+     * @param description string to use to describe what didn't happen to user
+     */
+    private void sendCommand(final int command, final String description) {
+        if (this.serialConnected) {
+            try {
+                this.send(command);
+            } catch (Exception e) {
+            String stackTrace = Utils.getStackTrace(e);
+            updateStatus("", "Could not " + description + " due to error",
+                         "", stackTrace);
+            }
+        } else {
+            String updateMsg = "Could not " + description
+                                + " because not connected to serial port";
+            updateStatus("", updateMsg, this.updateAdv, "");
+        }
+        return;
+    }
     /**
      * Connects to usb serial port and should light up the LEDs 3 times.
      */
     public void checkConnection() {
         if (this.serialConnected) {
-            try {
-                this.send(this.FLASH_LED);
-            } catch (Exception e) {
-            String stackTrace = Utils.getStackTrace(e);
-            updateStatus("", "Could not flash LEDs", "", stackTrace);
-            }
+            sendCommand(this.FLASH_LED, "flash LEDs");
+        } else {
+            new Thread(new Runnable() {
+                public void run() {
+                    connectToPort(NUM_REATTEMPTS);
+                };
+            }, "SerialPortConnection").start();
         }
         return;
     }
@@ -247,46 +275,40 @@ public class Serial {
      */
     public String getControllerInfo() {
         String serialInfo = "Controller Info: <br/>";
-        try {
-            for (int j = this.GET_SOURCE; j <= this.GET_KEYS; j++) {
-                send(j);
+        for (int j = this.GET_SOURCE; j <= this.GET_KEYS; j++) {
+            try {
+            sendCommand(j, "retrieve controller info");
+            //try {
                 serialInfo = serialInfo + "<br/>" + receive();
-            }
-            return serialInfo;
-        } catch (Exception e) {
-            String stackTrace = Utils.getStackTrace(e);
-            updateStatus("", "Could not retrieve controller info",
+            } catch (Exception e) {
+                String stackTrace = Utils.getStackTrace(e);
+                updateStatus("", "Could not receive controller info",
                         "", stackTrace);
-            return "";
+                return "";
+            }
         }
+        return serialInfo;
     }
 
     /**
      * Requests that control box turn on the monitors of the test computers.
      */
     public void turnOnMonitor() {
-        try {
-            send(this.ADJUST_ON);
-        } catch (Exception e) {
-            String stackTrace = Utils.getStackTrace(e);
-            updateStatus("", "Could not turn on monitor", "", stackTrace);
-        }
+        sendCommand(this.ADJUST_ON, "turn on monitors");
+        return;
     }
 
     /**
      * Requests that control box turn off the monitors of the test computers.
      */
     public void turnOffMonitor() {
-        try {
-            send(this.ADJUST_OFF);
-        } catch (Exception e) {
-            String stackTrace = Utils.getStackTrace(e);
-            updateStatus("", "Could not turn off monitor", "", stackTrace);
-        }
+        sendCommand(this.ADJUST_OFF, "turn off monitors");
+        return;
     }
 
     /**
      * Sends timeout, on and off bytes to controller.
+     * Note this does not use the sendCommand method to reduce latency
      * @param tReactionTimeoutByte : byte for timeout timings
      * @param tMonitorOnByte byte for monitor on timings
      * @param tMonitorOffByte byte for monitor off timings
