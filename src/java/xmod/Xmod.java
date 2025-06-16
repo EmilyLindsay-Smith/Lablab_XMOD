@@ -103,10 +103,33 @@ public class Xmod implements PropertyChangeListener {
 
     private void operationLoadTMS() { };
     private void operationRunExp() { };
-    private void operationMonitorOn() { };
-    private void operationMonitorOff() { };
-    private void operationCheckConnection() { };
-    private void operationControllerInfo() { };
+
+    /** Calls serialPort to turn on the experiment monitors. */
+    private void operationMonitorOn() {
+        this.serialPort.turnOnMonitor();
+     };
+
+    /** Calls serialPort to turn on the experiment monitors. */
+    private void operationMonitorOff() {
+        this.serialPort.turnOffMonitor();
+    };
+
+    /** Checks connection to the controller box via the serial port.
+     * If the connection exists, the LEDs on the box will flash three times.
+     * If no connection, it will try to re-establish connection with the box.
+     */
+    private void operationCheckConnection() {
+        this.serialPort.checkConnection();
+    };
+
+    /** Requests information about the controller box to display.
+     * Wraps result in an ObjectReport and updates status to display to user.
+     */
+    private void operationControllerInfo() {
+        String info = this.serialPort.getControllerInfo();
+        // OBJECT REPORT HERE
+    };
+
     private void operationCheckFont() { };
 
     /* ***** METHODS RELATED TO UPDATING THE WINDOWS/TEXT/FONT ************/
