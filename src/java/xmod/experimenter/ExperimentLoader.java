@@ -34,27 +34,27 @@ public class ExperimentLoader {
     /** tmsFilePath for where the tms file is. */
     private String tmsFilePath;
     /** Whether the tms file has been loaded. */
-    public Boolean tmsLoaded = false;
+    private Boolean tmsLoaded = false;
     /** Base file name for tmsFile. */
-    public String tmsFileName;
+    private String tmsFileName;
     /** Codehead from the tms file. */
-    public String codehead;
+    private String codehead;
 
     /** timeout from RT start. */
-    public int[] tReactionTimeout;
+    private int[] tReactionTimeout;
     /** offset from start to start recording RT. */
-    public int[] tReactionOffset;
+    private int[] tReactionOffset;
     /** time to turn monitor on from bleep. */
-    public int[] tMonitorOn;
+    private int[] tMonitorOn;
     /** time to turn monitor off from bleep. */
-    public int[] tMonitorOff;
+    private int[] tMonitorOff;
     /**  contains code text fields. */
-    public String[] codingArray;
+    private String[] codingArray;
     /**  array of visual trial items. */
-    public String[] screenItems;
+    private String[] screenItems;
 
     /** list of lines in the tms file. */
-    public ArrayList<String> tmsFileLines;
+    private ArrayList<String> tmsFileLines;
 
     /** time in ms reserved for communication with controller.
      * Note why this is 400ms is unknown - but was set in Xmod 1.0
@@ -66,6 +66,70 @@ public class ExperimentLoader {
     **/
     public ExperimentLoader() {
         pcs = new PropertyChangeSupport(this);
+    }
+
+
+    /** Getter for tmsLoaded.
+     * @return this.tmsLoaded
+     */
+    public Boolean getTMSLoaded() {
+        return this.tmsLoaded;
+    }
+
+    /** Getter for tmsFileName.
+     * @return this.tmsFileName
+     */
+    public String getTMSFileName() {
+        return this.tmsFileName;
+    }
+
+    /** Getter for Codehead from the tms file.
+     * @return this.codehead
+     */
+    public String getCodehead() {
+        return this.codehead;
+    }
+
+    /** Getter for timeout from RT start.
+     * @return this.tReactionTimeout;
+     */
+    public int[] getTReactionTimeout() {
+        return this.tReactionTimeout;
+    }
+
+    /** Getter for recording offset from RT start.
+     * @return this.tReactionOffset;
+     */
+    public int[] getTReactionOffset() {
+        return this.tReactionOffset;
+    }
+
+    /** Getter for time to turn monitor on from bleep. .
+     * @return this.tMonitorOn;
+     */
+    public int[] getTMonitorOn() {
+        return this.tMonitorOn;
+    }
+
+    /** Getter for time to turn monitor off from bleep. .
+     * @return this.tMonitorOff;
+     */
+    public int[] getTMonitorOff() {
+        return this.tMonitorOff;
+    }
+
+    /** Getter for coding array .
+     * @return this.codingArray;
+     */
+    public String[] getCodingArray() {
+        return this.codingArray;
+    }
+
+    /** Getter for array of visual trial items .
+     * @return this.screenItems;
+     */
+    public String[] getScreenItems() {
+        return this.screenItems;
     }
 
     /**
