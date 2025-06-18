@@ -21,6 +21,10 @@ public final class Responses {
                     + "<ul> <li> have the same name as the .tms file</li>"
                     + "<li> be in the same directory as the .tms file</li>"
                     + "<li> have a .wav filename </li></ul>";
+
+    /**Results directory could not be created. */
+    public static final String ERROR_RESULTS_DIRECTORY = "Results directory "
+                    + "could not be created";
     /** Experiment fully set up and ready to run. */
     public static final String EXPERIMENT_READY = "Experiment Ready";
     /** Experiment not fully set up. */
