@@ -55,7 +55,7 @@ public class ExperimentResulter {
     /** Array holding numeric key pressed for each reaction. */
     private String[][] nKey;
     /** Array holding flag for reaction pressed for each reaction. */
-    private Boolean[][] rflag;
+    private Boolean[][] rFlag;
     /** Array holding reaction time for each reaction. */
     private int[][] reacTime;
 
@@ -166,7 +166,7 @@ public class ExperimentResulter {
     public void createResultArrays() {
         this.cKey = new String[this.NUM_BOXES][this.expLength];
         this.nKey = new String[this.NUM_BOXES][this.expLength];
-        this.rflag = new Boolean[this.NUM_BOXES][this.expLength];
+        this.rFlag = new Boolean[this.NUM_BOXES][this.expLength];
         this.reacTime = new int[this.NUM_BOXES][this.expLength];
     }
 
@@ -212,28 +212,28 @@ public class ExperimentResulter {
      * @param boxNo which box(1-16)
      * @param currentIndex index of current trial
      */
-    private void getPressedKeys(final int output, final int boxNo,
+    public void getPressedKeys(final int output, final int boxNo,
                                 final int currentIndex) {
         switch (output) {
             case 1:
                 this.cKey[boxNo][currentIndex] = "L";
                 this.nKey[boxNo][currentIndex] = "1";
-                this.rflag[boxNo][currentIndex] = true;
+                this.rFlag[boxNo][currentIndex] = true;
                 break;
             case 2:
                 this.cKey[boxNo][currentIndex] = "R";
                 this.nKey[boxNo][currentIndex] = "3";
-                this.rflag[boxNo][currentIndex] = true;
+                this.rFlag[boxNo][currentIndex] = true;
                 break;
             case 3:
                 this.cKey[boxNo][currentIndex] = "M";
                 this.nKey[boxNo][currentIndex] = "2";
-                this.rflag[boxNo][currentIndex] = true;
+                this.rFlag[boxNo][currentIndex] = true;
                 break;
             default:
                 this.cKey[boxNo][currentIndex] = ".";
                 this.nKey[boxNo][currentIndex] = ".";
-                this.rflag[boxNo][currentIndex] = false;
+                this.rFlag[boxNo][currentIndex] = false;
                 this.reacTime[boxNo][currentIndex] = 0;
                 break;
             }
@@ -245,7 +245,7 @@ public class ExperimentResulter {
      * @param boxNo which box(1-16)
      * @param index index of current trial
      */
-    private void getReactionTime(final byte[] reaction,
+    public void getReactionTime(final byte[] reaction,
                                         final int boxNo, final int index) {
         if (null != reaction && cKey[boxNo][index] != ".") {
             //int x = (currentIndex * 2) + 3 - 1;
@@ -255,12 +255,16 @@ public class ExperimentResulter {
             // box 1 should look at reaction[6..7],
             // box 15 should look at reaction[34..35]
             int lowByte = (int) reaction[x]; // need ascii value
+            //Handle overflow when number above 220 truncated to 8 bits
+            if (lowByte < 0) {
+                lowByte += 256;
+            }
             // need ascii value
             int highByteMultiplier = 256;
             int highByte = (int) reaction[x + 1] * highByteMultiplier;
-            this.reacTime[boxNo][index] = highByte
-                                                + lowByte
+            int reactionTime = highByte + lowByte
                                                 - this.tReactionOffset[index];
+            this.reacTime[boxNo][index] = reactionTime;
         }
     }
 
@@ -283,7 +287,7 @@ public class ExperimentResulter {
         String results = codehead;
         for (int trialIndex = 0; trialIndex < this.expLength; trialIndex++) {
             for (int boxNo = 0; boxNo < this.NUM_BOXES; boxNo++) {
-                if (null != this.rflag[boxNo][trialIndex]) {
+                if (null != this.rFlag[boxNo][trialIndex]) {
                     results = results + Integer.toString(trialIndex + 1)
                             + Typesetting.TAB
                             + this.tmsFileName
@@ -361,9 +365,34 @@ public class ExperimentResulter {
      * Used in ExperimentRunnner to listen for pcs.
      * @param l listener i.e.ExperimentRunner
      */
-
     public void addObserver(final PropertyChangeListener l) {
         pcs.addPropertyChangeListener(Actions.UPDATE, l);
+    }
+
+// GETTERS PREDOMINATLEY FOR TESTING //
+    /** Returns character key of reaction.
+     * @return this.cKey
+     */
+    public String[][] getCKey() {
+        return this.cKey;
+    }
+    /** Returns numeric key of reaction.
+     * @return this.nKey
+     */
+    public String[][] getNKey() {
+        return this.nKey;
+    }
+    /** Returns reaction flag of reaction.
+     * @return this.rFlag
+     */
+    public Boolean[][] getRFlag() {
+        return this.rFlag;
+    }
+    /** Returns time of reaction.
+     * @return this.reacTime
+     */
+    public int[][] getReacTime() {
+        return this.reacTime;
     }
 
 }
