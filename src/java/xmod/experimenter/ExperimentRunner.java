@@ -32,7 +32,8 @@ public class ExperimentRunner implements PropertyChangeListener {
     /** Experiment Loader to load and parse the tms file. */
     private ExperimentLoader expLoader;
     /** ExperimentResulter to parse the results and print to file. */
-    //private ExperimentResulter expResulter;
+    private ExperimentResulter expResulter;
+
     /** PCS to listen for updates from ExperimentLoader. */
     private PropertyChangeSupport pcs;
 
@@ -98,8 +99,17 @@ public class ExperimentRunner implements PropertyChangeListener {
             this.tMonitorOff = this.expLoader.getTMonitorOff();
             this.codingArray = this.expLoader.getCodingArray();
             this.screenItems = this.expLoader.getScreenItems();
+            int[] tReactionOffset = this.expLoader.getTReactionOffset();
+            String codehead = this.expLoader.getCodehead();
+            this.expResulter = new ExperimentResulter(filename,
+                                                        this.expLength,
+                                                        tReactionOffset,
+                                                        codehead,
+                                                        this.codingArray,
+                                                        this.screenItems
+                                                    );
+            this.expResulter.addObserver(this);
 
-            //this.expResulter = new ExperimentResulter(this.expLoader);
             updateStatus(Responses.FILE_LOAD_SUCCESS + filename,
                         "Total number of trials: " + this.expLength,
                         "", "", ReportLabel.TMS);
@@ -120,6 +130,14 @@ public class ExperimentRunner implements PropertyChangeListener {
 
         }
 
+    }
+
+
+    /** Returns true if experiment loaded.
+     * @return this.experimentLoaded;
+     */
+    public Boolean isExperimentLoaded() {
+        return this.experimentLoaded;
     }
 
     /** Listen for updates from ExperimentLoader.
@@ -192,7 +210,8 @@ public class ExperimentRunner implements PropertyChangeListener {
                         "Cannot begin experiment as not connected"
                         + " to controller box",
                         "Please check serial port connection",
-                        "", ReportLabel.CONNECTION);
+                        "", ReportLabel.STATUS);
+
             return;
         }
         // Set flag to true
@@ -216,9 +235,10 @@ public class ExperimentRunner implements PropertyChangeListener {
             // complete set of reactions is 36 bytes
             byte[] reaction = this.serialPort.receiveChunk(this.REACTION_SET);
             // collects button pressed and reaction time for all 16 boxes
-            //this.expResulter.collectTrialResults(reaction, trialIndex);
+            this.expResulter.collectTrialResults(reaction, trialIndex);
         }
-        //this.expResulter.printResults();
+        this.expResulter.printResults();
+
         if  (this.running) {
             //tells main Xmod instance experiment is finished
             //so it can change window views etc

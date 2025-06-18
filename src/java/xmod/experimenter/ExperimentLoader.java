@@ -65,7 +65,7 @@ public class ExperimentLoader {
     /** Constructor.
     **/
     public ExperimentLoader() {
-        pcs = new PropertyChangeSupport(this);
+        this.pcs = new PropertyChangeSupport(this);
     }
 
 
@@ -345,8 +345,8 @@ public class ExperimentLoader {
     }
 
     /**
-     * Used in Xmod.java to allow the controller to listen for pcs.
-     * @param l listener i.e. Xmod.java
+     * Used in ExperimentRunnner to listen for pcs.
+     * @param l listener i.e.ExperimentRunner
      */
 
     public void addObserver(final PropertyChangeListener l) {

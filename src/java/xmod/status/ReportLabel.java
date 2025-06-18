@@ -5,7 +5,7 @@ package xmod.status;
  */
 public enum ReportLabel {
     /** Overall experiment status. */
-    STATUS("Status"),
+    STATUS("STATUS"),
     /** TMS file to control experiment run. */
     TMS("TMS"),
     /** Audio file to play during experiment. */
@@ -32,4 +32,3 @@ public enum ReportLabel {
         return this.value;
     }
     };
-

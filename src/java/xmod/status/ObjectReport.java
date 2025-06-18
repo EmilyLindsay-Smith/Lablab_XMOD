@@ -48,6 +48,7 @@ public class ObjectReport {
         return this.name.getValue();
     }
 
+
     /** Returns size of status.
      * @return int number of entries in report
      */
@@ -158,12 +159,14 @@ public class ObjectReport {
             ArrayList<String> values = e.getValue(); // get values
             // check if no values are set
             if (null != values && !values.isEmpty()) {
+                /*
                 output += "<span style="
                         + "\"display:inline-block;"
                         + "margin-left:40px;\">"
                         + "<u>"
                         + key.getValue()
                         + ":</u></span><br/>";
+                */
                 output += "<p style="
                         + "\"display:inline-block;"
                         + "margin-left:40px;\">";

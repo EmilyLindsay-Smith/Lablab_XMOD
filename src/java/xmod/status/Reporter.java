@@ -152,11 +152,11 @@ public class Reporter {
             if (null != values && !values.isEmpty()) {
                 output += "<span style=\"font-weight:bold\">"
                         + key.getValue()
-                        + "</span><br/>";
-                output += "<p style=\"display:inline-block;"
+                        + "</span>"; //<br/>";
+                output += "<span style=\"display:inline-block;"
                         + "margin-left:40px;\">";
                 output += values.toString();
-                output = output + "</p>";
+                output = output + "</span>";
             }
         }
         return output;
