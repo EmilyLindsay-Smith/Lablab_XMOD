@@ -40,21 +40,21 @@ import java.awt.Font;
 public class MainWindow {
     // GUI Components. */
     /** JFrame. */
-    public JFrame f;
+    private JFrame f;
     /** Header panel. */
-    public JPanel header;
+    private JPanel header;
     /** Title. */
-    public JLabel title;
+    private JLabel title;
     /** Subtitle. */
-    public JLabel subtitle;
+    private JLabel subtitle;
     /** Central text pane. */
-    public JTextPane text;
+    private JTextPane text;
     /** Central text pane scroller. */
-    public JScrollPane scrollPane;
+    private JScrollPane scrollPane;
     /** Left hand side buttons. */
-    public JPanel leftButtonPane;
+    private JPanel leftButtonPane;
     /** Right hand side buttons. */
-    public JPanel rightButtonPane;
+    private JPanel rightButtonPane;
 
     // List of buttons to facilitate for loops. */
     /** Left hand button list. */
@@ -82,12 +82,15 @@ public class MainWindow {
     private PropertyChangeSupport pcs;
 
     /**This is the official Oxford University Blue. */
-    public static final Color OXFORD_BLUE = new Color(0, 33, 71);
+    private static final Color OXFORD_BLUE = new Color(0, 33, 71);
 
-    /** Font settings. */
-    public String currentFontName;
-    public int currentSize = 18;
-    public static int currentStyle = Font.PLAIN;
+    // Font Settings
+    /** Current font. */
+    private String currentFontName;
+    /** Current font size. */
+    private int currentSize = 18;
+    /** Current font style. */
+    private static int currentStyle = Font.PLAIN;
 
     /**
      * Constructor.

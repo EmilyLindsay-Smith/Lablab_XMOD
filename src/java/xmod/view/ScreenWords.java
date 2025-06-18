@@ -1,16 +1,21 @@
 package xmod.view;
 
-public class ScreenWords{
-	/** Empty constructor, object does not need to be instantiated as all methods in class are static */
-	public ScreenWords()
-	{
-		//empty
-	}
+public final class ScreenWords {
+    /** Default font size. */
+    static final int DEFAULT_FONT_SIZE = 50;
+    /** Default font. */
+    static final String DEFAULT_FONT = "Times New Roman";
+
+    /** Empty constructor.
+     * object does not need to be instantiated
+     * as all methods in class are static */
+    private ScreenWords() { }
 
     /**
-     * Returns list of words
+     * Returns list of words.
+     * @return list of word
      */
-    public static String[] getWords(){
+    public static String[] getWords() {
         String[] words = {
             "Hello World",
             "নিরুপদ্রব",
@@ -31,28 +36,31 @@ public class ScreenWords{
     }
 
     /**
-     * Returns default font
+     * Returns default font.
+     * @return this.DEFAULT_FONT
      */
-    public static String getDefaultFont(){
-        return "Times New Roman";
+    public static String getDefaultFont() {
+        return DEFAULT_FONT;
     }
 
     /**
-     * Returns default size
+     * Returns default font size.
+     * @return this.DEFAULT_FONT_SIZE
      */
-    public static int getDefaultSize(){
-        return 50;
+    public static int getDefaultSize() {
+        return DEFAULT_FONT_SIZE;
     }
 
     /**
-	 * Searches for needle in haystack
-	 * @param needle string to search for
-	 * @param haystack array to search through
-	 * @return index of needle in haystack (or -1 if not found)
-	 */
-    public static Integer getIndex(String needle, String[] haystack){
-        for (int index = 0; index < haystack.length; index++){
-            if (haystack[index] == needle){
+     * Searches for needle in haystack.
+     * @param needle string to search for
+     * @param haystack array to search through
+     * @return index of needle in haystack (or -1 if not found)
+     */
+    public static Integer getIndex(final String needle,
+                                    final String[] haystack) {
+        for (int index = 0; index < haystack.length; index++) {
+            if (haystack[index] == needle) {
                 return index;
             }
         }
