@@ -8,7 +8,10 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 public final class ExperimentLoaderTest {
 
-    /** Test ensuring valid file is loaded. */
+
+    /** Test ensuring valid file is loaded.
+     * @param file from ValueSource
+     */
     @DisplayName("Load valid files")
     @ParameterizedTest
     @ValueSource(strings = {"./test/testFiles/charlie_short.tms"})
@@ -26,7 +29,10 @@ public final class ExperimentLoaderTest {
         }
      }
 
-    /** Test ensuring invalid file is not loaded. */
+    /** Test ensuring invalid file is not loaded.
+     * @param file from ValueSource
+     */
+
     @DisplayName("Fail to load invalid files")
     @ParameterizedTest
     @ValueSource(strings = {"./test/testFiles/charlie_short.txt",
