@@ -209,7 +209,7 @@ public class ExperimentLoader {
         } catch (ExperimentLoaderException e) {
             updateStatus(Responses.NO_FILE_SELECTED,
             "Failed to parse the tms file " + this.tmsFilePath,
-            "",
+            "Please try again with a valid .tms file",
             e.getMessage()
             );
         }
