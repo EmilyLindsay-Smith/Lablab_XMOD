@@ -414,7 +414,7 @@ public class Serial extends Thread {
      * @param chunkSize size of chunk to receive
      * @return output string containing response from control box
      */
-    private byte[] receiveChunk(final int chunkSize) {
+    public byte[] receiveChunk(final int chunkSize) {
         // Receive info from Serial
         // sets up buffer to size of incoming message
         byte[] inbuffer = new byte[chunkSize];
@@ -457,6 +457,13 @@ public class Serial extends Thread {
         return;
     }
 
+    /**
+     * Send updates to main Xmod.java.
+     * @param newStatus status
+     * @param newMessage message
+     * @param newAdvice advice
+     * @param newStackTrace any stack trace
+     */
     private void updateStatus(final String newStatus,
                                 final String newMessage,
                                 final String newAdvice,
