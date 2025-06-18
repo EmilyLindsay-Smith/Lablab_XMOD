@@ -1,15 +1,20 @@
 package xmod;
 
 import xmod.view.MainWindow;
+import xmod.view.ExperimentWindow;
 
 import xmod.constants.Actions;
 import xmod.constants.Operations;
+
+import xmod.experimenter.ExperimentRunner;
 
 import xmod.serial.Serial;
 
 import xmod.status.ObjectReport;
 import xmod.status.Reporter;
+import xmod.status.ReportCategory;
 import xmod.status.ReportLabel;
+import xmod.status.Responses;
 
 
 import javax.swing.SwingUtilities;
@@ -17,29 +22,38 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
 
 public class Xmod implements PropertyChangeListener {
-    /** Windows.*/
+    //Windows
+    /** Main GUI Window. */
     private MainWindow mainWindow;
+    /** Experiment GUI Window. */
+    private ExperimentWindow expWindow;
     // Objects.
     /** Reporter to manage status. */
     private Reporter reporter;
     /** SerialPort for communication to Controller Box. */
     private Serial serialPort;
+    /** ExperimentRunner to manage experiment. */
+    private ExperimentRunner experimentRunner;
      /**
      * Constructor.
      * @param aMainWindow MainWindow object
      * @param aReporter Reporter Object
      * @param aSerialPort Serial Object
+     * @param expRunner ExperimentRunner Object
      */
     Xmod(final MainWindow aMainWindow,
         final Reporter aReporter,
-        final Serial aSerialPort) {
+        final Serial aSerialPort,
+        final ExperimentRunner expRunner,
+        final ExperimentWindow aExpWindow) {
 
         //Initialise window variables
         this.mainWindow = aMainWindow;
-
+        this.expWindow = aExpWindow;
         // Initialise Objects
         this.reporter = aReporter;
         this.serialPort = aSerialPort;
+        this.experimentRunner = expRunner;
         // Set MainWindow Report
         updateWindowText();
     }
@@ -52,14 +66,19 @@ public class Xmod implements PropertyChangeListener {
             public void run() {
                 // Instantiate GUI Windows
                 MainWindow mainWindow = new MainWindow();
-
+                ExperimentWindow expWindow = new ExperimentWindow();
                 //Instantiate Objects
                 Reporter reporter = new Reporter();
                 Serial serialPort = new Serial();
-                Xmod t = new Xmod(mainWindow, reporter, serialPort);
+                ExperimentRunner experimentRunner = new ExperimentRunner(
+                                                        serialPort,
+                                                        expWindow);
+                Xmod t = new Xmod(mainWindow, reporter,
+                                serialPort, experimentRunner, expWindow);
                 // Add observers to respond to buttons/key strokes/error reports
                 mainWindow.addObserver(t);
                 serialPort.addObserver(t);
+                experimentRunner.addObserver(t);
                 // Show main Window
                 mainWindow.show();
             }
@@ -101,8 +120,27 @@ public class Xmod implements PropertyChangeListener {
         }
     }
 
-    private void operationLoadTMS() { };
-    private void operationRunExp() { };
+    private void operationLoadTMS() {
+        String filename = mainWindow.chooseFile();
+        // If no file selected
+        if (filename == Responses.NO_FILE_SELECTED ) {
+            updateStatus(createReport(ReportLabel.TMS,
+                        Responses.NO_FILE_SELECTED, "",
+                        "Please select a .tms file to upload", ""));
+            updateWindowText();
+            return;
+        }
+        //If file selected
+        this.experimentRunner.setUpExperiment(filename);
+        // Check loaded
+        if(this.experimentRunner.isExperimentLoaded()){
+            //lookForWavFile(filename);
+        }
+    };
+
+    private void operationRunExp() {
+        this.experimentRunner.runExperiment();
+    };
 
     /** Calls serialPort to turn on the experiment monitors. */
     private void operationMonitorOn() {
@@ -134,6 +172,37 @@ public class Xmod implements PropertyChangeListener {
 
     /* ***** METHODS RELATED TO UPDATING THE WINDOWS/TEXT/FONT ************/
 
+
+     /**
+     * Send updates to main Xmod.java.
+     * @param reportLabel which section it is for
+     * @param newStatus status
+     * @param newMessage message
+     * @param newAdvice advice
+     * @param newStackTrace any stack trace
+     */
+    private ObjectReport createReport(final ReportLabel reportLabel,
+                                final String newStatus,
+                                final String newMessage,
+                                final String newAdvice,
+                                final String newStackTrace
+                                ) {
+        ObjectReport report = new ObjectReport(reportLabel);
+        if (newStatus != "") {
+            report.updateValues(ReportCategory.STATUS, newStatus);
+        }
+        if (newMessage != "") {
+            report.updateValues(ReportCategory.MESSAGE, newMessage);
+        }
+        if (newAdvice != "") {
+            report.updateValues(ReportCategory.ADVICE, newAdvice);
+        }
+        if (newStackTrace != "") {
+            report.updateValues(ReportCategory.STACKTRACE, newStackTrace);
+        }
+        return report;
+    }
+
     /**
      * Updates the Reporter.
      * @param report ObjectReport containing the updates
@@ -143,6 +212,7 @@ public class Xmod implements PropertyChangeListener {
                                 report);
       return;
     }
+
 
 
     /**
@@ -160,8 +230,6 @@ public class Xmod implements PropertyChangeListener {
      * Handles cleanup on shutting down application.
      */
     private void operationCloseXmod() {
-        System.out.println("Closing Xmod...");
         System.exit(0);
-        System.out.println("XmodClosed...");
     }
 }
