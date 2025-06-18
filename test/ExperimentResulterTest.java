@@ -18,9 +18,9 @@ public final class ExperimentResulterTest {
     /** TMS file used for tests. */
         private String testFile = "./test/testFiles/charlie_short.tms";
     /** ExperimentResulter object. */
-        ExperimentResulter resulter;
+        private ExperimentResulter resulter;
     /** Listener. */
-        TestListener tester;
+        private TestListener tester;
 
 
     /**Set up. */
@@ -50,7 +50,7 @@ public final class ExperimentResulterTest {
         resulter.addObserver(tester);
     }
 
-    /** Check results directory created  */
+    /** Check results directory created.  */
     @DisplayName("Check results directory")
     @Test
     public void checkArrays() {
@@ -63,12 +63,15 @@ public final class ExperimentResulterTest {
         "result directory should have been created");
         try {
             Files.delete(resultsDir);
-        } catch (IOException e ) {
+        } catch (IOException e) {
             Assertions.assertEquals(false, true, "Could not delete resultsDir");
             e.printStackTrace();
         }
     }
 
+    /** Check keys pressed as expected.
+     * @param boxNo from ValueSource
+     */
     @DisplayName("Check key presses")
     @ParameterizedTest
     @ValueSource(ints = {0, 8, 15})
@@ -102,7 +105,7 @@ public final class ExperimentResulterTest {
         Assertions.assertEquals(false, this.resulter.getRFlag()[boxNo][1],
         "RFlag should = false");
     }
-    /** Utility func to reverse engineer the reaction array
+    /** Utility func to reverse engineer the reaction array.
      * @param num expected reaction as integer
      * @param boxNo which box
      * @return reaction as byte array

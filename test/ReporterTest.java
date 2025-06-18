@@ -2,58 +2,64 @@ package xmod.status;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.ValueSource;
 
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.api.Test;
 
 import java.util.stream.Stream;
-import java.util.*;
+import java.util.ArrayList;
 
-
+/*
 import xmod.status.ObjectReport;
 import xmod.status.ReportCategory;
 import xmod.status.ReportLabel;
+*/
 
+public class ReporterTest {
+    /** Reporter object. */
+    private Reporter reporter;
 
-public class ReporterTest{
-    Reporter reporter;
-
+    /** Instantiate new reporter for every test. */
     @BeforeEach
-    void makeReporter(){
+    void makeReporter() {
         reporter = new Reporter();
     }
 
+    /** Checks reporter has been initialised. */
     @DisplayName("Initialise Reporter")
     @Test
-    public void test_reporterInitialised(){
+    public void testReporterInitialised() {
         Assertions.assertEquals(false, this.reporter == null,
          "Reporter should not be null");
     };
 
+    /** Checks reporter is not empty. */
     @DisplayName("Check status not empty")
     @Test
-    public void test_reporterInitialised2(){
+    public void testReporterInitialised2() {
         Assertions.assertEquals(false, this.reporter.isEmpty(),
          "Reporter should not be empty");
     };
 
+    /** Check correct number of ReportLabel keys. */
     @DisplayName("Check correct number of keys")
     @Test
-    public void test_correctNumberOfKeys(){
+    public void testCorrectNumberOfKeys() {
         int numKeys = ReportLabel.values().length;
         Assertions.assertEquals(numKeys, this.reporter.size(),
          "Reporter should have " + numKeys + " keys");
     }
 
-  private static Stream<Arguments> reporterInitialValues(){
+    /**Test variables.
+     * @return ReportLabel and Response
+     */
+  private static Stream<Arguments> reporterInitialValues() {
         return Stream.of(
             Arguments.of(ReportLabel.STATUS, Responses.WELCOME),
             Arguments.of(ReportLabel.TMS, Responses.NO_FILE_SELECTED),
@@ -61,35 +67,45 @@ public class ReporterTest{
         );
     }
 
+    /** Check initial entries correct.
+     * @param key item[0] from reporterInitialValues
+     * @param value item[1] from reporterInitialValues
+     */
     @DisplayName("Check correct initial entries")
     @ParameterizedTest
     @MethodSource("reporterInitialValues")
-    public void test_initialEntries(ReportLabel key, String value){
+    public void testInitialEntries(final ReportLabel key, final String value) {
         ArrayList<String> realValues = this.reporter.get(key)
                                         .get(ReportCategory.MESSAGE);
         Assertions.assertEquals(1, realValues.size(),
                                 "there should only be one item in the values");
         String realValue = realValues.get(0);
         Assertions.assertEquals(value, realValue,
-                                    "Expected value and real value do not match");
+                                "Expected value and real value do not match");
     }
 
 
+    /** Check certain ReportLabels are empty as expected.
+     * @param key from EnumSource
+     */
     @DisplayName("Check correct empty initial entries")
     @ParameterizedTest
     @EnumSource(value = ReportLabel.class,
                 names = {"CONNECTION", "FONT", "MONITORS"})
-    public void test_emptyInitialEntries(ReportLabel key){
+    public void testEmptyInitialEntries(final ReportLabel key) {
         //ObjectReport realValues = this.reporter.get(key);
-        for(Map.Entry<ReportCategory, ArrayList<String>> e:
-            this.reporter.get(key).entrySet()) {
+        for (Map.Entry<ReportCategory, ArrayList<String>> e
+            : this.reporter.get(key).entrySet()) {
                 ArrayList<String> value = e.getValue(); // get values
                 Assertions.assertEquals(0, value.size(),
                 "There should be no initial values");
             }
     }
 
-    private static Stream<Arguments> updatingReporterValues1(){
+    /** Test variables.
+     * @return ReportLabel, Response
+     */
+    private static Stream<Arguments> updatingReporterValues1() {
         return Stream.of(
             Arguments.of(ReportLabel.CONNECTION, Responses.SERIAL_UNCONNECTED),
             Arguments.of(ReportLabel.FONT, "Font changed to Helvetica"),
@@ -98,10 +114,15 @@ public class ReporterTest{
         );
     }
 
+    /**Check new values added correctly.
+     * @param category item[0] from updatingReporterValues1
+     * @param newValue item[1] from updatingReporterValues1
+    */
     @DisplayName("Updating previously empty values correctly - adding")
     @ParameterizedTest
     @MethodSource("updatingReporterValues1")
-    public void test_updatingValues(ReportLabel category, String newValue){
+    public void testUpdatingValues(final ReportLabel category,
+                                    final String newValue) {
         //Create objectreport for new data
         ObjectReport reportUpdate = new ObjectReport(category);
         reportUpdate.updateValues(ReportCategory.STATUS, newValue);
@@ -115,10 +136,15 @@ public class ReporterTest{
         "The new value was not corrected added");
     }
 
+    /**Check new values added correctly.
+     * @param category item[0] from updatingReporterValues1
+     * @param newValue item[1] from updatingReporterValues1
+    */
     @DisplayName("Updating previously full values correctly - no duplication")
     @ParameterizedTest
     @MethodSource("updatingReporterValues1")
-    public void test_updatingValues2(ReportLabel category, String newValue){
+    public void testUpdatingValues2(final ReportLabel category,
+                                    final String newValue) {
         //Create objectreport for new data
         ObjectReport reportUpdate = new ObjectReport(category);
         reportUpdate.updateValues(ReportCategory.STATUS, newValue);
@@ -136,10 +162,15 @@ public class ReporterTest{
         "The newValue should only have one item in it");
     }
 
-    @DisplayName("Updating previously full values correctly with second message")
+    /**Check new values added correctly.
+     * @param category item[0] from updatingReporterValues1
+     * @param newValue item[1] from updatingReporterValues1
+    */
+    @DisplayName("Updating previously full values correctly with new message")
     @ParameterizedTest
     @MethodSource("updatingReporterValues1")
-    public void test_updatingValues3(ReportLabel category, String newValue){
+    public void testUpdatingValues3(final ReportLabel category,
+                                    final String newValue) {
         //Create objectreport for new data
         ObjectReport reportUpdate = new ObjectReport(category);
         reportUpdate.updateValues(ReportCategory.MESSAGE, newValue);
@@ -161,10 +192,15 @@ public class ReporterTest{
             "The second new value was not corrected added");
     }
 
+    /**Check new values added correctly.
+     * @param category item[0] from updatingReporterValues1
+     * @param newValue item[1] from updatingReporterValues1
+    */
     @DisplayName("Updating full values correctly with status change")
     @ParameterizedTest
     @MethodSource("updatingReporterValues1")
-    public void test_updatingValues4(ReportLabel category, String newValue){
+    public void testUpdatingValues4(final ReportLabel category,
+                                    final String newValue) {
         System.out.println("TEST OF INTEREST");
         //Create objectreport for new data
         ObjectReport reportUpdate = new ObjectReport(category);
@@ -187,10 +223,16 @@ public class ReporterTest{
             "The second new value was not corrected added");
     }
 
+    /**Check new values added correctly.
+     * @param category item[0] from updatingReporterValues1
+     * @param newValue item[1] from updatingReporterValues1
+    */
+
     @DisplayName("Updating full values correctly without status change")
     @ParameterizedTest
     @MethodSource("updatingReporterValues1")
-    public void test_updatingValue5(ReportLabel category, String newValue){
+    public void testUpdatingValue5(final ReportLabel category,
+                                    final String newValue) {
         //Create objectreport for new data
         ObjectReport reportUpdate = new ObjectReport(category);
         reportUpdate.updateValues(ReportCategory.STATUS, "first status");
