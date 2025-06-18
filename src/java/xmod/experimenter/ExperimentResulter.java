@@ -1,7 +1,13 @@
-package xmod.utils;
+package xmod.experimenter;
 
+import xmod.constants.Actions;
 import xmod.constants.Typesetting;
+import xmod.status.ObjectReport;
+import xmod.status.ReportCategory;
+import xmod.status.ReportLabel;
+import xmod.status.Responses;
 
+import xmod.utils.Utils;
 import java.io.IOException;
 
 import java.time.LocalDate;
@@ -11,6 +17,9 @@ import java.time.format.DateTimeFormatter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 
 /**
  * ExperimentResulter class holds all the experiment results and prints to file.
@@ -25,42 +34,81 @@ import java.nio.file.Paths;
  */
 
 public class ExperimentResulter {
+     /** PCS to handle sending updates. */
+    private PropertyChangeSupport pcs;
+
+    /** Path and name of tms file (extracted from expLoader). */
     private String tmsFileName;
+    /** Number of trials in experiment (extracted from expLoader). */
     private int expLength;
+    /** Codehead for researcher-specific codes (extracted from expLoader). */
     private String specificCodehead;
+    /** Reaction time offset (extracted from expLoader). */
     private int[] tReactionOffset;
+    /** Coding array for each trial (extracted from expLoader). */
     private String[] codingArray;
+    /** Item to show on screen for each trial (extracted from expLoader). */
     private String[] screenItems;
 
+    /** Array holding character key pressed for each reaction. */
     private String[][] cKey;
+    /** Array holding numeric key pressed for each reaction. */
     private String[][] nKey;
+    /** Array holding flag for reaction pressed for each reaction. */
     private Boolean[][] rflag;
+    /** Array holding reaction time for each reaction. */
     private int[][] reacTime;
 
+    /** Directory to save results to. */
+    private Path resultsDir;
+    /** Number of boxes in the system - fixed at 16. */
     private static final int NUM_BOXES = 16;
 
     /** Constructor.
-     * @param expLength number of trials in experiment
-     * @param tRTOffset offset for each trial
-     * @param codehead
-     * @param tmsFileName must include path
-     * @param codingArray
-     * @param screenItems
-
+     * @param experimentLength number of trials in experiment
+     * @param tReactionTOffset offset for each trial
+     * @param experimentCodehead labels for the columns
+     * @param fileName must include path
+     * @param experimentCodingArray all the coding info from the tms file
+     * @param experimentScreenItems items for each trial
     */
-    public ExperimentResulter(final int expLength, final int[] tRTOffset,
-                                final String codehead,
-                                final String tmsFileName,
-                                final String[] codingArray,
-                                final String[] screenItems) {
-        this.expLength = expLength;
-        this.tReactionOffset = tRTOffset;
-        this.specificCodehead = codehead;
-        this.tmsFileName = tmsFileName;
-        this.codingArray = codingArray;
-        this.screenItems = screenItems;
-        createResultArrays();
+    public ExperimentResulter(final String fileName,
+                                final int experimentLength,
+                                final int[] tReactionTOffset,
+                                final String experimentCodehead,
+                                final String[] experimentCodingArray,
+                                final String[] experimentScreenItems) {
 
+        this.pcs = new PropertyChangeSupport(this);
+
+        this.expLength = experimentLength;
+        this.tReactionOffset = tReactionTOffset;
+        this.specificCodehead = experimentCodehead;
+        this.tmsFileName = fileName;
+        this.codingArray = experimentCodingArray;
+        this.screenItems = experimentScreenItems;
+        createResultsDirectory();
+        createResultArrays();
+    }
+
+    /**
+     * Check directory exists to house results and create if it doesn't exist.
+     */
+    private void createResultsDirectory() {
+        // check if 'results' folder exists else create it
+        Path tmsFileHome = Paths.get(this.tmsFileName).getParent();
+        this.resultsDir = Paths.get(tmsFileHome.toString(), "results");
+        if (!(Files.isDirectory(resultsDir))) {
+            try {
+                Files.createDirectories(resultsDir);
+            } catch (IOException e) {
+                updateStatus(Responses.ERROR_RESULTS_DIRECTORY,
+                "Could not create results directory",
+                "Please check stack trace and ensure permissions are correct",
+                Utils.getStackTrace(e));
+                return;
+            }
+        }
     }
 
     /**
@@ -86,38 +134,31 @@ public class ExperimentResulter {
      * Save the results of all the trials to file.
      */
     public void printResults() {
+        // Get time and date strings
         String dateString = getDate();
         String timeString = getTime();
-
+        // Get results as string
         String resultsString = createResultsText(dateString, timeString);
-        // check if 'results' folder exists else create it
-        Path tmsFileHome = Paths.get(this.tmsFileName).getParent();
-        Path tmsFileName = Paths.get(this.tmsFileName).getFileName();
-        Path resultsDir = Paths.get(TMSFileHome.toString(), "results");
-        if (!(Files.isDirectory(resultsDir))) {
-            try {
-                Files.createDirectories(resultsDir);
-            } catch (IOException e) {
-                System.out.println("Problem creating results directory");
-                 e.printStackTrace();
-                return;
-            }
-        }
-        // Set results filename
-        String filename = TMSFileName.toString() + "_"
-                            + dateString + "_" + timeString + ".txt";
-        Path resultsFile = Paths.get(resultsDir.toString(), filename);
         byte[] byteString = resultsString.getBytes();
+
+        // Set results filename
+        Path tmsBareFileName = Paths.get(this.tmsFileName).getFileName();
+        String resultsFilename = tmsBareFileName.toString() + "_"
+                            + dateString + "_" + timeString + ".txt";
+        Path resultsFile = Paths.get(this.resultsDir.toString(),
+                                    resultsFilename);
+        // Write to file
         try {
             Files.write(resultsFile, byteString);
+            updateStatus("", "Results successfully printed to file "
+                        + resultsFile, "", "");
         } catch (IOException e) {
-            System.out.println("Problem writing to results file: ");
-            e.printStackTrace();
-            // SEND UPDATE TO XMOD
+            updateStatus("",
+                "Could not create results file",
+                "Please check stack trace and ensure permissions are correct",
+                Utils.getStackTrace(e));
         }
     }
-
-
 
     /**
      * instantiate the arrays to hold the results.
@@ -139,15 +180,26 @@ public class ExperimentResulter {
      * @return the number corresponding to the pressed key for that box
      */
     private int getOutput(final byte[] reaction, final int box) {
+        int maskOne = 3;
+        int maskTwo = 12;
+        int maskThree = 48;
+        int maskFour = 192;
+        int shiftOne = 0;
+        int shiftTwo = 2;
+        int shiftThree = 4;
+        int shiftFour = 6;
+
+
         if (null == reaction) {
             return -1;
         }
         int[] pressedKeys = {reaction[0], reaction[1],
                                 reaction[2], reaction[3]};
-        int[] masks = {3, 12, 48, 192};
-        int[] shiftRights = {0, 2, 4, 6};
-        int pressedKey = pressedKeys[(int) ((box) / 4)];
-        int x = (box) % 4;
+        int[] masks = {maskOne, maskTwo, maskThree, maskFour};
+        int[] shiftRights = {shiftOne, shiftTwo, shiftThree, shiftFour};
+        int boxDivisor = 4;
+        int pressedKey = pressedKeys[(int) ((box) / boxDivisor)];
+        int x = (box) % boxDivisor;
         int mask = masks[x];
         int rightShift = shiftRights[x];
         int output = (pressedKey & mask) >> rightShift;
@@ -198,12 +250,14 @@ public class ExperimentResulter {
         if (null != reaction && cKey[boxNo][index] != ".") {
             //int x = (currentIndex * 2) + 3 - 1;
             // which byte look at in reaction array
-            int x = ((boxNo + 1) * 2) + 3 - 1;
+            int x = ((boxNo + 1) * 2) + 2;
             // box 0 should look at reaction[4..5],
             // box 1 should look at reaction[6..7],
             // box 15 should look at reaction[34..35]
             int lowByte = (int) reaction[x]; // need ascii value
-            int highByte = (int) reaction[x + 1] * 256; // need ascii value
+            // need ascii value
+            int highByteMultiplier = 256;
+            int highByte = (int) reaction[x + 1] * highByteMultiplier;
             this.reacTime[boxNo][index] = highByte
                                                 + lowByte
                                                 - this.tReactionOffset[index];
@@ -218,7 +272,6 @@ public class ExperimentResulter {
      */
     private String createResultsText(final String dateString,
                                     final String timeString) {
-        String results = "";
         String genericCodehead = "Item" + Typesetting.TAB
                                 + "File" + Typesetting.TAB
                                 + "Date Time SJ" + Typesetting.TAB
@@ -227,6 +280,7 @@ public class ExperimentResulter {
                                 + "Key" + Typesetting.TAB;
         // for the experiment specific coding headers
         String codehead = genericCodehead + this.specificCodehead;
+        String results = codehead;
         for (int trialIndex = 0; trialIndex < this.expLength; trialIndex++) {
             for (int boxNo = 0; boxNo < this.NUM_BOXES; boxNo++) {
                 if (null != this.rflag[boxNo][trialIndex]) {
@@ -251,7 +305,6 @@ public class ExperimentResulter {
                 }
             }
         }
-        results = codehead + results;
         return results;
         }
 
@@ -277,5 +330,40 @@ public class ExperimentResulter {
         return formattedTime;
     }
 
+    /** Send updates to main Xmod.java.
+     * @param newStatus status
+     * @param newMessage message
+     * @param newAdvice advice
+     * @param newStackTrace any stack trace
+     */
+    private void updateStatus(final String newStatus,
+                                final String newMessage,
+                                final String newAdvice,
+                                final String newStackTrace) {
+        ObjectReport report = new ObjectReport(ReportLabel.STATUS);
+        if  (newStatus != "") {
+            report.updateValues(ReportCategory.STATUS, newStatus);
+        }
+        if  (newMessage != "") {
+            report.updateValues(ReportCategory.MESSAGE, newMessage);
+        }
+        if  (newAdvice != "") {
+            report.updateValues(ReportCategory.ADVICE, newAdvice);
+        }
+        if  (newStackTrace != "") {
+            report.updateValues(ReportCategory.STACKTRACE, newStackTrace);
+        }
+        pcs.firePropertyChange(Actions.UPDATE, null, report);
+        return;
+    }
+
+    /**
+     * Used in ExperimentRunnner to listen for pcs.
+     * @param l listener i.e.ExperimentRunner
+     */
+
+    public void addObserver(final PropertyChangeListener l) {
+        pcs.addPropertyChangeListener(Actions.UPDATE, l);
+    }
 
 }
