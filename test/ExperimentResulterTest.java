@@ -23,6 +23,7 @@ public final class ExperimentResulterTest {
         private TestListener tester;
 
 
+
     /**Set up. */
     @BeforeEach
     void setup() {
@@ -51,6 +52,7 @@ public final class ExperimentResulterTest {
     }
 
     /** Check results directory created.  */
+
     @DisplayName("Check results directory")
     @Test
     public void checkArrays() {
@@ -64,10 +66,12 @@ public final class ExperimentResulterTest {
         try {
             Files.delete(resultsDir);
         } catch (IOException e) {
+
             Assertions.assertEquals(false, true, "Could not delete resultsDir");
             e.printStackTrace();
         }
     }
+
 
     /** Check keys pressed as expected.
      * @param boxNo from ValueSource
@@ -105,6 +109,7 @@ public final class ExperimentResulterTest {
         Assertions.assertEquals(false, this.resulter.getRFlag()[boxNo][1],
         "RFlag should = false");
     }
+
     /** Utility func to reverse engineer the reaction array.
      * @param num expected reaction as integer
      * @param boxNo which box
