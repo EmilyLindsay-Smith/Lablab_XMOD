@@ -5,6 +5,9 @@ import java.io.File;
 import java.io.StringWriter;
 import java.io.PrintWriter;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 /**
 * Class of static methods that are useful tools for the project.
 * @author ELS
@@ -90,5 +93,26 @@ public final class Utils {
         return (f.exists() && !f.isDirectory());
     }
 
+	/**
+     * Get datestamp.
+     * @return string of formatted date
+     */
+    public static String getDate() {
+            LocalDate date = LocalDate.now();
+            DateTimeFormatter format = DateTimeFormatter.ofPattern("dd.MM.yy");
+            String formattedDate = date.format(format);
+            return formattedDate;
+    }
+
+    /**
+     * Get timestamp.
+     * @return string of formatted time
+     */
+    public static String getTime() {
+        LocalTime time = LocalTime.now();
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("HH.mm.ss");
+        String formattedTime = time.format(format);
+        return formattedTime;
+    }
 
 }

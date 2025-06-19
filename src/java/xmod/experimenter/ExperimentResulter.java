@@ -10,10 +10,6 @@ import xmod.status.Responses;
 import xmod.utils.Utils;
 import java.io.IOException;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -135,8 +131,8 @@ public class ExperimentResulter {
      */
     public void printResults() {
         // Get time and date strings
-        String dateString = getDate();
-        String timeString = getTime();
+        String dateString = Utils.getDate();
+        String timeString = Utils.getTime();
         // Get results as string
         String resultsString = createResultsText(dateString, timeString);
         byte[] byteString = resultsString.getBytes();
@@ -312,27 +308,7 @@ public class ExperimentResulter {
         return results;
         }
 
-    /**
-     * Get datestamp.
-     * @return string of formatted date
-     */
-    private String getDate() {
-            LocalDate date = LocalDate.now();
-            DateTimeFormatter format = DateTimeFormatter.ofPattern("dd.MM.yy");
-            String formattedDate = date.format(format);
-            return formattedDate;
-    }
 
-    /**
-     * Get timestamp.
-     * @return string of formatted time
-     */
-    private String getTime() {
-        LocalTime time = LocalTime.now();
-        DateTimeFormatter format = DateTimeFormatter.ofPattern("HH.mm.ss");
-        String formattedTime = time.format(format);
-        return formattedTime;
-    }
 
     /** Send updates to main Xmod.java.
      * @param newStatus status
