@@ -22,7 +22,7 @@ import java.beans.PropertyChangeSupport;
  * Uses jSerialComm's SerialPort class
  *
  * @author ELS
- * @version 1.0
+ * @version 2.0
  * @since 2025-06-09
  * KNOWN BUGS:
  */
@@ -34,6 +34,8 @@ public class Serial extends Thread {
     private PropertyChangeSupport pcs;
     /** Is application connected to the controller box. */
     private Boolean serialConnected = false;
+    /** True if trying to reconnect to controller box. */
+    private Boolean tryingToConnect = false;
     /** Serial port connection to controller box. */
     private SerialPort serialPort = null;
     /** duration of waiting for control box bytesAvailable() > 0. */
@@ -93,15 +95,31 @@ public class Serial extends Thread {
     /**Constructor to connect to serial port. */
     public Serial() {
         pcs = new PropertyChangeSupport(this);
-
-        new Thread(new Runnable() {
-            public void run() {
-                connectToPort(NUM_REATTEMPTS);
-            };
-        }, "SerialPortConnection").start();
-
+        connectRepeatedly();
     }
 
+    /** Thread to try to connect to serial port multiple times.
+     * Only starts new thread if one isn't currently running.
+    */
+    private void connectRepeatedly() {
+        if (! his.tryingToConnect) {
+            new Thread(new Runnable() {
+                public void run() {
+                    flipConnectFlag();
+                    connectToPort(NUM_REATTEMPTS);
+                    flipConnectFlag();
+                    return;
+                };
+            }, "SerialPortConnection").start();
+        }
+    }
+
+    /** Flips this.tryingToConnect to block concurrent threads.
+     */
+    private void flipConnectFlag() {
+        this.tryingToConnect = !this.tryingToConnect;
+        return;
+    }
     /**
      * Identify available serial ports and select correct port.
      */
@@ -126,39 +144,6 @@ public class Serial extends Thread {
         // No Update sent via PCS as this is handled within the connectToPort()
     }
 
-
-    /**
-     * Add data listener to serial port to listen for disconnection.
-     */
-    private void addPortListener() {
-        this.serialPort.addDataListener(new SerialPortDataListener() {
-            @Override
-            public int getListeningEvents() {
-                return SerialPort.LISTENING_EVENT_PORT_DISCONNECTED;
-            }
-
-            @Override
-            public void serialEvent(final SerialPortEvent serialPortEvent) {
-                if (serialPortEvent.getEventType()
-                    == SerialPort.LISTENING_EVENT_PORT_DISCONNECTED) {
-                    close(); // close port
-                    notifyDisconnect();
-                    connectToPort(NUM_REATTEMPTS);
-                }
-            }
-        });
-    }
-
-    /**
-     * Connect to serial port and set up timeouts and parameters.
-     * Doesn't not try multiple times if no connection established
-     */
-    private void connectToPort() {
-        connectToPort(0);
-    }
-
-
-
     /**
      * Connect to serial port and set up timeouts and parameters.
      * @param repeatInt integer: number of items to check
@@ -168,10 +153,8 @@ public class Serial extends Thread {
         selectPort();
         if (this.serialPort == null) { // if port not identified yet
             if (repeatInt > 0) {
-                String updateMsg = "Retrying in "
-                    + (this.WAIT_DURATION / this.SECONDS_IN_MILLISECONDS)
-                    + "s ... ("
-                    + repeatInt + "automatic connection attempts remaining...)";
+                String updateMsg = Utils.getTime()
+                            + ": Trying to connect to serial port ... ";
                 updateStatus(Responses.SERIAL_UNCONNECTED,
                     updateMsg, "", "");
                 Utils.pause(this.WAIT_DURATION);
@@ -180,10 +163,8 @@ public class Serial extends Thread {
                 return;
              } else {
                 String updateMsg = "Failed to connect to the controller box";
-
                 updateStatus(Responses.SERIAL_UNCONNECTED,
                     updateMsg, this.updateAdv, "");
-
                 return;
             }
         }
@@ -204,15 +185,12 @@ public class Serial extends Thread {
                 | SerialPort.TIMEOUT_WRITE_BLOCKING,
                 this.TIMEOUT, 0);
             this.serialConnected = true; //only update here as mark of success
+            return;
          } else {
             String errorMessage = "Serial Port Unavailable: "
             + "Could not open connection to control box.";
             if (repeatInt > 0) {
-                String updateMsg = "Retrying in "
-                    + (this.WAIT_DURATION / this.SECONDS_IN_MILLISECONDS)
-                    + " s ... ("
-                    + repeatInt + " automatic connection attempts left...)";
-
+                String updateMsg = "Trying to connect to serial port...";
                 updateStatus(Responses.SERIAL_UNCONNECTED,
                     updateMsg, "", "");
                 Utils.pause(this.WAIT_DURATION);
@@ -224,7 +202,6 @@ public class Serial extends Thread {
                                     + " to the controller box";
                 updateStatus(Responses.SERIAL_UNCONNECTED,
                     updateMsg, this.updateAdv, "");
-
                 return;
             }
         }
@@ -244,48 +221,53 @@ public class Serial extends Thread {
      * @param description string to use to describe what didn't happen to user
      */
     private void sendCommand(final int command, final String description) {
-        if (this.serialConnected) {
-            try {
-                this.send(command);
-            } catch (Exception e) {
-            String stackTrace = Utils.getStackTrace(e);
-            updateStatus("", "Could not " + description + " due to error",
-                         "", stackTrace);
-
-            }
-        } else {
+        if (!this.serialConnected) {
             String updateMsg = "Could not " + description
                                 + " because not connected to serial port";
-            updateStatus("", updateMsg, this.updateAdv, "");
+            updateStatus(Responses.SERIAL_UNCONNECTED, updateMsg,
+                        this.updateAdv, "");
         }
+
+        try {
+            this.send(command);
+        } catch (Exception e) {
+            String stackTrace = Utils.getStackTrace(e);
+            updateStatus("", "Could not " + description + " due to error",
+                            "", stackTrace);
+        }
+
         return;
     }
     /**
      * Connects to usb serial port and should light up the LEDs 3 times.
+     * If not connected, will reattempt connection NUM_REATTEMPTS times.
      */
     public void checkConnection() {
-        if (this.serialConnected) {
-            sendCommand(this.FLASH_LED, "flash LEDs");
+        if (!this.serialConnected) {
+            connectRepeatedly();
         } else {
-            new Thread(new Runnable() {
-                public void run() {
-                    connectToPort(NUM_REATTEMPTS);
-                };
-            }, "SerialPortConnection").start();
+            sendCommand(this.FLASH_LED, "flash LEDs");
         }
         return;
     }
 
     /**
      * Requests information about the control box.
-     * @return String representation of all control box info
+     * @return String representation of all control box info or ""
      */
     public String getControllerInfo() {
+        if (!this.serialConnected) {
+            String updateMsg = "Could not retrieve controller info"
+                                + " because not connected to serial port";
+            updateStatus(Responses.SERIAL_UNCONNECTED, updateMsg,
+                            this.updateAdv, "");
+            return "";
+        }
+
         String serialInfo = "Controller Info: <br/>";
         for (int j = this.GET_SOURCE; j <= this.GET_KEYS; j++) {
             try {
-            sendCommand(j, "retrieve controller info");
-            //try {
+                sendCommand(j, "retrieve controller info");
                 serialInfo = serialInfo + "<br/>" + receive();
             } catch (Exception e) {
                 String stackTrace = Utils.getStackTrace(e);
@@ -485,6 +467,27 @@ public class Serial extends Thread {
         return;
     }
 
+    /**
+     * Add data listener to serial port to listen for disconnection.
+     */
+    private void addPortListener() {
+        this.serialPort.addDataListener(new SerialPortDataListener() {
+            @Override
+            public int getListeningEvents() {
+                return SerialPort.LISTENING_EVENT_PORT_DISCONNECTED;
+            }
+
+            @Override
+            public void serialEvent(final SerialPortEvent serialPortEvent) {
+                if (serialPortEvent.getEventType()
+                    == SerialPort.LISTENING_EVENT_PORT_DISCONNECTED) {
+                    close(); // close port
+                    notifyDisconnect();
+                    connectToPort(NUM_REATTEMPTS);
+                }
+            }
+        });
+    }
     /**
      * Used in Xmod.java to allow the controller to listen for pcs.
      * @param l listener i.e. Xmod.java
