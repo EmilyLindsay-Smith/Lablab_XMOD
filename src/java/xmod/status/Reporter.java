@@ -113,14 +113,14 @@ public class Reporter {
         ArrayList<String> newStatus = newValues
                                         .get(ReportCategory.STATUS);
 
+        // If newStatus is different, clear the values
         if (!newStatus.equals(oldStatus)) {
             clearOldValues = true;
-        } else {
+        }
+        // Keep the old values if newStatus is empty
+        if (newStatus.equals("")){
             clearOldValues = false;
         }
-
-        // DEBUG LINE
-        clearOldValues = false;
 
         //For each ReportCategory in the ObjectReport
         for (Map.Entry<ReportCategory, ArrayList<String>> e
