@@ -5,9 +5,15 @@ import java.util.Map;
 import java.util.LinkedHashMap;
 import java.util.Set;
 
-/** Class to manage reports on status of a REport Category.
+
+/** ObjectReport manages reports on status of a Report Category.
  * Used by Reporter to handle overall state
  * Used by other classes to format updates to send to Reporter
+ *
+ * @author ELS
+ * @version 2.0
+ * @since 2025-06-09
+ * KNOWN BUGS:
  */
 public class ObjectReport {
     /**Map to hold info for each ReportCategory. */

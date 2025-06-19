@@ -27,9 +27,9 @@
  * Responses are string constants for different messages to the user
  * </p>
  *
- * @since 1.0
+ * @since 2.0
  * @author ELS
- * @version 1.1
+ * @version 2.0
  */
 
 package xmod.status;
