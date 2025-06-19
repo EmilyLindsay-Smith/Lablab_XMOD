@@ -18,7 +18,7 @@ import xmod.status.ReportCategory;
 import xmod.status.ReportLabel;
 import xmod.status.Responses;
 
-
+import java.awt.EventQueue;
 import javax.swing.SwingUtilities;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
@@ -154,7 +154,6 @@ public class Xmod implements PropertyChangeListener {
         this.experimentRunner.setUpExperiment(filename);
         // Check loaded
         if (this.experimentRunner.isExperimentLoaded()) {
-            break;
             //lookForWavFile(filename);
         }
     };
@@ -186,7 +185,12 @@ public class Xmod implements PropertyChangeListener {
      */
     private void operationControllerInfo() {
         String info = this.serialPort.getControllerInfo();
-        // OBJECT REPORT HERE
+        if (info != "") {
+            ObjectReport report = createReport(ReportLabel.CONNECTION, info,
+                                                "", "", "");
+            updateStatus(report);
+            updateWindowText();
+        }
     };
 
     /** Displays the fontWindow GUI. */
@@ -263,11 +267,17 @@ public class Xmod implements PropertyChangeListener {
 
     /**
      * Updates the central text box on MainWindow.
+     * Note use of EventQueue schedules task for Event Dispatch Thread
      */
     private void updateWindowText() {
-        String newText = this.reporter.toString();
-        this.mainWindow.updateText(newText);
-        this.mainWindow.repaint();
+        EventQueue.invokeLater(new Runnable() {
+          @Override
+            public void run() {
+                String newText = reporter.toString();
+                mainWindow.updateText(newText);
+                mainWindow.repaint();
+            }
+        });
     }
 
     /* ******* METHODS RELATED TO SHUTTING DOWN THE APPLICATION ************/
