@@ -2,9 +2,6 @@ package xmod.utils;
 
 import java.io.File;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 import java.io.StringWriter;
 import java.io.PrintWriter;
 
@@ -39,61 +36,55 @@ public final class Utils {
         return stringStackTrace;
     }
 
-    	/**
-	 * Checks filename extension matches expected extension
-	 * @param filename name of file
-	 * @param expectedExtension expected extension e.g. "wav"
-	 * @return boolean true if filename has expected extension
-	 */
-	public static Boolean fileHasExtension(String filename, String expectedExtension){
-		if (null == filename || null == expectedExtension){
-			return false;
-		}
-		//If first char is '.', ignore this
-		if (expectedExtension.charAt(0) == '.'){
-			expectedExtension = expectedExtension.substring(1);
-		}
-
-		String fileExtension = getFileExtension(filename);
-
-		if (fileExtension.equals(expectedExtension)){
-			return true;
-		}else{
-			return false;
-		}
-	}
-	/**
-	 * Gets file extension
-	 * @param filename
-	 */
-	public static String getFileExtension(String filename){
-		if (null == filename){
-			return "";
-		}
-		int dotIndex = filename.lastIndexOf('.');
-		// handle no extension or dot at end of filename so no extension
-		if (dotIndex == -1 || dotIndex == filename.length() -1){
-			return "";
-		}else{
-			return filename.substring(dotIndex + 1);
-		}
-	}
-
-	/**
-	 * Checks file exists
-	 * @param filename
-	 * @return boolean true if file exists
-	 */
-	public static Boolean fileExists(String filename){
-		if (null == filename){
-			return false;
-		}
-		File f = new File(filename);
-        if (f.exists() && !f.isDirectory())
-            return true;
-        else
+    /**
+     * Checks filename extension matches expected extension.
+     * @param filename name of file
+     * @param expectedExtension expected extension e.g. "wav"
+     * @return boolean true if filename has expected extension
+     */
+    public static Boolean fileHasExtension(final String filename,
+                                            final String expectedExtension) {
+        if (null == filename || null == expectedExtension) {
             return false;
-	}
+        }
+        //If first char is '.', ignore this
+        if (expectedExtension.charAt(0) == '.') {
+            expectedExtension = expectedExtension.substring(1);
+        }
+
+        String fileExtension = getFileExtension(filename);
+        return (fileExtension.equals(expectedExtension));
+    }
+    /**
+     * Gets file extension.
+     * @param filename
+     * @return file extension or ""
+     */
+    public static String getFileExtension(final String filename) {
+        if (null == filename) {
+            return "";
+        }
+        int dotIndex = filename.lastIndexOf('.');
+        // handle no extension or dot at end of filename so no extension
+        if (dotIndex == -1 || dotIndex == filename.length() - 1) {
+            return "";
+        } else {
+            return filename.substring(dotIndex + 1);
+        }
+    }
+
+    /**
+     * Checks file exists.
+     * @param filename
+     * @return boolean true if file exists
+     */
+    public static Boolean fileExists(final String filename) {
+        if (null == filename) {
+            return false;
+        }
+        File f = new File(filename);
+        return (f.exists() && !f.isDirectory());
+    }
 
 
 }
