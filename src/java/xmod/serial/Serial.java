@@ -118,7 +118,6 @@ public class Serial extends Thread {
      */
     private void flipConnectFlag(){
         this.tryingToConnect = !this.tryingToConnect;
-        System.out.println("Flipping the flag to " + this.tryingToConnect);
         return;
     }
     /**
