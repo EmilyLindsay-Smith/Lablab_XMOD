@@ -102,7 +102,7 @@ public class Serial extends Thread {
      * Only starts new thread if one isn't currently running.
     */
     private void connectRepeatedly() {
-        if (! his.tryingToConnect) {
+        if (! this.tryingToConnect) {
             new Thread(new Runnable() {
                 public void run() {
                     flipConnectFlag();
