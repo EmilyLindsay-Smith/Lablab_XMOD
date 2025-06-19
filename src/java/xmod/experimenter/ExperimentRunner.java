@@ -213,7 +213,7 @@ public class ExperimentRunner implements PropertyChangeListener {
         // Set flag to true
         this.running = true;
 
-        this.expWindow.text.setText("");
+        this.expWindow.updateText("");
         this.serialPort.turnOffMonitor();
 
         for (int trialIndex = 0; trialIndex < this.expLength; trialIndex++) {
@@ -222,7 +222,7 @@ public class ExperimentRunner implements PropertyChangeListener {
                 break;
             }
             //Show Window and screen item
-            this.expWindow.text.setText(this.screenItems[trialIndex]);
+            this.expWindow.updateText(this.screenItems[trialIndex]);
             this.serialPort.sendTrialTimings(
                                 this.tReactionTimeout[trialIndex],
                                 this.tMonitorOn[trialIndex],

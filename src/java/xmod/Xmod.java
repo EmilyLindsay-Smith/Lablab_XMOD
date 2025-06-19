@@ -1,7 +1,9 @@
 package xmod;
 
-import xmod.view.MainWindow;
+
+import xmod.view.FontWindow;
 import xmod.view.ExperimentWindow;
+import xmod.view.MainWindow;
 
 import xmod.constants.Actions;
 import xmod.constants.Operations;
@@ -27,6 +29,8 @@ public class Xmod implements PropertyChangeListener {
     private MainWindow mainWindow;
     /** Experiment GUI Window. */
     private ExperimentWindow expWindow;
+    /** Font GUI Window. */
+    private FontWindow fontWindow;
     // Objects.
     /** Reporter to manage status. */
     private Reporter reporter;
@@ -37,19 +41,23 @@ public class Xmod implements PropertyChangeListener {
      /**
      * Constructor.
      * @param aMainWindow MainWindow object
+     * @param aExpWindow ExpWindow object
+     * @param aFontWindow FontWindow object
      * @param aReporter Reporter Object
      * @param aSerialPort Serial Object
      * @param expRunner ExperimentRunner Object
      */
     Xmod(final MainWindow aMainWindow,
+        final ExperimentWindow aExpWindow,
+        final FontWindow aFontWindow,
         final Reporter aReporter,
         final Serial aSerialPort,
-        final ExperimentRunner expRunner,
-        final ExperimentWindow aExpWindow) {
+        final ExperimentRunner expRunner) {
 
         //Initialise window variables
         this.mainWindow = aMainWindow;
         this.expWindow = aExpWindow;
+        this.fontWindow = aFontWindow;
         // Initialise Objects
         this.reporter = aReporter;
         this.serialPort = aSerialPort;
@@ -67,18 +75,21 @@ public class Xmod implements PropertyChangeListener {
                 // Instantiate GUI Windows
                 MainWindow mainWindow = new MainWindow();
                 ExperimentWindow expWindow = new ExperimentWindow();
+                FontWindow fontWindow = new FontWindow();
                 //Instantiate Objects
                 Reporter reporter = new Reporter();
                 Serial serialPort = new Serial();
                 ExperimentRunner experimentRunner = new ExperimentRunner(
                                                         serialPort,
                                                         expWindow);
-                Xmod t = new Xmod(mainWindow, reporter,
-                                serialPort, experimentRunner, expWindow);
+                Xmod xmod = new Xmod(mainWindow, expWindow, fontWindow,
+                                reporter, serialPort, experimentRunner);
                 // Add observers to respond to buttons/key strokes/error reports
-                mainWindow.addObserver(t);
-                serialPort.addObserver(t);
-                experimentRunner.addObserver(t);
+                mainWindow.addObserver(xmod);
+                expWindow.addObserver(xmod);
+                fontWindow.addObserver(xmod);
+                serialPort.addObserver(xmod);
+                experimentRunner.addObserver(xmod);
                 // Show main Window
                 mainWindow.show();
             }
@@ -114,16 +125,18 @@ public class Xmod implements PropertyChangeListener {
            }
         } else if (actionType == Actions.UPDATE) {
             // Send the ObjectReport to reporter to update the status
-            ObjectReport action = (ObjectReport) evt.getNewValue();
-            updateStatus(action);
+            ObjectReport report = (ObjectReport) evt.getNewValue();
+            updateStatus(report);
             updateWindowText();
+        } else if (actionType == Actions.UPDATE_FONT) {
+            updateFont();
         }
     }
 
     private void operationLoadTMS() {
         String filename = mainWindow.chooseFile();
         // If no file selected
-        if (filename == Responses.NO_FILE_SELECTED ) {
+        if (filename == Responses.NO_FILE_SELECTED) {
             updateStatus(createReport(ReportLabel.TMS,
                         Responses.NO_FILE_SELECTED, "",
                         "Please select a .tms file to upload", ""));
@@ -133,7 +146,8 @@ public class Xmod implements PropertyChangeListener {
         //If file selected
         this.experimentRunner.setUpExperiment(filename);
         // Check loaded
-        if(this.experimentRunner.isExperimentLoaded()){
+        if (this.experimentRunner.isExperimentLoaded()) {
+            break;
             //lookForWavFile(filename);
         }
     };
@@ -168,9 +182,35 @@ public class Xmod implements PropertyChangeListener {
         // OBJECT REPORT HERE
     };
 
-    private void operationCheckFont() { };
+    /** Displays the fontWindow GUI. */
+    private void operationCheckFont() {
+        this.fontWindow.show();
+        //Note fontWindow.hide() is triggered in updateFont()
+    };
 
     /* ***** METHODS RELATED TO UPDATING THE WINDOWS/TEXT/FONT ************/
+
+    /**
+     * Updates the font in ExperimentWindow.
+     */
+    private void updateFont() {
+        //Get the new font & size from fontWindow
+        String newFont = this.fontWindow.getCurrentFont();
+        int newSize = this.fontWindow.getCurrentSize();
+        // Change the font & size for expWindow
+        this.expWindow.changeFont(newFont, newSize);
+        //Report the change
+        ObjectReport report = createReport(ReportLabel.FONT, "Font updated",
+        "New Font: " + newFont + " <br/>New font size: " + newSize + " pt",
+        "", "");
+        updateStatus(report);
+        updateWindowText();
+        // Return to the main window
+        this.mainWindow.show();
+        this.fontWindow.hide();
+        return;
+    }
+
 
 
      /**
@@ -180,6 +220,7 @@ public class Xmod implements PropertyChangeListener {
      * @param newMessage message
      * @param newAdvice advice
      * @param newStackTrace any stack trace
+     * @return report
      */
     private ObjectReport createReport(final ReportLabel reportLabel,
                                 final String newStatus,
@@ -213,15 +254,13 @@ public class Xmod implements PropertyChangeListener {
       return;
     }
 
-
-
     /**
      * Updates the central text box on MainWindow.
      */
     private void updateWindowText() {
         String newText = this.reporter.toString();
-        this.mainWindow.text.setText(newText);
-        this.mainWindow.f.repaint();
+        this.mainWindow.updateText(newText);
+        this.mainWindow.repaint();
     }
 
     /* ******* METHODS RELATED TO SHUTTING DOWN THE APPLICATION ************/
