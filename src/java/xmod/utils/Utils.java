@@ -39,11 +39,13 @@ public final class Utils {
     /**
      * Checks filename extension matches expected extension.
      * @param filename name of file
-     * @param expectedExtension expected extension e.g. "wav"
+     * @param extension expected extension e.g. "wav"
      * @return boolean true if filename has expected extension
      */
     public static Boolean fileHasExtension(final String filename,
-                                            final String expectedExtension) {
+                                            final String extension) {
+		String expectedExtension = extension;
+
         if (null == filename || null == expectedExtension) {
             return false;
         }
