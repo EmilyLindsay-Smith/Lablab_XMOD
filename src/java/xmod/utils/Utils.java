@@ -8,7 +8,9 @@ import java.io.PrintWriter;
 /**
 * Class of static methods that are useful tools for the project.
 * @author ELS
+* @version 2.0
 */
+
 public final class Utils {
     private Utils() { }; // Private Constructor
     /**

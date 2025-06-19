@@ -23,6 +23,13 @@ import javax.swing.SwingUtilities;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
 
+/** Xmod is the controller class for the whole application.
+ *
+ * @author ELS
+ * @version 2.0
+ * @since 2025-06-09
+ */
+
 public class Xmod implements PropertyChangeListener {
     //Windows
     /** Main GUI Window. */

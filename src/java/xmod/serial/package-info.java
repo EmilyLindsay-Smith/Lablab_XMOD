@@ -3,9 +3,9 @@
  *
  * All serial port communications use the jSerialComm library
  *
- * @since 1.0
+ * @since 2.0
  * @author ELS
- * @version 1.1
+ * @version 2.0
  */
 
 package xmod.serial;
