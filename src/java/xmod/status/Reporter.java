@@ -119,9 +119,9 @@ public class Reporter {
             clearOldValues = false;
         }
 
-        System.out.println("clearOldValues: " + clearOldValues);
-        System.out.println("Initial Status: " + oldStatus);
-        System.out.println("New Status: " + newStatus);
+        // DEBUG LINE
+        clearOldValues = false;
+
         //For each ReportCategory in the ObjectReport
         for (Map.Entry<ReportCategory, ArrayList<String>> e
             :newValues.entrySet()) {
