@@ -45,6 +45,12 @@ public class FontWindow extends ExperimentWindow {
     private String originalFontName;
     /** Original font size before any changes. */
     private int originalSize;
+    /** Current font. */
+    private String currentFontName;
+    /** Current font size.. */
+    private int currentSize;
+
+
     /** Array of available words to display. */
     private String[] availableWords;
 
@@ -197,6 +203,19 @@ public class FontWindow extends ExperimentWindow {
         return;
     }
 
+    /** Gets current font .
+     * @return this.current_font_name
+     */
+    public String getCurrentFont(){
+        return this.currentFontName;
+    }
+
+    /** Gets current font size.
+     * @return this.current_size
+     */
+    public int getCurrentSize(){
+        return this.currentSize;
+    }
      /**
      * Listens for the escape key.
      * to tell the controller to close window nad update font

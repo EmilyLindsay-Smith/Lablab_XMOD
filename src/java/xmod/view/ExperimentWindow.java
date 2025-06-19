@@ -32,9 +32,9 @@ import java.util.Arrays;
 
 public class ExperimentWindow implements KeyListener {
     /** Text to show trial item. */
-    private JLabel text;
+    protected JLabel text;
     /** Frame for window. */
-    private JFrame f;
+    protected JFrame f;
 
     /** For user-initiated abort. */
     private Boolean abort = false;
@@ -119,6 +119,18 @@ public class ExperimentWindow implements KeyListener {
         }
         return;
     }
+
+    /** Updates the text.
+     * @param newText new text to show
+     */
+    public void updateText(final String newText) {
+        if (newText == "") {
+            return;
+        }
+        this.text.setText(newText);
+        return;
+    }
+
 
     /**
      * Makes the experiment window full screen and visible.
