@@ -220,8 +220,8 @@ public class Xmod implements PropertyChangeListener {
      */
     private void updateWindowText() {
         String newText = this.reporter.toString();
-        this.mainWindow.text.setText(newText);
-        this.mainWindow.f.repaint();
+        this.mainWindow.updateText(newText);
+        this.mainWindow.repaint();
     }
 
     /* ******* METHODS RELATED TO SHUTTING DOWN THE APPLICATION ************/
