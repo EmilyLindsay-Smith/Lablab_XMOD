@@ -4,6 +4,7 @@ import xmod.constants.Actions;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 
 import java.awt.BorderLayout;
@@ -12,17 +13,28 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
 import java.awt.Color;
-
+import java.awt.Font;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.Arrays;
+
+/** ExperimentWindow is the GUI shown during the experiment.
+ *
+ * @author ELS
+ * @version 2.0
+ * @since 2025-06-09
+ * NOTES:
+ * Many of the integers used in setting borders etc are magic numbers
+ * so adjust these cautiously
+ */
 
 public class ExperimentWindow implements KeyListener {
     /** Text to show trial item. */
-    public JLabel text;
+    private JLabel text;
     /** Frame for window. */
-    public JFrame f;
+    private JFrame f;
 
     /** For user-initiated abort. */
     private Boolean abort = false;
@@ -35,16 +47,16 @@ public class ExperimentWindow implements KeyListener {
 
     /** Central text area. */
     private JTextArea textArea;
-    /** Font name. */
-    private String currentFontName;;
-    /** Font size. */
-    private int currentSize;
-    /** Font style. */
-    private int defaultStyle = Font.PLAIN;
-    /** Fonts available on device. */
-    private String[] fonts;
+    /** Font name. Protected so FontWindow can access. */
+    protected String currentFontName;;
+    /** Font size. Protected so FontWindow can access.*/
+    protected int currentSize;
+    /** Font style.Protected so FontWindow can access. */
+    protected int defaultStyle = Font.PLAIN;
+    /** Fonts available on device. Protected so FontWindow can access.*/
+    protected String[] fonts;
     /** Max font size. */
-    private static final int MAX_FONT_SIZE = 200;
+    protected static final int MAX_FONT_SIZE = 200;
 
     /**
      * Constructor.

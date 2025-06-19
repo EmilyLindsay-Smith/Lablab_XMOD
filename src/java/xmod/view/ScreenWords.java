@@ -1,5 +1,11 @@
 package xmod.view;
 
+/** ScreenWords holds the set of words used in FontWindow.
+ * @author ELS
+ * @version 2.0
+ * @since 2025-06-09
+ */
+
 public final class ScreenWords {
     /** Default font size. */
     static final int DEFAULT_FONT_SIZE = 50;
@@ -13,6 +19,7 @@ public final class ScreenWords {
 
     /**
      * Returns list of words.
+     * Many of these are Bengali to check correct rendering of diacritics
      * @return list of word
      */
     public static String[] getWords() {

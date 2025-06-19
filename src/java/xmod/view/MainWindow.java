@@ -34,9 +34,13 @@ import java.beans.PropertyChangeSupport;
 import java.awt.Color;
 import java.awt.Font;
 
-/**
- * This class creates the main GUI for the application.
+/** MainWindow is the main GUI for the application.
+ *
+ * @author ELS
+ * @version 2.0
+ * @since 2025-06-09
  */
+
 public class MainWindow {
     // GUI Components. */
     /** JFrame. */
@@ -112,7 +116,6 @@ public class MainWindow {
         // Set closing operation to hide and send property change to main
         // Xmod class to handle shutdown
         this.f.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-
     }
 
     /**
@@ -139,17 +142,19 @@ public class MainWindow {
         this.text.setContentType("text/html");
         this.text.setEditable(false);
         this.text.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES,
-                                        true); // ensure font can be set
+                                        true); // ensure font can be updated
         this.scrollPane = new JScrollPane(this.text,
                                         JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
                                         JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         //Left Hand Button Pane //rows, cols, hgap, vgap
+        // 2 rows because 2 buttons
         this.leftButtonPane = new JPanel(new GridLayout(2, 1, 5, 5));
 
         this.buttonRunExp = new JButton(Operations.RUN_EXP);
         this.buttonLoadTMS = new JButton(Operations.LOAD_TMS);
 
         //Right Hand Button Pane //rows, cols, hgap, vgap
+        // 5 rows because 5 buttons
         this.rightButtonPane = new JPanel(new GridLayout(5, 1, 5, 5));
 
         this.buttonMonitorOn = new JButton(Operations.MONITOR_ON);
@@ -178,7 +183,6 @@ public class MainWindow {
         this.f.add(this.scrollPane, BorderLayout.CENTER);
         this.f.add(this.leftButtonPane, BorderLayout.WEST);
         this.f.add(this.rightButtonPane, BorderLayout.EAST);
-
     }
 
     /**
@@ -268,8 +272,25 @@ public class MainWindow {
         f.setVisible(false);
     }
 
-    /** Popup to select a file.
-     * @return string filename of chosen file
+    /** Repaints the frame so updates become visible to user. */
+    public void repaint() {
+        this.f.repaint();
+    }
+
+    /** Updates the text.
+     * @param newText new text to show
+     */
+    public void updateText(final String newText) {
+        if (newText == "") {
+            return;
+        }
+        this.text.setText(newText);
+        return;
+    }
+
+
+    /** Popup to select a TMS file.
+     * @return string filename of chosen tms file
      * Note this is called in Xmod.java when a button is called
      * but method is in this class as it relates to the main window components
      */

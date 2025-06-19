@@ -4,22 +4,27 @@ import xmod.constants.Actions;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import java.awt.BorderLayout;
-
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-
+import java.awt.Color;
 import java.awt.Font;
-/*
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
-*/
+
+
+/** FontWindow is where the font size and family can be updated by the user.
+ * It extends ExperimentWindow so that ExperimentWindow can be updated as well.
+ * @author ELS
+ * @version 2.0
+ * @since 2025-06-09
+ */
 
 public class FontWindow extends ExperimentWindow {
     //inherits all the variables from ExperimentWindow plus the following
@@ -197,7 +202,7 @@ public class FontWindow extends ExperimentWindow {
      * to tell the controller to close window nad update font
      */
     @Override
-    public void keyReleased(final keyEvent e) {
+    public void keyReleased(final KeyEvent e) {
         int key = e.getKeyCode();
         if (key == KeyEvent.VK_ESCAPE) {
             System.out.println("Escape!");
