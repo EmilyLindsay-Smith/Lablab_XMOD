@@ -11,9 +11,9 @@
  * Typesetting.java is typsetting constants e.g. tab and newline
  * </p>
  *
- * @since 1.0
+ * @since 2.0
  * @author ELS
- * @version 1.1
+ * @version 2.0
  */
 
 package xmod.constants;
