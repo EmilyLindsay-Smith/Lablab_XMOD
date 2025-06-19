@@ -118,7 +118,7 @@ public class Reporter {
             clearOldValues = true;
         }
         // Keep the old values if newStatus is empty
-        if (newStatus.equals("")){
+        if (newStatus.equals("")) {
             clearOldValues = false;
         }
 

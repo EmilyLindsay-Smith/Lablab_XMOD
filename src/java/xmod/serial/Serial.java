@@ -101,8 +101,8 @@ public class Serial extends Thread {
     /** Thread to try to connect to serial port multiple times.
      * Only starts new thread if one isn't currently running.
     */
-    private void connectRepeatedly(){
-        if (! this.tryingToConnect) {
+    private void connectRepeatedly() {
+        if (! his.tryingToConnect) {
             new Thread(new Runnable() {
                 public void run() {
                     flipConnectFlag();
@@ -116,7 +116,7 @@ public class Serial extends Thread {
 
     /** Flips this.tryingToConnect to block concurrent threads.
      */
-    private void flipConnectFlag(){
+    private void flipConnectFlag() {
         this.tryingToConnect = !this.tryingToConnect;
         return;
     }
