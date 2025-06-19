@@ -126,6 +126,12 @@ public class AudioPlayer extends Thread {
         this.audioLoaded = true; // flag updated
     }
 
+    /** Returns audioLoaded flag.
+     * @return true if loaded
+     */
+    public Boolean isAudioLoaded() {
+        return this.audioLoaded;
+    }
 
     /** Start thread to play audio file. */
     public void play() {
@@ -249,7 +255,7 @@ public class AudioPlayer extends Thread {
      * Note: this truncates any fractional seconds rather than rounding down/up
      * @return audio length in seconds
      */
-    private int getAudioLengthInSeconds() {
+    public int getAudioLengthInSeconds() {
         if (null != this.audioStream && null != this.audioFormat) {
             long frameLength = this.audioStream.getFrameLength();
             float frameRate = this.audioFormat.getFrameRate();
