@@ -163,8 +163,9 @@ public class MainWindow {
                                                             1, 5, 5));
         //Right Hand Button Pane //rows, cols, hgap, vgap
         // 5 rows because 5 buttons
-        this.rightButtonPane = new JPanel(new GridLayout(this.buttonListB.size(),
-                                                            1, 5, 5));
+        this.rightButtonPane = new JPanel(
+                                    new GridLayout(this.buttonListB.size(),
+                                                    1, 5, 5));
 
         // Place buttons on the screen
         for (JButton button: buttonListA) {
@@ -181,7 +182,8 @@ public class MainWindow {
         this.f.add(this.rightButtonPane, BorderLayout.EAST);
     }
 
-    private void createButtons(){
+    /** Creates all the buttons. */
+    private void createButtons() {
         this.buttonRunExp = new JButton(Operations.RUN_EXP);
         this.buttonLoadTMS = new JButton(Operations.LOAD_TMS);
         this.buttonMonitorOn = new JButton(Operations.MONITOR_ON);

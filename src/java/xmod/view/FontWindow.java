@@ -206,14 +206,14 @@ public class FontWindow extends ExperimentWindow {
     /** Gets current font .
      * @return this.current_font_name
      */
-    public String getCurrentFont(){
+    public String getCurrentFont() {
         return this.currentFontName;
     }
 
     /** Gets current font size.
      * @return this.current_size
      */
-    public int getCurrentSize(){
+    public int getCurrentSize() {
         return this.currentSize;
     }
      /**

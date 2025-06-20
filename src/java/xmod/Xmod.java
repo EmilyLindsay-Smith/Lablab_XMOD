@@ -165,7 +165,7 @@ public class Xmod implements PropertyChangeListener {
     /** Loads TMS file.
      * @param filename name of tms file
      */
-    private void loadTMSFile(String filename){
+    private void loadTMSFile(final String filename) {
         // If no file selected
         if (filename == Responses.NO_FILE_SELECTED) {
             updateStatus(createReport(ReportLabel.TMS,
