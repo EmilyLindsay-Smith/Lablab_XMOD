@@ -207,7 +207,7 @@ public class ExperimentRunner implements PropertyChangeListener {
             return;
         }
 
-        if (!this.audioPlayer.isAudioLoaded()){
+        if (!this.audioPlayer.isAudioLoaded()) {
             updateStatus(Responses.EXPERIMENT_NOT_READY,
                         "Cannot begin experiment as audio file not loaded",
                         "Please check audio file exists",
