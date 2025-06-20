@@ -1,5 +1,6 @@
 package xmod.experimenter;
 
+import xmod.audio.AudioPlayer;
 import xmod.constants.Actions;
 
 
@@ -18,7 +19,7 @@ import java.beans.PropertyChangeSupport;
 /**
  * ExperimentRunner class controls running the experiment.
  * @author ELS
- * @version 1.0
+ * @version 2.0
  * @since 2025-01-10
  * BUGS:
 
@@ -29,6 +30,8 @@ public class ExperimentRunner implements PropertyChangeListener {
     private Serial serialPort;
     /** Experiment window to display the visual trial items. */
     private ExperimentWindow expWindow;
+    /** Audio Player to play the audio file. */
+    private AudioPlayer audioPlayer;
     /** Experiment Loader to load and parse the tms file. */
     private ExperimentLoader expLoader;
     /** ExperimentResulter to parse the results and print to file. */
@@ -65,11 +68,13 @@ public class ExperimentRunner implements PropertyChangeListener {
      */
 
     public ExperimentRunner(final Serial aSerialPort,
-                            final ExperimentWindow aExpWindow) {
+                            final ExperimentWindow aExpWindow,
+                            final AudioPlayer aAudioPlayer) {
         this.pcs = new PropertyChangeSupport(this);
 
         this.serialPort = aSerialPort;
         this.expWindow = aExpWindow;
+        this.audioPlayer = aAudioPlayer;
         this.expLoader = new ExperimentLoader();
         this.expLoader.addObserver(this);
 
@@ -202,6 +207,14 @@ public class ExperimentRunner implements PropertyChangeListener {
             return;
         }
 
+        if (!this.audioPlayer.isAudioLoaded()){
+            updateStatus(Responses.EXPERIMENT_NOT_READY,
+                        "Cannot begin experiment as audio file not loaded",
+                        "Please check audio file exists",
+                        "", ReportLabel.STATUS);
+            return;
+        }
+
         if  (!this.serialPort.isSerialConnected()) {
             updateStatus(Responses.EXPERIMENT_NOT_READY,
                         "Cannot begin experiment as not connected"
@@ -212,7 +225,7 @@ public class ExperimentRunner implements PropertyChangeListener {
         }
         // Set flag to true
         this.running = true;
-
+        this.audioPlayer.playAudio();
         this.expWindow.updateText("");
         this.serialPort.turnOffMonitor();
 
@@ -234,6 +247,8 @@ public class ExperimentRunner implements PropertyChangeListener {
             this.expResulter.collectTrialResults(reaction, trialIndex);
         }
         this.expResulter.printResults();
+        this.audioPlayer.stopAudio();
+        //If experiment not aborted
         if  (this.running) {
             //tells main Xmod instance experiment is finished
             //so it can change window views etc
