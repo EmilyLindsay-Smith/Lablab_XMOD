@@ -115,4 +115,96 @@ public final class Utils {
         return formattedTime;
     }
 
+	/** Gets wav filename from tms file name.
+	 * @param tmsFilename name of tms file
+	 * @return name of wavfile
+	 */
+	public static String getWavFromTMS(String tmsFilename) {
+		String location = getParent(tmsFilename);
+        String bareFileName = getBareName(tmsFilename);
+		if (location == "" || bareFileName == ""){
+			return "";
+		}
+        String wavFile = mergePaths(location, bareFileName, ".wav");
+		return wavFile;
+	}
+
+	/**
+	 * Gets parent directory of a file
+	 * @param filename
+	 * @return parent directory
+	 */
+	public static String getParent(String filename) {
+		if (null == filename) {
+			return "";
+		}
+
+		File childDirectory = new File(new File(filename).getAbsolutePath());
+        File parentDirectory = new File(childDirectory.getParent());
+
+		if (parentDirectory.exists() && parentDirectory.isDirectory()) {
+			return parentDirectory.toString();
+		} else {
+			return "";
+		}
+	}
+
+	/**
+	 * Gets filename without path or extension
+	 * @param filename
+	 * @return filename without path or extension
+	 */
+	public static String getBareName(String filename) {
+		if (null == filename || "" == filename) {
+			return "";
+		}
+		try {
+			File tmsFile = new File(filename);
+			String tmsName = tmsFile.getName();
+			int dotIndex = tmsName.lastIndexOf('.');
+			String fileBareName = tmsName.substring(0, dotIndex);
+			return fileBareName;
+		} catch(Exception e){
+			e.printStackTrace();
+			return "";
+		}
+	}
+
+	/**
+	 * Mergers filename and path
+	 * @param path path to directory where the file should be
+	 * @param bareFileName name of the file without any extensions etc
+	 * @param ext extension to use for the file
+	 * @return string representation of file path
+	 */
+	public static String mergePaths(String path, String bareFileName,
+									String ext) {
+		char fileSeparator = File.separatorChar;
+		// remove any file separator at end of path
+		if (path.charAt(path.length() -1) == fileSeparator) {
+			path = path.substring(0, path.length() -1);
+		}
+		//Remove file separator at start of barefileName
+		if (bareFileName.charAt(0) == fileSeparator) {
+			bareFileName = bareFileName.substring(1);
+		}
+
+		//Remove file separator at end of barefileName
+		if (bareFileName.charAt(bareFileName.length() -1) == fileSeparator) {
+			bareFileName = bareFileName.substring(0, bareFileName.length() -1);
+		}
+
+		// remove . at end of bareFileName
+		if (bareFileName.charAt(bareFileName.length() -1) == '.') {
+			bareFileName = bareFileName.substring(0, bareFileName.length() -1);
+		}
+
+		//remove . at start of extension
+		if (ext.charAt(0) == '.') {
+			ext = ext.substring(1);
+		}
+		String newFileName = path + fileSeparator + bareFileName + '.' + ext;
+		return newFileName;
+	}
+
 }

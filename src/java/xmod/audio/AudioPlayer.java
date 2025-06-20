@@ -4,6 +4,7 @@ import xmod.constants.Actions;
 import xmod.status.ObjectReport;
 import xmod.status.ReportCategory;
 import xmod.status.ReportLabel;
+import xmod.status.Responses;
 import xmod.utils.Utils;
 //import java.io.File;
 
@@ -61,16 +62,21 @@ public class AudioPlayer extends Thread {
 
     /**
      * AudioLoader Constructor.
-     * @param audioFile name & path of audio file
      */
-    public AudioPlayer(final String audioFile) {
+    public AudioPlayer() {
         pcs = new PropertyChangeSupport(this);
+    }
+
+    /**
+     * Loads audio file.
+     * @param audioFile name of audio file
+     */
+    public void loadAudio(final String audioFile){
         if (null != audioFile && isAudioValid(audioFile)) {
             this.audioFilePath = audioFile;
             setUpPlayer();
         }
     }
-
     /**
      * Validates audio file - checks if filename ends in .wav and file exists.
      * @param audioFile
@@ -123,7 +129,10 @@ public class AudioPlayer extends Thread {
         this.audioFormat = this.audioStream.getFormat();
         this.info = new DataLine.Info(SourceDataLine.class, this.audioFormat);
 
-        this.audioLoaded = true; // flag updated
+        this.audioLoaded = true;
+        updateStatus(Responses.FILE_LOAD_SUCCESS + this.audioFilePath,
+                    "Audio Duration: " + this.getAudioLength(),
+                    "","");
     }
 
     /** Returns audioLoaded flag.

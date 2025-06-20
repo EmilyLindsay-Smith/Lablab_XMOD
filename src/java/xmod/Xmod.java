@@ -1,6 +1,6 @@
 package xmod;
 
-
+import xmod.audio.AudioPlayer;
 import xmod.view.FontWindow;
 import xmod.view.ExperimentWindow;
 import xmod.view.MainWindow;
@@ -11,6 +11,8 @@ import xmod.constants.Operations;
 import xmod.experimenter.ExperimentRunner;
 
 import xmod.serial.Serial;
+
+import xmod.utils.Utils;
 
 import xmod.status.ObjectReport;
 import xmod.status.Reporter;
@@ -45,6 +47,8 @@ public class Xmod implements PropertyChangeListener {
     private Serial serialPort;
     /** ExperimentRunner to manage experiment. */
     private ExperimentRunner experimentRunner;
+    /** AudioPlayer to play audio file. */
+    private AudioPlayer audioPlayer;
      /**
      * Constructor.
      * @param aMainWindow MainWindow object
@@ -53,13 +57,15 @@ public class Xmod implements PropertyChangeListener {
      * @param aReporter Reporter Object
      * @param aSerialPort Serial Object
      * @param expRunner ExperimentRunner Object
+     * @param aAudioPlayer AudioPLayer Object
      */
     Xmod(final MainWindow aMainWindow,
         final ExperimentWindow aExpWindow,
         final FontWindow aFontWindow,
         final Reporter aReporter,
         final Serial aSerialPort,
-        final ExperimentRunner expRunner) {
+        final ExperimentRunner expRunner,
+        final AudioPlayer aAudioPlayer) {
 
         //Initialise window variables
         this.mainWindow = aMainWindow;
@@ -69,6 +75,7 @@ public class Xmod implements PropertyChangeListener {
         this.reporter = aReporter;
         this.serialPort = aSerialPort;
         this.experimentRunner = expRunner;
+        this.audioPlayer = aAudioPlayer;
         // Set MainWindow Report
         updateWindowText();
     }
@@ -89,14 +96,17 @@ public class Xmod implements PropertyChangeListener {
                 ExperimentRunner experimentRunner = new ExperimentRunner(
                                                         serialPort,
                                                         expWindow);
+                AudioPlayer audioPlayer = new AudioPlayer();
                 Xmod xmod = new Xmod(mainWindow, expWindow, fontWindow,
-                                reporter, serialPort, experimentRunner);
+                                reporter, serialPort, experimentRunner,
+                                audioPlayer);
                 // Add observers to respond to buttons/key strokes/error reports
                 mainWindow.addObserver(xmod);
                 expWindow.addObserver(xmod);
                 fontWindow.addObserver(xmod);
                 serialPort.addObserver(xmod);
                 experimentRunner.addObserver(xmod);
+                audioPlayer.addObserver(xmod);
                 // Show main Window
                 mainWindow.show();
             }
@@ -154,9 +164,47 @@ public class Xmod implements PropertyChangeListener {
         this.experimentRunner.setUpExperiment(filename);
         // Check loaded
         if (this.experimentRunner.isExperimentLoaded()) {
-            //lookForWavFile(filename);
+            lookForWavFile(filename);
         }
     };
+
+    /** Looks for wav file to go with tms file.
+     * @param filename name of tms file
+     * calls loadAudio to load the audio file
+     */
+    private void lookForWavFile(final String filename) {
+        String wavFile = Utils.getWavFromTMS(filename);
+        if (wavFile == ""){
+            ObjectReport report = createReport(
+                ReportLabel.AUDIO,Responses.WAV_UNAVAILABLE,
+                "Could not identify wav file name from tms file name",
+                "", "");
+            return;
+        }
+        if (!Utils.fileExists(wavFile)) {
+            // if new file doesn't exist
+            ObjectReport report = createReport(
+                ReportLabel.AUDIO,Responses.WAV_UNAVAILABLE,
+                "Please ensure .wav file is in the same folder as the .tms file",
+                "", "");
+            updateStatus(report);
+            updateWindowText();
+            return;
+        }
+        loadAudio(wavFile);
+        return;
+    }
+
+    /** Loads the audio file.
+     * @param wavFile name of audio file
+     */
+    private void loadAudio(final String wavFile) {
+        if (null != wavFile & wavFile.length() > 0) {
+            this.audioPlayer.loadAudio(wavFile);
+        }
+        //AudioPlayer will handle sending updates to XMOD re status
+        return;
+    }
 
     private void operationRunExp() {
         this.experimentRunner.runExperiment();
