@@ -149,6 +149,8 @@ public class Xmod implements PropertyChangeListener {
             updateWindowText();
         } else if (actionType == Actions.UPDATE_FONT) {
             updateFont();
+        } else if (actionType == Actions.ABORT_EXPERIMENT) {
+            abortExperiment();
         }
     }
 
@@ -168,6 +170,7 @@ public class Xmod implements PropertyChangeListener {
         if (this.experimentRunner.isExperimentLoaded()) {
             lookForWavFile(filename);
         }
+        checkExperimentReady();
     };
 
     /** Looks for wav file to go with tms file.
@@ -206,6 +209,35 @@ public class Xmod implements PropertyChangeListener {
         }
         //AudioPlayer will handle sending updates to XMOD re status
         return;
+    }
+
+    private void checkExperimentReady() {
+        Boolean ready = true;
+        String updateAdv = "";
+        ObjectReport report;        if (!this.experimentRunner.isExperimentLoaded()){
+            updateAdv += "No experiment loaded <br/>";
+            ready = false;
+        }
+        if (!this.audioPlayer.isAudioLoaded()){
+            updateAdv += "No audio file loaded <br/>";
+            ready = false;
+        }
+        if (!this.serialPort.isSerialConnected()){
+            updateAdv += "No connection to controller box via serial port <br/>";
+            ready = false;
+        }
+        if (ready){
+            report = createReport(
+                ReportLabel.STATUS, Responses.EXPERIMENT_READY, "",
+                "Click " + Operations.RUN_EXP + " to begin", "");
+        } else {
+            report = createReport(
+                ReportLabel.STATUS, Responses.EXPERIMENT_NOT_READY, "",
+                updateAdv, "");
+        }
+        this.reporter.clearValues(ReportLabel.STATUS);
+        updateStatus(report);
+        updateWindowText();
     }
 
     private void operationRunExp() {
@@ -249,6 +281,10 @@ public class Xmod implements PropertyChangeListener {
         //Note fontWindow.hide() is triggered in updateFont()
     };
 
+    /** Aborts the experiment. */
+    private void abortExperiment() {
+        this.experimentRunner.setRunning(false); // abort experiment runner
+    }
     /* ***** METHODS RELATED TO UPDATING THE WINDOWS/TEXT/FONT ************/
 
     /**

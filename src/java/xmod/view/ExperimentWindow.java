@@ -36,8 +36,6 @@ public class ExperimentWindow implements KeyListener {
     /** Frame for window. */
     protected JFrame f;
 
-    /** For user-initiated abort. */
-    private Boolean abort = false;
     /** PCs for communicaiton with main xmod. */
     private PropertyChangeSupport pcs;
     /** Graphics Environment for window sizing. */
@@ -166,7 +164,6 @@ public class ExperimentWindow implements KeyListener {
         int key = e.getKeyCode();
         if (key == KeyEvent.VK_ESCAPE) {
             pcs.firePropertyChange(Actions.ABORT_EXPERIMENT, false, true);
-            abort = true;
         }
     }
     /**

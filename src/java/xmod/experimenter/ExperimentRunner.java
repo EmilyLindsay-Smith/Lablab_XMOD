@@ -142,6 +142,15 @@ public class ExperimentRunner implements PropertyChangeListener {
         return this.experimentLoaded;
     }
 
+    /** Sets the running flag.
+     * Useful to abort experiment.
+     * @param flag boolean for the running flag
+     * e.g. false to abort experiment
+     */
+    public void setRunning(Boolean flag){
+        this.running = flag;
+        return;
+    }
     /** Listen for updates from ExperimentLoader.
      * @param evt property change event
      */
@@ -203,7 +212,7 @@ public class ExperimentRunner implements PropertyChangeListener {
             updateStatus(Responses.EXPERIMENT_NOT_READY,
                         "Cannot begin experiment as no experiment loaded",
                         "Please load a valid TMS file",
-                        "", ReportLabel.TMS);
+                        "", ReportLabel.STATUS);
             return;
         }
 
@@ -224,7 +233,7 @@ public class ExperimentRunner implements PropertyChangeListener {
             return;
         }
         // Set flag to true
-        this.running = true;
+        setRunning(true);
         this.audioPlayer.playAudio();
         this.expWindow.updateText("");
         this.serialPort.turnOffMonitor();
@@ -246,14 +255,20 @@ public class ExperimentRunner implements PropertyChangeListener {
             // collects button pressed and reaction time for all 16 boxes
             this.expResulter.collectTrialResults(reaction, trialIndex);
         }
-        this.expResulter.printResults();
         this.audioPlayer.stopAudio();
+        this.expResulter.printResults();
         //If experiment not aborted
-        if  (this.running) {
+        if (this.running) {
             //tells main Xmod instance experiment is finished
             //so it can change window views etc
             this.pcs.firePropertyChange(Actions.FINISH_EXPERIMENT, false, true);
-            this.running = false;
+            setRunning(false);
+        } else {
+            // If experiment aborted by user
+            updateStatus(Responses.EXPERIMENT_ABORTED,
+                        "Experiment aborted by user<br/>"
+                        + "Results to date printed to file in results/"
+                        , "", "", ReportLabel.STATUS);
         }
     }
 
