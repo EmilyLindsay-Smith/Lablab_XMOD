@@ -81,7 +81,8 @@ public class MainWindow {
     private JButton buttonControllerInfo;
     /** Button to trigger FontWindow GUI to adjust font for experiments. */
     private JButton buttonCheckFont;
-
+    /** Button to trigger Test Experiment. */
+    private JButton buttonTestSystem;
     /** Property Change Support. */
     private PropertyChangeSupport pcs;
 
@@ -146,29 +147,24 @@ public class MainWindow {
         this.scrollPane = new JScrollPane(this.text,
                                         JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
                                         JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        //Left Hand Button Pane //rows, cols, hgap, vgap
-        // 2 rows because 2 buttons
-        this.leftButtonPane = new JPanel(new GridLayout(2, 1, 5, 5));
 
-        this.buttonRunExp = new JButton(Operations.RUN_EXP);
-        this.buttonLoadTMS = new JButton(Operations.LOAD_TMS);
-
-        //Right Hand Button Pane //rows, cols, hgap, vgap
-        // 5 rows because 5 buttons
-        this.rightButtonPane = new JPanel(new GridLayout(5, 1, 5, 5));
-
-        this.buttonMonitorOn = new JButton(Operations.MONITOR_ON);
-        this.buttonMonitorOff = new JButton(Operations.MONITOR_OFF);
-        this.buttonCheckConnection = new JButton(Operations.CHECK_CONNECTION);
-        this.buttonControllerInfo = new JButton(Operations.CONTROLLER_INFO);
-        this.buttonCheckFont = new JButton(Operations.CHECK_FONT);
-
+        // Instantiate the buttons
+        createButtons();
         //Add buttons to buttonListA and buttonListB
         createButtonLists();
 
         // Add listeners to send property change notification to main Xmod class
         addListener(this.buttonListA); //left hand buttons
         addListener(this.buttonListB); //right hand buttons
+
+        //Left Hand Button Pane //rows, cols, hgap, vgap
+        // 2 rows because 2 buttons
+        this.leftButtonPane = new JPanel(new GridLayout(this.buttonListA.size(),
+                                                            1, 5, 5));
+        //Right Hand Button Pane //rows, cols, hgap, vgap
+        // 5 rows because 5 buttons
+        this.rightButtonPane = new JPanel(new GridLayout(this.buttonListB.size(),
+                                                            1, 5, 5));
 
         // Place buttons on the screen
         for (JButton button: buttonListA) {
@@ -185,6 +181,16 @@ public class MainWindow {
         this.f.add(this.rightButtonPane, BorderLayout.EAST);
     }
 
+    private void createButtons(){
+        this.buttonRunExp = new JButton(Operations.RUN_EXP);
+        this.buttonLoadTMS = new JButton(Operations.LOAD_TMS);
+        this.buttonMonitorOn = new JButton(Operations.MONITOR_ON);
+        this.buttonMonitorOff = new JButton(Operations.MONITOR_OFF);
+        this.buttonCheckConnection = new JButton(Operations.CHECK_CONNECTION);
+        this.buttonControllerInfo = new JButton(Operations.CONTROLLER_INFO);
+        this.buttonCheckFont = new JButton(Operations.CHECK_FONT);
+        this.buttonTestSystem = new JButton(Operations.TEST);
+    }
     /**
      * Adds buttons to lists.
      */
@@ -201,6 +207,8 @@ public class MainWindow {
         this.buttonListB.add(this.buttonCheckFont);
         this.buttonListB.add(this.buttonMonitorOn);
         this.buttonListB.add(this.buttonMonitorOff);
+        this.buttonListB.add(this.buttonTestSystem);
+
     }
 
     /** Sets the colours, fonts and borders of the components. */
@@ -285,6 +293,7 @@ public class MainWindow {
             return;
         }
         this.text.setText(newText);
+        this.text.setCaretPosition(0);
         return;
     }
 

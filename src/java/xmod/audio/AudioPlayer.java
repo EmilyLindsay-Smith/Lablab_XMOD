@@ -302,7 +302,12 @@ public class AudioPlayer extends Thread {
         int minutes = duration / timeDivisor;
         int hours = minutes / timeDivisor;
         minutes = minutes % timeDivisor;
-        String durationString = hours + ":" + minutes + ":" + seconds;
+        String minuteFormat = "";
+        if (minutes < 10) {
+            minuteFormat = "0";
+        }
+        String durationString = hours + ":" + minuteFormat
+                                + minutes + ":" + seconds;
         return durationString;
     }
 

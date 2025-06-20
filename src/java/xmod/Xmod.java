@@ -140,6 +140,8 @@ public class Xmod implements PropertyChangeListener {
                     operationCheckFont(); break;
                 case Operations.CLOSE_XMOD:
                     operationCloseXmod();
+                case Operations.TEST:
+                    operationTestSystem();
                 default: break;
            }
         } else if (actionType == Actions.UPDATE) {
@@ -154,8 +156,16 @@ public class Xmod implements PropertyChangeListener {
         }
     }
 
+    /** Calls the file chooser and the the loadTMSFile method. */
     private void operationLoadTMS() {
         String filename = mainWindow.chooseFile();
+        loadTMSFile(filename);
+    };
+
+    /** Loads TMS file.
+     * @param filename name of tms file
+     */
+    private void loadTMSFile(String filename){
         // If no file selected
         if (filename == Responses.NO_FILE_SELECTED) {
             updateStatus(createReport(ReportLabel.TMS,
@@ -171,7 +181,7 @@ public class Xmod implements PropertyChangeListener {
             lookForWavFile(filename);
         }
         checkExperimentReady();
-    };
+    }
 
     /** Looks for wav file to go with tms file.
      * @param filename name of tms file
@@ -285,6 +295,14 @@ public class Xmod implements PropertyChangeListener {
     /** Aborts the experiment. */
     private void abortExperiment() {
         this.experimentRunner.setRunning(false); // abort experiment runner
+    }
+
+    /** Tests the system. */
+    private void operationTestSystem() {
+        String testFile = "../test/testFiles/charlie_short.tms";
+        loadTMSFile(testFile);
+        operationRunExp();
+        return;
     }
     /* ***** METHODS RELATED TO UPDATING THE WINDOWS/TEXT/FONT ************/
 
