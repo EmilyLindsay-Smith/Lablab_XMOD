@@ -102,7 +102,7 @@ public class Serial extends Thread {
      * Only starts new thread if one isn't currently running.
     */
     private void connectRepeatedly() {
-        if (! this.tryingToConnect) {
+        if (!this.tryingToConnect) {
             new Thread(new Runnable() {
                 public void run() {
                     flipConnectFlag();
@@ -219,13 +219,14 @@ public class Serial extends Thread {
     /** Wrapper method to send commands to controller box and handle errors.
      * @param command integer command to send to the controller box
      * @param description string to use to describe what didn't happen to user
+     * @param sendSuccessUpdate send update via PCS if command sent successfully
      * @return true if sent successfully
      */
     private Boolean sendCommand(final int command, final String description,
                                 final Boolean sendSuccessUpdate) {
         try {
             this.send(command);
-            if (sendSuccessUpdate){
+            if (sendSuccessUpdate) {
                 updateStatus(Responses.SERIAL_CONNECTED, "Sent command to "
                                 + description, "", "");
             }
@@ -342,9 +343,9 @@ public class Serial extends Thread {
      * Flushes IO buffers and Sends data to the serial port.
      * @param  message integer representation of the command to the control box
      */
-    private void send(final int message) throws SerialNotConnectedException{
+    private void send(final int message) throws SerialNotConnectedException {
         // Tell serialPort to flush buffers
-        if (null == this.serialPort){
+        if (null == this.serialPort) {
             throw new SerialNotConnectedException();
         }
             this.serialPort.flushIOBuffers(); //command from jSerialComm
@@ -360,7 +361,7 @@ public class Serial extends Thread {
      */
     private void sendWithoutFlush(final int message)
                                             throws SerialNotConnectedException {
-        if (null == this.serialPort){
+        if (null == this.serialPort) {
             throw new SerialNotConnectedException();
         }
         //Create Message in Bytes
@@ -505,7 +506,7 @@ public class Serial extends Thread {
 class SerialNotConnectedException extends Exception {
     /** Constructor.
     */
-    public SerialNotConnectedException() {
+    SerialNotConnectedException() {
         super("Not connected to serial port");
     }
 
