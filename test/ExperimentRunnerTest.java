@@ -1,5 +1,6 @@
 package xmod.experimenter;
 
+import xmod.audio.AudioPlayer;
 import xmod.serial.Serial;
 import xmod.status.ObjectReport;
 import xmod.status.ReportCategory;
@@ -22,8 +23,9 @@ public final class ExperimentRunnerTest {
     public void loadValidFiles(final String file) {
         try {
             Serial serial = new Serial();
-            ExperimentWindow expWindow = new ExperimentWindow();
-            ExperimentRunner runner = new ExperimentRunner(serial, expWindow);
+            ExperimentWindow ew = new ExperimentWindow();
+            AudioPlayer audio = new AudioPlayer();
+            ExperimentRunner runner = new ExperimentRunner(serial, ew, audio);
             TestListener tester = new TestListener();
             runner.addObserver(tester);
             runner.setUpExperiment(file);
@@ -48,8 +50,9 @@ public final class ExperimentRunnerTest {
     public void loadValidFiles2(final String file) {
         try {
             Serial serial = new Serial();
-            ExperimentWindow expWindow = new ExperimentWindow();
-            ExperimentRunner runner = new ExperimentRunner(serial, expWindow);
+            ExperimentWindow ew = new ExperimentWindow();
+            AudioPlayer audio = new AudioPlayer();
+            ExperimentRunner runner = new ExperimentRunner(serial, ew, audio);
             TestListener tester = new TestListener();
             runner.addObserver(tester);
             runner.setUpExperiment(file);
