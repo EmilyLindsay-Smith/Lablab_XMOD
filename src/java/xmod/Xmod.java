@@ -214,19 +214,20 @@ public class Xmod implements PropertyChangeListener {
     private void checkExperimentReady() {
         Boolean ready = true;
         String updateAdv = "";
-        ObjectReport report;        if (!this.experimentRunner.isExperimentLoaded()){
+        ObjectReport report;
+        if (!this.experimentRunner.isExperimentLoaded()) {
             updateAdv += "No experiment loaded <br/>";
             ready = false;
         }
-        if (!this.audioPlayer.isAudioLoaded()){
+        if (!this.audioPlayer.isAudioLoaded()) {
             updateAdv += "No audio file loaded <br/>";
             ready = false;
         }
-        if (!this.serialPort.isSerialConnected()){
-            updateAdv += "No connection to controller box via serial port <br/>";
+        if (!this.serialPort.isSerialConnected()) {
+            updateAdv += "No connection to controller box <br/>";
             ready = false;
         }
-        if (ready){
+        if (ready) {
             report = createReport(
                 ReportLabel.STATUS, Responses.EXPERIMENT_READY, "",
                 "Click " + Operations.RUN_EXP + " to begin", "");

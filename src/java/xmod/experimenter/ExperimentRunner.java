@@ -65,6 +65,7 @@ public class ExperimentRunner implements PropertyChangeListener {
      * Constructor.
      * @param aSerialPort Serial object for communication to controller box
      * @param aExpWindow the ExperimentWindow shown to participants
+     * @param aAudioPlayer the AudioPlayer object to play the audio file
      */
 
     public ExperimentRunner(final Serial aSerialPort,
@@ -147,7 +148,7 @@ public class ExperimentRunner implements PropertyChangeListener {
      * @param flag boolean for the running flag
      * e.g. false to abort experiment
      */
-    public void setRunning(Boolean flag){
+    public void setRunning(final Boolean flag) {
         this.running = flag;
         return;
     }
@@ -267,8 +268,8 @@ public class ExperimentRunner implements PropertyChangeListener {
             // If experiment aborted by user
             updateStatus(Responses.EXPERIMENT_ABORTED,
                         "Experiment aborted by user<br/>"
-                        + "Results to date printed to file in results/"
-                        , "", "", ReportLabel.STATUS);
+                        + "Results to date printed to file in results/",
+                        "", "", ReportLabel.STATUS);
         }
     }
 
