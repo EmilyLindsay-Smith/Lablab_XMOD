@@ -15,7 +15,8 @@ class AudioTest{
     @Test
     public void validateAudio() {
         String filepath = this.realFile;
-        player = new AudioPlayer(filepath);
+        player = new AudioPlayer();
+        player.loadAudio(filepath);
         Assertions.assertEquals(true, player.isAudioLoaded(),
                                  "Audio should be loaded");
     }
@@ -25,7 +26,8 @@ class AudioTest{
     @ValueSource(strings = {"", "./test/charlie_short.tms",
                                 "./charlie_short2.wav"})
     public void invalidateAudio(final String filepath) {
-        player = new AudioPlayer(filepath);
+        player = new AudioPlayer();
+        player.loadAudio(filepath);
         Assertions.assertEquals(false, player.isAudioLoaded(),
                                  "Audio should not be loaded");
     }
@@ -33,7 +35,8 @@ class AudioTest{
     @DisplayName("Check audio Length")
     @Test
     public void checkLength() {
-        player = new AudioPlayer(this.realFile);
+        player = new AudioPlayer();
+        player.loadAudio(this.realFile);
         int length = player.getAudioLengthInSeconds();
         Assertions.assertEquals(29, length, "Audio file should be 29s long");
     }
@@ -42,7 +45,8 @@ class AudioTest{
     @DisplayName("Check invalid audio Length")
     @Test
     public void checkInvalidLength() {
-        player = new AudioPlayer("");
+        player = new AudioPlayer();
+        player.loadAudio("");
         int length = player.getAudioLengthInSeconds();
         Assertions.assertEquals(-1, length, "Audio file length should be -1");
     }

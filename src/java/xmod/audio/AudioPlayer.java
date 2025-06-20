@@ -71,7 +71,7 @@ public class AudioPlayer extends Thread {
      * Loads audio file.
      * @param audioFile name of audio file
      */
-    public void loadAudio(final String audioFile){
+    public void loadAudio(final String audioFile) {
         if (null != audioFile && isAudioValid(audioFile)) {
             this.audioFilePath = audioFile;
             setUpPlayer();
@@ -101,28 +101,49 @@ public class AudioPlayer extends Thread {
         try {
             this.originalInputStream = Files.newInputStream(
                                                 Paths.get(this.audioFilePath));
-            this.inputStream = new BufferedInputStream(
-                                                    this.originalInputStream);
-        } catch (Exception e) {
+        } catch (IOException e) {
             String stackTrace = Utils.getStackTrace(e);
-            updateStatus("", "Could not load audio file due to error",
+            updateStatus(Responses.FILE_LOAD_FAILURE,
+                        "Could not load audio file due to I/O error",
                             "", stackTrace);
             return;
+        } catch (SecurityException e) {
+            String stackTrace = Utils.getStackTrace(e);
+            updateStatus(Responses.FILE_LOAD_FAILURE,
+                        "Could not load audio file due to SecurityException",
+                        "", stackTrace);
+            return;
+        } catch (IllegalArgumentException e) {
+            String stackTrace = Utils.getStackTrace(e);
+            updateStatus(Responses.FILE_LOAD_FAILURE,
+                        "Could not load audio file due to IllegalArgument",
+                        "", stackTrace);
+            return;
+        } catch (UnsupportedOperationException e) {
+            String stackTrace = Utils.getStackTrace(e);
+            updateStatus(Responses.FILE_LOAD_FAILURE,
+                        "Could not load audio file due to UnsupportedOperation",
+                        "", stackTrace);
+            return;
         }
+        this.inputStream = new BufferedInputStream(this.originalInputStream);
+
 
         try {
             this.audioStream = AudioSystem.getAudioInputStream(
                                                             this.inputStream);
         } catch (UnsupportedAudioFileException e) {
             String stackTrace = Utils.getStackTrace(e);
-            updateStatus("", "Could not load audio file due to "
-                            + "unsupported audio file error",
-                            "", stackTrace);
+            updateStatus(Responses.FILE_LOAD_FAILURE,
+                        "Could not load audio file due to "
+                        + "unsupported audio file error",
+                        "", stackTrace);
             return;
-        } catch (Exception e) {
+        } catch (IOException e) {
             String stackTrace = Utils.getStackTrace(e);
-            updateStatus("", "Could not load audio file due to error",
-                            "", stackTrace);
+            updateStatus(Responses.FILE_LOAD_FAILURE,
+                        "Could not load audio file due to I/O Exception",
+                        "", stackTrace);
             return;
         }
 
@@ -132,7 +153,7 @@ public class AudioPlayer extends Thread {
         this.audioLoaded = true;
         updateStatus(Responses.FILE_LOAD_SUCCESS + this.audioFilePath,
                     "Audio Duration: " + this.getAudioLength(),
-                    "","");
+                    "", "");
     }
 
     /** Returns audioLoaded flag.
@@ -144,29 +165,21 @@ public class AudioPlayer extends Thread {
 
     /** Start thread to play audio file. */
     public void play() {
-        if (this.getState() == Thread.State.NEW) {
-            this.setName("AUDIO PLAYER");
-            new Thread(new Runnable() {
-                public void run() {
-                    playAudio();
-                    return;
-                };
-            }, "AUDIO PLAYER").start();
-        } else if (this.getState() == Thread.State.TERMINATED) {
-            try {
-                this.setUpPlayer();
-                new Thread(new Runnable() {
-                public void run() {
-                    playAudio();
-                    return;
-                };
-            }, "AUDIO PLAYER").start();
-            } catch (Exception e) {
-                String stackTrace = Utils.getStackTrace(e);
-                updateStatus("", "Could not play audio due to thread issue",
-                            "", stackTrace);
-            }
+        //If restarting, reload audio to start from the beginning.
+        if (this.getState() == Thread.State.TERMINATED) {
+            this.setUpPlayer();
         }
+        if (this.playAudio) {
+            updateStatus("", "Could not play audio as audio already playing",
+                            "", "");
+            return;
+        }
+        new Thread(new Runnable() {
+        public void run() {
+            playAudio();
+            return;
+        };
+        }, "AUDIO PLAYER").start();
     }
     /**
      * Plays audio file.
@@ -181,16 +194,36 @@ public class AudioPlayer extends Thread {
         try {
             this.sourceDataLine = (SourceDataLine) AudioSystem.getLine(
                                                                 this.info);
-            this.sourceDataLine.open(audioFormat);
         } catch (LineUnavailableException e) {
             String stackTrace = Utils.getStackTrace(e);
-            updateStatus("", "Could not play audio file due to error",
+            updateStatus(Responses.AUDIO_ERROR,
+                        "Could not play audio file due to error",
                         "", stackTrace);
+            this.playAudio = false;
             return;
-        } catch (Exception e) {
-            String stackTrace = Utils.getStackTrace(e);
-            updateStatus("", "Could not play audio file due to error",
+        }
+        try {
+            this.sourceDataLine.open(audioFormat);
+        } catch (LineUnavailableException e) {
+           String stackTrace = Utils.getStackTrace(e);
+            updateStatus(Responses.AUDIO_ERROR,
+                        "Could not play audio file due to error",
                         "", stackTrace);
+            this.playAudio = false;
+            return;
+        } catch (IllegalStateException e) {
+           String stackTrace = Utils.getStackTrace(e);
+            updateStatus(Responses.AUDIO_ERROR,
+                        "Could not play audio file due to error",
+                        "", stackTrace);
+            this.playAudio = false;
+            return;
+        } catch (SecurityException e) {
+           String stackTrace = Utils.getStackTrace(e);
+            updateStatus(Responses.AUDIO_ERROR,
+                        "Could not play audio file due to error",
+                        "", stackTrace);
+            this.playAudio = false;
             return;
         }
 
@@ -205,17 +238,27 @@ public class AudioPlayer extends Thread {
                 }
         } catch (IOException e) {
             String stackTrace = Utils.getStackTrace(e);
-            updateStatus("", "Could not play audio file due to error",
+            updateStatus(Responses.AUDIO_ERROR,
+                        "Could not play audio file due to error",
                         "", stackTrace);
+            this.playAudio = false;
             return;
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
             String stackTrace = Utils.getStackTrace(e);
-            updateStatus("", "Could not play audio file due to error",
+            updateStatus(Responses.AUDIO_ERROR,
+                        "Could not play audio file due to error",
                         "", stackTrace);
+            this.playAudio = false;
+            return;
+        } catch (ArrayIndexOutOfBoundsException e) {
+            String stackTrace = Utils.getStackTrace(e);
+            updateStatus(Responses.AUDIO_ERROR,
+                        "Could not play audio file due to error",
+                        "", stackTrace);
+            this.playAudio = false;
             return;
         }
         stopAudio();
-
     }
 
     /**
@@ -224,23 +267,27 @@ public class AudioPlayer extends Thread {
     public void stopAudio() {
         this.playAudio = false; // this stops playAudio()
         sourceDataLine.drain();
-        sourceDataLine.close();
+        try {
+            sourceDataLine.close();
+        } catch (SecurityException e) {
+            String stackTrace = Utils.getStackTrace(e);
+                updateStatus(Responses.AUDIO_ERROR,
+                            "Could not stop audio file due to error",
+                            "", stackTrace);
+            return;
+        }
 
         try {
             audioStream.close();
         } catch (IOException e) {
             String stackTrace = Utils.getStackTrace(e);
-                updateStatus("", "Could not stop audio file due to error",
-                            "", stackTrace);
-            return;
-        } catch (Exception e) {
-            String stackTrace = Utils.getStackTrace(e);
-                updateStatus("", "Could not stop audio file due to error",
+                updateStatus(Responses.AUDIO_ERROR,
+                            "Could not stop audio file due to error",
                             "", stackTrace);
             return;
         }
-    }
 
+    }
 
     /** Returns length of audio file in HH:MM:SS format.
      * @return audio file duration
