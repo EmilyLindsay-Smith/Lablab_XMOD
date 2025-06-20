@@ -304,6 +304,7 @@ public class Xmod implements PropertyChangeListener {
         operationRunExp();
         return;
     }
+
     /* ***** METHODS RELATED TO UPDATING THE WINDOWS/TEXT/FONT ************/
 
     /**
