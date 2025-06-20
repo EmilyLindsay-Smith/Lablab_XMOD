@@ -93,10 +93,12 @@ public class Xmod implements PropertyChangeListener {
                 //Instantiate Objects
                 Reporter reporter = new Reporter();
                 Serial serialPort = new Serial();
+                AudioPlayer audioPlayer = new AudioPlayer();
                 ExperimentRunner experimentRunner = new ExperimentRunner(
                                                         serialPort,
-                                                        expWindow);
-                AudioPlayer audioPlayer = new AudioPlayer();
+                                                        expWindow,
+                                                        audioPlayer);
+
                 Xmod xmod = new Xmod(mainWindow, expWindow, fontWindow,
                                 reporter, serialPort, experimentRunner,
                                 audioPlayer);
