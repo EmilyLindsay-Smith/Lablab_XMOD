@@ -55,7 +55,8 @@ public class ExperimentWindow implements KeyListener {
     protected String[] fonts;
     /** Max font size. */
     protected static final int MAX_FONT_SIZE = 200;
-
+    /** Min font size. */
+    protected static final int MIN_FONT_SIZE = 40;
     /**
      * Constructor.
      */

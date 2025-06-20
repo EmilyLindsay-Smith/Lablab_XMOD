@@ -151,7 +151,7 @@ public class FontWindow extends ExperimentWindow {
     private void createSizeChooser() {
 
         this.sizeChooser = new JComboBox<Integer>();
-        for (int i = 8; i < this.MAX_FONT_SIZE; i++) {
+        for (int i = this.MIN_FONT_SIZE; i < this.MAX_FONT_SIZE; i++) {
             sizeChooser.addItem(i);
             }
 
