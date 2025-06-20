@@ -164,7 +164,7 @@ public class AudioPlayer extends Thread {
     }
 
     /** Start thread to play audio file. */
-    public void play() {
+    public void playAudio() {
         //If restarting, reload audio to start from the beginning.
         if (this.getState() == Thread.State.TERMINATED) {
             this.setUpPlayer();
@@ -176,7 +176,7 @@ public class AudioPlayer extends Thread {
         }
         new Thread(new Runnable() {
         public void run() {
-            playAudio();
+            play();
             return;
         };
         }, "AUDIO PLAYER").start();
@@ -184,7 +184,7 @@ public class AudioPlayer extends Thread {
     /**
      * Plays audio file.
      */
-    private void playAudio() {
+    private void play() {
         if (!this.audioLoaded) {
             updateStatus("", "Could not play audio as not loaded",
                             "", "");

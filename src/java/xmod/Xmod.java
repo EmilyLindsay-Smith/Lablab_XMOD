@@ -174,9 +174,9 @@ public class Xmod implements PropertyChangeListener {
      */
     private void lookForWavFile(final String filename) {
         String wavFile = Utils.getWavFromTMS(filename);
-        if (wavFile == ""){
+        if (wavFile == "") {
             ObjectReport report = createReport(
-                ReportLabel.AUDIO,Responses.WAV_UNAVAILABLE,
+                ReportLabel.AUDIO, Responses.WAV_UNAVAILABLE,
                 "Could not identify wav file name from tms file name",
                 "", "");
             return;
@@ -184,8 +184,8 @@ public class Xmod implements PropertyChangeListener {
         if (!Utils.fileExists(wavFile)) {
             // if new file doesn't exist
             ObjectReport report = createReport(
-                ReportLabel.AUDIO,Responses.WAV_UNAVAILABLE,
-                "Please ensure .wav file is in the same folder as the .tms file",
+                ReportLabel.AUDIO, Responses.WAV_UNAVAILABLE,
+                "Please ensure .wav file is in the same folder as .tms file",
                 "", "");
             updateStatus(report);
             updateWindowText();

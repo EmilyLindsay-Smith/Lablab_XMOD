@@ -6,10 +6,13 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.jupiter.api.Test;
 
-class AudioTest{
-    AudioPlayer player;
+import xmod.utils.Utils;
 
-    String realFile = "./test/testFiles/charlie_short.wav";
+class AudioTest {
+    /**AudioPlayer object. */
+    private AudioPlayer player;
+    /**Real audio file in testFiles. */
+    private String realFile = "./test/testFiles/charlie_short.wav";
 
     @DisplayName("ValidateAudio")
     @Test
@@ -49,5 +52,20 @@ class AudioTest{
         player.loadAudio("");
         int length = player.getAudioLengthInSeconds();
         Assertions.assertEquals(-1, length, "Audio file length should be -1");
+    }
+
+    @DisplayName("Check audio playing")
+    @Test
+    public void checkPlaying() {
+        player = new AudioPlayer();
+        player.loadAudio(this.realFile);
+        try {
+            player.playAudio();
+            Utils.pause(5000);
+            player.stopAudio();
+            Assertions.assertEquals(true, true, "The audio should play");
+        } catch (Exception e) {
+            Assertions.assertEquals(false, true, "Error in playing the audio");
+        }
     }
 }
