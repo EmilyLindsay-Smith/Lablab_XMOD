@@ -48,5 +48,7 @@ public final class Responses {
     public static final String MONITORS_ON = "Turning monitors on...";
     /** Cannot contact/control the monitors via the control box. */
     public static final String MONITORS_UNAVAILABLE = "Cannot control monitors";
+    /** Problem with AudioPLayer. */
+    public static final String AUDIO_ERROR = "Audio Error";
 
 }
