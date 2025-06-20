@@ -183,7 +183,6 @@ public class Xmod implements PropertyChangeListener {
         checkExperimentReady();
     }
 
-
     /** Looks for wav file to go with tms file.
      * @param filename name of tms file
      * calls loadAudio to load the audio file

@@ -49,7 +49,7 @@ public final class Utils {
      */
     public static Boolean fileHasExtension(final String filename,
                                             final String extension) {
-		String expectedExtension = extension;
+        String expectedExtension = extension;
 
         if (null == filename || null == expectedExtension) {
             return false;
@@ -93,7 +93,7 @@ public final class Utils {
         return (f.exists() && !f.isDirectory());
     }
 
-	/**
+    /**
      * Get datestamp.
      * @return string of formatted date
      */
@@ -115,96 +115,105 @@ public final class Utils {
         return formattedTime;
     }
 
-	/** Gets wav filename from tms file name.
-	 * @param tmsFilename name of tms file
-	 * @return name of wavfile
-	 */
-	public static String getWavFromTMS(String tmsFilename) {
-		String location = getParent(tmsFilename);
+    /** Gets wav filename from tms file name.
+     * @param tmsFilename name of tms file
+     * @return name of wavfile
+     */
+    public static String getWavFromTMS(final String tmsFilename) {
+        String location = getParent(tmsFilename);
         String bareFileName = getBareName(tmsFilename);
-		if (location == "" || bareFileName == ""){
-			return "";
-		}
+        if (location == "" || bareFileName == "") {
+            return "";
+        }
         String wavFile = mergePaths(location, bareFileName, ".wav");
-		return wavFile;
-	}
+        return wavFile;
+    }
 
-	/**
-	 * Gets parent directory of a file
-	 * @param filename
-	 * @return parent directory
-	 */
-	public static String getParent(String filename) {
-		if (null == filename) {
-			return "";
-		}
+    /**
+     * Gets parent directory of a file.
+     * @param filename
+     * @return parent directory
+     */
+    public static String getParent(final String filename) {
+        if (null == filename) {
+            return "";
+        }
 
-		File childDirectory = new File(new File(filename).getAbsolutePath());
+        File childDirectory = new File(new File(filename).getAbsolutePath());
         File parentDirectory = new File(childDirectory.getParent());
 
-		if (parentDirectory.exists() && parentDirectory.isDirectory()) {
-			return parentDirectory.toString();
-		} else {
-			return "";
-		}
-	}
+        if (parentDirectory.exists() && parentDirectory.isDirectory()) {
+            return parentDirectory.toString();
+        } else {
+            return "";
+        }
+    }
 
-	/**
-	 * Gets filename without path or extension
-	 * @param filename
-	 * @return filename without path or extension
-	 */
-	public static String getBareName(String filename) {
-		if (null == filename || "" == filename) {
-			return "";
-		}
-		try {
-			File tmsFile = new File(filename);
-			String tmsName = tmsFile.getName();
-			int dotIndex = tmsName.lastIndexOf('.');
-			String fileBareName = tmsName.substring(0, dotIndex);
-			return fileBareName;
-		} catch(Exception e){
-			e.printStackTrace();
-			return "";
-		}
-	}
+    /**
+     * Gets filename without path or extension.
+     * @param filename
+     * @return filename without path or extension
+     */
+    public static String getBareName(final String filename) {
+        if (null == filename || "" == filename) {
+            return "";
+        }
+        try {
+            File tmsFile = new File(filename);
+            String tmsName = tmsFile.getName();
+            int dotIndex = tmsName.lastIndexOf('.');
+            String fileBareName = tmsName.substring(0, dotIndex);
+            return fileBareName;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
 
-	/**
-	 * Mergers filename and path
-	 * @param path path to directory where the file should be
-	 * @param bareFileName name of the file without any extensions etc
-	 * @param ext extension to use for the file
-	 * @return string representation of file path
-	 */
-	public static String mergePaths(String path, String bareFileName,
-									String ext) {
-		char fileSeparator = File.separatorChar;
-		// remove any file separator at end of path
-		if (path.charAt(path.length() -1) == fileSeparator) {
-			path = path.substring(0, path.length() -1);
-		}
-		//Remove file separator at start of barefileName
-		if (bareFileName.charAt(0) == fileSeparator) {
-			bareFileName = bareFileName.substring(1);
-		}
+    /**
+     * Merges filename and path.
+     * @param path path to directory where the file should be
+     * @param bareFileName name of the file without any extensions etc
+     * @param ext extension to use for the file
+     * @return string representation of file path
+     */
+    public static String mergePaths(final String path,
+                                    final String bareFileName,
+                                    final String ext) {
+		String cleanPath = path;
+		String cleanBareFileName = bareFileName;
+		String cleanExt = ext;
 
-		//Remove file separator at end of barefileName
-		if (bareFileName.charAt(bareFileName.length() -1) == fileSeparator) {
-			bareFileName = bareFileName.substring(0, bareFileName.length() -1);
-		}
+        char fileSeparator = File.separatorChar;
+        // remove any file separator at end of path
+        if (cleanPath.charAt(cleanPath.length() - 1) == fileSeparator) {
+            cleanPath = cleanPath.substring(0, cleanPath.length() - 1);
+        }
+        //Remove file separator at start of barefileName
+        if (cleanBareFileName.charAt(0) == fileSeparator) {
+            cleanBareFileName = cleanBareFileName.substring(1);
+        }
 
-		// remove . at end of bareFileName
-		if (bareFileName.charAt(bareFileName.length() -1) == '.') {
-			bareFileName = bareFileName.substring(0, bareFileName.length() -1);
-		}
+        //Remove file separator at end of barefileName
+        if (cleanBareFileName.charAt(cleanBareFileName.length() - 1)
+				== fileSeparator) {
+            cleanBareFileName = cleanBareFileName.substring(0,
+												cleanBareFileName.length() - 1);
+        }
 
-		//remove . at start of extension
-		if (ext.charAt(0) == '.') {
-			ext = ext.substring(1);
-		}
-		String newFileName = path + fileSeparator + bareFileName + '.' + ext;
-		return newFileName;
-	}
+        // remove . at end of bareFileName
+        if (cleanBareFileName.charAt(cleanBareFileName.length() - 1) == '.') {
+            cleanBareFileName = cleanBareFileName.substring(0,
+												cleanBareFileName.length() - 1);
+        }
+
+        //remove . at start of extension
+        if (cleanExt.charAt(0) == '.') {
+            cleanExt = cleanExt.substring(1);
+        }
+        String newFileName = cleanPath + fileSeparator
+							+ cleanBareFileName + '.' + cleanExt;
+        return newFileName;
+    }
 
 }
