@@ -140,7 +140,7 @@ public class Reporter {
     /** Clears all the status for the given ReportLabel category.
      * @param category ReportLabel e.g. STATUS, TMS, AUDIO etc.
      */
-    public void clearValues(ReportLabel category){
+    public void clearValues(final ReportLabel category) {
         ObjectReport currentValues = this.status.get(category);
         for (Map.Entry<ReportCategory, ArrayList<String>> e
             :currentValues.entrySet()) {
