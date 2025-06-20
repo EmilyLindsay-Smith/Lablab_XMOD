@@ -102,7 +102,7 @@ public class Serial extends Thread {
      * Only starts new thread if one isn't currently running.
     */
     private void connectRepeatedly() {
-        if (! this.tryingToConnect) {
+        if (!this.tryingToConnect) {
             new Thread(new Runnable() {
                 public void run() {
                     flipConnectFlag();
@@ -219,24 +219,26 @@ public class Serial extends Thread {
     /** Wrapper method to send commands to controller box and handle errors.
      * @param command integer command to send to the controller box
      * @param description string to use to describe what didn't happen to user
+     * @param sendSuccessUpdate send update via PCS if command sent successfully
+     * @return true if sent successfully
      */
-    private void sendCommand(final int command, final String description) {
-        if (!this.serialConnected) {
-            String updateMsg = "Could not " + description
-                                + " because not connected to serial port";
-            updateStatus(Responses.SERIAL_UNCONNECTED, updateMsg,
-                        this.updateAdv, "");
-        }
-
+    private Boolean sendCommand(final int command, final String description,
+                                final Boolean sendSuccessUpdate) {
         try {
             this.send(command);
-        } catch (Exception e) {
-            String stackTrace = Utils.getStackTrace(e);
-            updateStatus("", "Could not " + description + " due to error",
-                            "", stackTrace);
+            if (sendSuccessUpdate) {
+                updateStatus(Responses.SERIAL_CONNECTED, "Sent command to "
+                                + description, "", "");
+            }
+            return true;
+        } catch (SerialNotConnectedException e) {
+            // StackTrace not passed on as
+            updateStatus(Responses.SERIAL_UNCONNECTED, "Could not "
+                            + description
+                            + " as not connected to the serial port",
+                            this.updateAdv, "");
+            return false;
         }
-
-        return;
     }
     /**
      * Connects to usb serial port and should light up the LEDs 3 times.
@@ -246,7 +248,7 @@ public class Serial extends Thread {
         if (!this.serialConnected) {
             connectRepeatedly();
         } else {
-            sendCommand(this.FLASH_LED, "flash LEDs");
+            sendCommand(this.FLASH_LED, "flash LEDs", true);
         }
         return;
     }
@@ -266,14 +268,9 @@ public class Serial extends Thread {
 
         String serialInfo = "Controller Info: <br/>";
         for (int j = this.GET_SOURCE; j <= this.GET_KEYS; j++) {
-            try {
-                sendCommand(j, "retrieve controller info");
+            Boolean sent = sendCommand(j, "retrieve controller info", false);
+            if (sent) {
                 serialInfo = serialInfo + "<br/>" + receive();
-            } catch (Exception e) {
-                String stackTrace = Utils.getStackTrace(e);
-                updateStatus("", "Could not receive controller info",
-                        "", stackTrace);
-                return "";
             }
         }
         return serialInfo;
@@ -283,7 +280,7 @@ public class Serial extends Thread {
      * Requests that control box turn on the monitors of the test computers.
      */
     public void turnOnMonitor() {
-        sendCommand(this.ADJUST_ON, "turn on monitors");
+        sendCommand(this.ADJUST_ON, "turn on monitors", true);
         return;
     }
 
@@ -291,7 +288,7 @@ public class Serial extends Thread {
      * Requests that control box turn off the monitors of the test computers.
      */
     public void turnOffMonitor() {
-        sendCommand(this.ADJUST_OFF, "turn off monitors");
+        sendCommand(this.ADJUST_OFF, "turn off monitors", true);
         return;
     }
 
@@ -306,7 +303,6 @@ public class Serial extends Thread {
                                 final int tMonitorOnByte,
                                 final int tMonitorOffByte) {
         try {
-
             int tOnLowByte = tMonitorOnByte % this.HIGH_LOW_BYTE_SEPARATOR;
             int tOnHighByte = tMonitorOnByte / this.HIGH_LOW_BYTE_SEPARATOR;
             int tOffLowByte = tMonitorOffByte % this.HIGH_LOW_BYTE_SEPARATOR;
@@ -335,9 +331,10 @@ public class Serial extends Thread {
             // tell controller to enable external interrupr
             // this isaudio trigger to start exp run
             send(this.ENABLE_EXT_INT0);
-        } catch (Exception e) {
+        } catch (SerialNotConnectedException e) {
             String stackTrace = Utils.getStackTrace(e);
-            updateStatus("", "Could not send trial timings", "", stackTrace);
+            updateStatus("", "Could not send trial timings as not connected "
+                + "to serial port", "", stackTrace);
         }
         return;
     }
@@ -346,19 +343,27 @@ public class Serial extends Thread {
      * Flushes IO buffers and Sends data to the serial port.
      * @param  message integer representation of the command to the control box
      */
-    private void send(final int message) {
+    private void send(final int message) throws SerialNotConnectedException {
         // Tell serialPort to flush buffers
-        this.serialPort.flushIOBuffers(); //command from jSerialComm
-        //Send message
-        sendWithoutFlush(message);
-        return;
-    }
+        if (null == this.serialPort) {
+            throw new SerialNotConnectedException();
+        }
+            this.serialPort.flushIOBuffers(); //command from jSerialComm
+            //Send message
+            sendWithoutFlush(message);
+            return;
+      }
+
 
     /**
      * Sends data to the serial port.
      * @param  message integer representation of the command to the control box
      */
-    private void sendWithoutFlush(final int message) {
+    private void sendWithoutFlush(final int message)
+                                            throws SerialNotConnectedException {
+        if (null == this.serialPort) {
+            throw new SerialNotConnectedException();
+        }
         //Create Message in Bytes
         byte[] sendByte = new byte[1];
         sendByte[0] = (byte) message;
@@ -495,4 +500,14 @@ public class Serial extends Thread {
     public void addObserver(final PropertyChangeListener l) {
         pcs.addPropertyChangeListener(Actions.UPDATE, l);
     }
+}
+
+/** Custom Exception to stop parsing if errors occur. */
+class SerialNotConnectedException extends Exception {
+    /** Constructor.
+    */
+    SerialNotConnectedException() {
+        super("Not connected to serial port");
+    }
+
 }
