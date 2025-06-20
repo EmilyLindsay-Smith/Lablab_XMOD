@@ -85,10 +85,13 @@ public class ExperimentResulter {
         this.screenItems = experimentScreenItems;
         createResultsDirectory();
         createResultArrays();
+
     }
 
     /**
      * Check directory exists to house results and create if it doesn't exist.
+     * If there's an issue using the same directory as the tms file, it uses
+     * ~/Documents/results instead
      */
     private void createResultsDirectory() {
         // check if 'results' folder exists else create it
@@ -97,13 +100,22 @@ public class ExperimentResulter {
         if (!(Files.isDirectory(resultsDir))) {
             try {
                 Files.createDirectories(resultsDir);
-            } catch (IOException e) {
-                updateStatus(Responses.ERROR_RESULTS_DIRECTORY,
-                "Could not create results directory",
-                "Please check stack trace and ensure permissions are correct",
-                Utils.getStackTrace(e));
-                return;
+            } catch (Exception exc) {
+                this.resultsDir = Paths.get(System.getProperty("user.home"),
+                                                        "Documents", "results");
+                if (!(Files.isDirectory(resultsDir))) {
+                    try {
+                        Files.createDirectories(resultsDir);
+                    } catch (Exception e) {
+                        updateStatus(Responses.ERROR_RESULTS_DIRECTORY,
+                        "Could not create results directory",
+                        "Please ensure permissions are correct",
+                        Utils.getStackTrace(e));
+                        return;
+                    }
+                }
             }
+
         }
     }
 
