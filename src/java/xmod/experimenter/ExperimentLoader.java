@@ -21,7 +21,7 @@ import java.beans.PropertyChangeSupport;
 /**s
  * Loads the .tms file and parses the information needed to run the experiment.
  * @author ELS
- * @version 1.0
+ * @version 2.0
  * @since 2025-06-09
  * BUGS:
  * PCS MUST BE EXPERIMENT RUNNER NOT XMOD.JAVA
