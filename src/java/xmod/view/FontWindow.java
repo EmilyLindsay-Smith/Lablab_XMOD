@@ -151,7 +151,7 @@ public class FontWindow extends ExperimentWindow {
     private void createSizeChooser() {
 
         this.sizeChooser = new JComboBox<Integer>();
-        for (int i = 8; i < this.MAX_FONT_SIZE; i++) {
+        for (int i = this.MIN_FONT_SIZE; i < this.MAX_FONT_SIZE; i++) {
             sizeChooser.addItem(i);
             }
 
@@ -206,14 +206,14 @@ public class FontWindow extends ExperimentWindow {
     /** Gets current font .
      * @return this.current_font_name
      */
-    public String getCurrentFont(){
+    public String getCurrentFont() {
         return this.currentFontName;
     }
 
     /** Gets current font size.
      * @return this.current_size
      */
-    public int getCurrentSize(){
+    public int getCurrentSize() {
         return this.currentSize;
     }
      /**

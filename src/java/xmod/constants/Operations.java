@@ -24,5 +24,7 @@ public final class Operations {
     public static final String CHECK_FONT = "CHANGE FONT";
     /** Close the Xmod application. */
     public static final String CLOSE_XMOD = "CLOSE XMOD";
+     /** Run the sample experiment. */
+    public static final String TEST = "TEST SYSTEM";
 
 }
