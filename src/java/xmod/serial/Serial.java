@@ -221,9 +221,14 @@ public class Serial extends Thread {
      * @param description string to use to describe what didn't happen to user
      * @return true if sent successfully
      */
-    private Boolean sendCommand(final int command, final String description) {
+    private Boolean sendCommand(final int command, final String description,
+                                final Boolean sendSuccessUpdate) {
         try {
             this.send(command);
+            if (sendSuccessUpdate){
+                updateStatus(Responses.SERIAL_CONNECTED, "Sent command to "
+                                + description, "", "");
+            }
             return true;
         } catch (SerialNotConnectedException e) {
             // StackTrace not passed on as
@@ -242,7 +247,7 @@ public class Serial extends Thread {
         if (!this.serialConnected) {
             connectRepeatedly();
         } else {
-            sendCommand(this.FLASH_LED, "flash LEDs");
+            sendCommand(this.FLASH_LED, "flash LEDs", true);
         }
         return;
     }
@@ -262,7 +267,7 @@ public class Serial extends Thread {
 
         String serialInfo = "Controller Info: <br/>";
         for (int j = this.GET_SOURCE; j <= this.GET_KEYS; j++) {
-            Boolean sent = sendCommand(j, "retrieve controller info");
+            Boolean sent = sendCommand(j, "retrieve controller info", false);
             if (sent) {
                 serialInfo = serialInfo + "<br/>" + receive();
             }
@@ -274,7 +279,7 @@ public class Serial extends Thread {
      * Requests that control box turn on the monitors of the test computers.
      */
     public void turnOnMonitor() {
-        sendCommand(this.ADJUST_ON, "turn on monitors");
+        sendCommand(this.ADJUST_ON, "turn on monitors", true);
         return;
     }
 
@@ -282,7 +287,7 @@ public class Serial extends Thread {
      * Requests that control box turn off the monitors of the test computers.
      */
     public void turnOffMonitor() {
-        sendCommand(this.ADJUST_OFF, "turn off monitors");
+        sendCommand(this.ADJUST_OFF, "turn off monitors", true);
         return;
     }
 
