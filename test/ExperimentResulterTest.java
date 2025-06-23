@@ -9,7 +9,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -64,9 +64,14 @@ public final class ExperimentResulterTest {
         Assertions.assertEquals(true, Files.exists(resultsDir),
         "result directory should have been created");
         try {
+            File index = new File(resultsDir.toString());
+            String[] entries = index.list();
+            for (String s : entries) {
+                File currentFile = new File(index.getPath(), s);
+                currentFile.delete();
+            }
             Files.delete(resultsDir);
         } catch (IOException e) {
-
             Assertions.assertEquals(false, true, "Could not delete resultsDir");
             e.printStackTrace();
         }

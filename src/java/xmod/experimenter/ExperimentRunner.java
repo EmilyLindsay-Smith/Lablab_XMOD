@@ -5,6 +5,8 @@ import xmod.constants.Actions;
 
 
 import xmod.serial.Serial;
+import xmod.serial.SerialBytesReceivedException;
+
 import xmod.status.ObjectReport;
 import xmod.status.ReportCategory;
 import xmod.status.ReportLabel;
@@ -198,7 +200,12 @@ public class ExperimentRunner implements PropertyChangeListener {
     public void runExperiment() {
         new Thread(new Runnable() {
             public void run() {
-              runMethod();
+                if (!running) {
+                  runMethod();
+                } else {
+                    System.out.println("Can't run twice!");
+                }
+                return;
             };
         }, "EXPERIMENT RUNNER").start();
     }
@@ -234,6 +241,9 @@ public class ExperimentRunner implements PropertyChangeListener {
         }
         // Set flag to true
         setRunning(true);
+        updateStatus(Responses.EXPERIMENT_RUNNING,
+                        "", "Press ESC key to abort", "",
+                        ReportLabel.STATUS);
         this.audioPlayer.playAudio();
         this.expWindow.updateText("");
         this.expWindow.show();
@@ -252,9 +262,15 @@ public class ExperimentRunner implements PropertyChangeListener {
                                 this.tMonitorOff[trialIndex]
                                 );
             // complete set of reactions is 36 bytes
-            byte[] reaction = this.serialPort.receiveChunk(this.REACTION_SET);
-            // collects button pressed and reaction time for all 16 boxes
-            this.expResulter.collectTrialResults(reaction, trialIndex);
+            try {
+                byte[] reaction = this.serialPort.receiveChunk(
+                                                            this.REACTION_SET
+                                                            );
+                // collects button pressed and reaction time for all 16 boxes
+                this.expResulter.collectTrialResults(reaction, trialIndex);
+            } catch (SerialBytesReceivedException e) {
+                //SOLUTION
+            }
         }
         this.audioPlayer.stopAudio();
         this.expResulter.printResults();
