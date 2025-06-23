@@ -237,6 +237,7 @@ public class ExperimentRunner implements PropertyChangeListener {
         setRunning(true);
         this.audioPlayer.playAudio();
         this.expWindow.updateText("");
+        this.expWindow.show();
         this.serialPort.turnOffMonitor();
 
         for (int trialIndex = 0; trialIndex < this.expLength; trialIndex++) {
