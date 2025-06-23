@@ -269,12 +269,13 @@ public class Serial extends Thread {
         String serialInfo = "Controller Info: <br/>";
         try {
             for (int j = this.GET_SOURCE; j <= this.GET_KEYS; j++) {
-                Boolean sent = sendCommand(j, "retrieve controller info", false);
+                Boolean sent = sendCommand(j, "retrieve controller info",
+                                            false);
                 if (sent) {
                     serialInfo = serialInfo + "<br/>" + receive();
                 }
             }
-        } catch (SerialBytesReceivedException e){
+        } catch (SerialBytesReceivedException e) {
             String updateMsg = "Could not retrieve controller info"
                                 + " because of error receiving bytes";
             updateStatus("", updateMsg,
@@ -403,7 +404,7 @@ public class Serial extends Thread {
         byte[] received;
         try {
             received = receiveChunk(availableBytes);
-        } catch (SerialBytesReceivedException e){
+        } catch (SerialBytesReceivedException e) {
             throw new SerialBytesReceivedException();
         }
         //Write input to string
@@ -422,7 +423,7 @@ public class Serial extends Thread {
      * @return output string containing response from control box
      */
     public byte[] receiveChunk(final int chunkSize)
-        throws SerialBytesReceivedException{
+        throws SerialBytesReceivedException {
 
         if (chunkSize < 0) {
             String updateMsg = "Error occurred while expected bytes from "

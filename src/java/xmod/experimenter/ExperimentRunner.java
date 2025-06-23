@@ -200,7 +200,7 @@ public class ExperimentRunner implements PropertyChangeListener {
     public void runExperiment() {
         new Thread(new Runnable() {
             public void run() {
-                if (!running){
+                if (!running) {
                   runMethod();
                 } else {
                     System.out.println("Can't run twice!");
@@ -242,7 +242,7 @@ public class ExperimentRunner implements PropertyChangeListener {
         // Set flag to true
         setRunning(true);
         updateStatus(Responses.EXPERIMENT_RUNNING,
-                        "", "Press ESC key to abort","",
+                        "", "Press ESC key to abort", "",
                         ReportLabel.STATUS);
         this.audioPlayer.playAudio();
         this.expWindow.updateText("");
@@ -263,7 +263,9 @@ public class ExperimentRunner implements PropertyChangeListener {
                                 );
             // complete set of reactions is 36 bytes
             try {
-                byte[] reaction = this.serialPort.receiveChunk(this.REACTION_SET);
+                byte[] reaction = this.serialPort.receiveChunk(
+                                                            this.REACTION_SET
+                                                            );
                 // collects button pressed and reaction time for all 16 boxes
                 this.expResulter.collectTrialResults(reaction, trialIndex);
             } catch (SerialBytesReceivedException e) {
