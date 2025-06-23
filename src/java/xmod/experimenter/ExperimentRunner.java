@@ -208,7 +208,6 @@ public class ExperimentRunner implements PropertyChangeListener {
      */
     public void runMethod() {
         // CHECK EVERYTHING IS READY
-
         if  (!this.experimentLoaded) {
             updateStatus(Responses.EXPERIMENT_NOT_READY,
                         "Cannot begin experiment as no experiment loaded",
