@@ -27,6 +27,8 @@ public final class Responses {
                     + "could not be created";
     /** Experiment fully set up and ready to run. */
     public static final String EXPERIMENT_READY = "Experiment Ready";
+    /** Experiment currently running. */
+    public static final String EXPERIMENT_RUNNING = "Experiment In Progress";
     /** Experiment not fully set up. */
     public static final String EXPERIMENT_NOT_READY = "Experiment not ready";
     /** Experiment aborted (by user pressing esc). */
