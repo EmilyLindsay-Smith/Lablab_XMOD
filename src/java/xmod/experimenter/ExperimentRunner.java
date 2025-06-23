@@ -272,6 +272,7 @@ public class ExperimentRunner implements PropertyChangeListener {
                         + "Results to date printed to file in results/",
                         "", "", ReportLabel.STATUS);
         }
+        this.expWindow.hide();
     }
 
     /**
