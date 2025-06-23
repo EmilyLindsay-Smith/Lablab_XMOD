@@ -78,9 +78,6 @@ public class FontWindow extends ExperimentWindow {
 
         // Create Componenets
         this.generateExtraWindowContents();
-        System.out.println("Current Font: " + this.currentFontName);
-        System.out.println("Original Font: " + this.originalFontName);
-
     }
 
     /**
@@ -229,7 +226,6 @@ public class FontWindow extends ExperimentWindow {
     public void keyReleased(final KeyEvent e) {
         int key = e.getKeyCode();
         if (key == KeyEvent.VK_ESCAPE) {
-            System.out.println("Escape!");
             pcs.firePropertyChange(Actions.UPDATE_FONT, false, true);
         }
     }
