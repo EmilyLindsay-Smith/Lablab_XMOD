@@ -79,12 +79,12 @@ public class ExperimentWindow implements KeyListener {
 
     }
 
-    private void setScreen(){
+    private void setScreen() {
         this.g = GraphicsEnvironment.getLocalGraphicsEnvironment();
         GraphicsDevice[] gs = this.g.getScreenDevices();
         this.device = this.g.getDefaultScreenDevice();
-        for (int i = 0; i < gs.length; i++){
-            if (gs[i]!=this.g.getDefaultScreenDevice()) {
+        for (int i = 0; i < gs.length; i++) {
+            if (gs[i] != this.g.getDefaultScreenDevice()) {
                 this.device = gs[i];
                 break;
             }
