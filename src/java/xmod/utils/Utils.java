@@ -180,9 +180,9 @@ public final class Utils {
     public static String mergePaths(final String path,
                                     final String bareFileName,
                                     final String ext) {
-		String cleanPath = path;
-		String cleanBareFileName = bareFileName;
-		String cleanExt = ext;
+        String cleanPath = path;
+        String cleanBareFileName = bareFileName;
+        String cleanExt = ext;
 
         char fileSeparator = File.separatorChar;
         // remove any file separator at end of path
@@ -196,15 +196,15 @@ public final class Utils {
 
         //Remove file separator at end of barefileName
         if (cleanBareFileName.charAt(cleanBareFileName.length() - 1)
-				== fileSeparator) {
+                == fileSeparator) {
             cleanBareFileName = cleanBareFileName.substring(0,
-												cleanBareFileName.length() - 1);
+                                           cleanBareFileName.length() - 1);
         }
 
         // remove . at end of bareFileName
         if (cleanBareFileName.charAt(cleanBareFileName.length() - 1) == '.') {
             cleanBareFileName = cleanBareFileName.substring(0,
-												cleanBareFileName.length() - 1);
+                                            cleanBareFileName.length() - 1);
         }
 
         //remove . at start of extension
@@ -212,7 +212,7 @@ public final class Utils {
             cleanExt = cleanExt.substring(1);
         }
         String newFileName = cleanPath + fileSeparator
-							+ cleanBareFileName + '.' + cleanExt;
+                            + cleanBareFileName + '.' + cleanExt;
         return newFileName;
     }
 
