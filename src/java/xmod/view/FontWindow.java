@@ -73,6 +73,8 @@ public class FontWindow extends ExperimentWindow {
         this.availableWords = ScreenWords.getWords();
         this.originalFontName = ScreenWords.getDefaultFont();
         this.originalSize = ScreenWords.getDefaultSize();
+        this.currentFontName = this.originalFontName;
+        this.currentSize = this.originalSize;
 
         // Create Componenets
         this.generateExtraWindowContents();
@@ -204,7 +206,7 @@ public class FontWindow extends ExperimentWindow {
     }
 
     /** Gets current font .
-     * @return this.current_font_name
+     * @return this.currentFontName
      */
     public String getCurrentFont() {
         return this.currentFontName;
@@ -224,7 +226,6 @@ public class FontWindow extends ExperimentWindow {
     public void keyReleased(final KeyEvent e) {
         int key = e.getKeyCode();
         if (key == KeyEvent.VK_ESCAPE) {
-            System.out.println("Escape!");
             pcs.firePropertyChange(Actions.UPDATE_FONT, false, true);
         }
     }

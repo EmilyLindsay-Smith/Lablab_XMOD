@@ -208,7 +208,6 @@ public class ExperimentRunner implements PropertyChangeListener {
      */
     public void runMethod() {
         // CHECK EVERYTHING IS READY
-
         if  (!this.experimentLoaded) {
             updateStatus(Responses.EXPERIMENT_NOT_READY,
                         "Cannot begin experiment as no experiment loaded",
@@ -237,6 +236,7 @@ public class ExperimentRunner implements PropertyChangeListener {
         setRunning(true);
         this.audioPlayer.playAudio();
         this.expWindow.updateText("");
+        this.expWindow.show();
         this.serialPort.turnOffMonitor();
 
         for (int trialIndex = 0; trialIndex < this.expLength; trialIndex++) {
@@ -271,6 +271,7 @@ public class ExperimentRunner implements PropertyChangeListener {
                         + "Results to date printed to file in results/",
                         "", "", ReportLabel.STATUS);
         }
+        this.expWindow.hide();
     }
 
     /**

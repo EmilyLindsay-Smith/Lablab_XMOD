@@ -57,10 +57,13 @@ public class ExperimentWindow implements KeyListener {
     protected static final int MAX_FONT_SIZE = 200;
     /** Min font size. */
     protected static final int MIN_FONT_SIZE = 40;
+
     /**
      * Constructor.
      */
     public ExperimentWindow() {
+        // Define screen
+        setScreen();
         //Set up window contents
         this.f = new JFrame();
         // Add listeners
@@ -74,8 +77,18 @@ public class ExperimentWindow implements KeyListener {
         //Set window contents
         this.generateWindowContents();
 
+    }
+
+    private void setScreen() {
         this.g = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        GraphicsDevice[] gs = this.g.getScreenDevices();
         this.device = this.g.getDefaultScreenDevice();
+        for (int i = 0; i < gs.length; i++) {
+            if (gs[i] != this.g.getDefaultScreenDevice()) {
+                this.device = gs[i];
+                break;
+            }
+        }
     }
 
     /**
@@ -90,13 +103,13 @@ public class ExperimentWindow implements KeyListener {
         this.text = new JLabel("", SwingConstants.CENTER);
         this.text.setText(ScreenWords.getWords()[0]);
         this.text.setFont(new Font(this.currentFontName,
-            this.defaultStyle, this.currentSize));
+        this.defaultStyle, this.currentSize));
         this.text.setForeground(Color.WHITE);
-
         this.f.setLayout(new BorderLayout());
-        this.f.add(text, BorderLayout.CENTER);
 
+        this.f.add(text, BorderLayout.CENTER);
         this.f.getContentPane().setBackground(Color.BLACK);
+        this.f.pack();
     }
 
     /**
@@ -135,10 +148,11 @@ public class ExperimentWindow implements KeyListener {
      * Makes the experiment window full screen and visible.
      */
     public void show() {
-        this.f.setVisible(true);
         //Make full-screen
+        //this.f.setLocationRelativeTo(null);
         this.f.setResizable(false);
         this.device.setFullScreenWindow(f);
+        this.f.setVisible(true);
     }
 
     /**
