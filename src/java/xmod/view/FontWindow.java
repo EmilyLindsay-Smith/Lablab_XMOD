@@ -73,9 +73,14 @@ public class FontWindow extends ExperimentWindow {
         this.availableWords = ScreenWords.getWords();
         this.originalFontName = ScreenWords.getDefaultFont();
         this.originalSize = ScreenWords.getDefaultSize();
+        this.currentFontName = this.originalFontName;
+        this.currentSize = this.originalSize;
 
         // Create Componenets
         this.generateExtraWindowContents();
+        System.out.println("Current Font: " + this.currentFontName);
+        System.out.println("Original Font: " + this.originalFontName);
+
     }
 
     /**
@@ -204,7 +209,7 @@ public class FontWindow extends ExperimentWindow {
     }
 
     /** Gets current font .
-     * @return this.current_font_name
+     * @return this.currentFontName
      */
     public String getCurrentFont() {
         return this.currentFontName;
