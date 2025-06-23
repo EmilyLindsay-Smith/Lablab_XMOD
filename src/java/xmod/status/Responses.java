@@ -38,7 +38,7 @@ public final class Responses {
     /** Disconnection to control box via serial port. */
     public static final String SERIAL_DISCONNECTED = "Not connected";
     /** Successful connection to control box via serial port. */
-    public static final String SERIAL_CONNECTED = "Connected to";
+    public static final String SERIAL_CONNECTED = "Connected to controller box";
     /** Error retrieving information from the control box. */
     public static final String SERIAL_INFO_UNAVAILABLE = "Cannot provide "
                                                     + "controller info";
