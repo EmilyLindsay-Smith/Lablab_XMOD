@@ -3,7 +3,6 @@ package xmod.experimenter;
 import xmod.audio.AudioPlayer;
 import xmod.constants.Actions;
 
-
 import xmod.serial.Serial;
 import xmod.serial.SerialBytesReceivedException;
 
@@ -12,6 +11,8 @@ import xmod.status.ReportCategory;
 import xmod.status.ReportLabel;
 import xmod.status.Responses;
 import xmod.view.ExperimentWindow;
+
+import xmod.utils.Utils;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -201,9 +202,18 @@ public class ExperimentRunner implements PropertyChangeListener {
         new Thread(new Runnable() {
             public void run() {
                 if (!running) {
-                  runMethod();
+                    try {
+                      runMethod();
+                    } catch (Exception e) {
+                        String stackTrace = Utils.getStackTrace(e);
+                        updateStatus(Responses.EXPERIMENT_ABORTED,
+                        "Experiment aborted due to error", "",
+                        stackTrace, ReportLabel.STATUS);
+                        setRunning(false);
+                    }
                 } else {
-                    System.out.println("Can't run twice!");
+                    updateStatus("", "Experiment already in progress",
+                    "", "", ReportLabel.STATUS);
                 }
                 return;
             };
@@ -213,7 +223,7 @@ public class ExperimentRunner implements PropertyChangeListener {
     /**
      * Runs the experiment.
      */
-    public void runMethod() {
+    public void runMethod() throws SerialBytesReceivedException {
         // CHECK EVERYTHING IS READY
         if  (!this.experimentLoaded) {
             updateStatus(Responses.EXPERIMENT_NOT_READY,
@@ -269,7 +279,7 @@ public class ExperimentRunner implements PropertyChangeListener {
                 // collects button pressed and reaction time for all 16 boxes
                 this.expResulter.collectTrialResults(reaction, trialIndex);
             } catch (SerialBytesReceivedException e) {
-                //SOLUTION
+                throw e;
             }
         }
         this.audioPlayer.stopAudio();
