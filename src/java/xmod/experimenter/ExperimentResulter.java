@@ -150,8 +150,8 @@ public class ExperimentResulter {
         byte[] byteString = resultsString.getBytes();
 
         // Set results filename
-        Path tmsBareFileName = Paths.get(this.tmsFileName).getFileName();
-        String resultsFilename = tmsBareFileName.toString() + "_"
+        String tmsBareFileName = Utils.getBareName(this.tmsFileName);
+        String resultsFilename = tmsBareFileName + "_"
                             + dateString + "_" + timeString + ".txt";
         Path resultsFile = Paths.get(this.resultsDir.toString(),
                                     resultsFilename);
