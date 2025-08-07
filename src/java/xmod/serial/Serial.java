@@ -51,6 +51,7 @@ public class Serial extends Thread {
     /** Port Parameters: Parity. */
     private static final int PARITY = SerialPort.NO_PARITY;
     /** time in ms to wait for data from control box. */
+    // This needs to be 0 so it waits for as long as necessary
     private static final int TIMEOUT = 0;
 
     /** High -low byte separator. */
@@ -394,7 +395,6 @@ public class Serial extends Thread {
         }
 
         int availableBytes = this.serialPort.bytesAvailable();
-
         if (availableBytes == -1) {
             String updateMsg = "Error (-1 bytes available) occurred while"
                 + " receiving bytes from controller box";
@@ -424,10 +424,9 @@ public class Serial extends Thread {
      */
     public byte[] receiveChunk(final int chunkSize)
         throws SerialBytesReceivedException {
-
         if (chunkSize < 0) {
             String updateMsg = "Error occurred while expected bytes from "
-                    + "controller box";
+                    + "controller box; should have expected more than 0 bytes";
             updateStatus("", updateMsg, "", "");
             throw new SerialBytesReceivedException();
         }
