@@ -1,13 +1,13 @@
 #!/bin/bash
 
-if [ $# -ne 1 ]; then
+if [[ $# -ne 1 ]]; then
     echo "Usage: checkstyle.sh directory"
     echo "e.g. ./checkstyle.sh test"
     echo "e.g. ./checkstyle.sh serial"
 fi
 
 
-if [ $1 = "test" ]; then
+if [[ $1 = "test" ]]; then
     dirToCheck=$1
 else
     dirToCheck="src/java/xmod/$1"
