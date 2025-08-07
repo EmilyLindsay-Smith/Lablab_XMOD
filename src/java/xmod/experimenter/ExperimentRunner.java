@@ -223,7 +223,7 @@ public class ExperimentRunner implements PropertyChangeListener {
     /**
      * Runs the experiment.
      */
-    public void runMethod() throws SerialBytesReceivedException {
+    public void runMethod() { //throws SerialBytesReceivedException {
         // CHECK EVERYTHING IS READY
         if  (!this.experimentLoaded) {
             updateStatus(Responses.EXPERIMENT_NOT_READY,
@@ -262,6 +262,7 @@ public class ExperimentRunner implements PropertyChangeListener {
         for (int trialIndex = 0; trialIndex < this.expLength; trialIndex++) {
             // to faciliate aborting the experiment
             if  (!this.running) {
+                System.out.println("Quit running");
                 break;
             }
             //Show Window and screen item
@@ -279,7 +280,7 @@ public class ExperimentRunner implements PropertyChangeListener {
                 // collects button pressed and reaction time for all 16 boxes
                 this.expResulter.collectTrialResults(reaction, trialIndex);
             } catch (SerialBytesReceivedException e) {
-                throw e;
+                break; // quit the experiment running
             }
         }
         this.audioPlayer.stopAudio();
