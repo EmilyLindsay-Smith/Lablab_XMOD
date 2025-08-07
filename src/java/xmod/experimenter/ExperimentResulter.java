@@ -57,6 +57,8 @@ public class ExperimentResulter {
 
     /** Directory to save results to. */
     private Path resultsDir;
+    /** Name of results file. */
+    private Path resultsFile;
     /** Number of boxes in the system - fixed at 16. */
     private static final int NUM_BOXES = 16;
 
@@ -139,6 +141,13 @@ public class ExperimentResulter {
     }
 
     /**
+     * Return location of results file.
+     * @return name of results file as string
+     */
+    public String getResultsFile() {
+        return resultsFile.toString();
+    }
+    /**
      * Save the results of all the trials to file.
      */
     public void printResults() {
@@ -153,7 +162,7 @@ public class ExperimentResulter {
         String tmsBareFileName = Utils.getBareName(this.tmsFileName);
         String resultsFilename = tmsBareFileName + "_"
                             + dateString + "_" + timeString + ".txt";
-        Path resultsFile = Paths.get(this.resultsDir.toString(),
+        resultsFile = Paths.get(this.resultsDir.toString(),
                                     resultsFilename);
         // Write to file
         try {
