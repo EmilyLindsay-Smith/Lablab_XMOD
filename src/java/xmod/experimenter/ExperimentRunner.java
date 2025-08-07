@@ -295,7 +295,8 @@ public class ExperimentRunner implements PropertyChangeListener {
             // If experiment aborted by user
             updateStatus(Responses.EXPERIMENT_ABORTED,
                         "Experiment aborted by user<br/>"
-                        + "Results to date printed to file in results/",
+                        + "Results to date printed to file in "
+                        + this.expResulter.getResultsFile(),
                         "", "", ReportLabel.STATUS);
         }
         this.expWindow.hide();
