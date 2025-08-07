@@ -138,6 +138,8 @@ public class Serial extends Thread {
                     this.serialPort = availablePorts[i];
                     addPortListener();
                     updateStatus(Responses.SERIAL_CONNECTED, "", "", "");
+                    // Turn off monitor immediately
+                    turnOffMonitor()
                     return;
                 }
             }
