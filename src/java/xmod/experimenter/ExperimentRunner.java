@@ -18,6 +18,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * ExperimentRunner class controls running the experiment.
@@ -49,7 +50,8 @@ public class ExperimentRunner implements PropertyChangeListener {
     /** Whether the experiment is loaded. */
     private Boolean experimentLoaded = false;
     /** Whether the experiment is currently running. */
-    private Boolean running = false;
+    //private Boolean running = false;
+    private AtomicBoolean running;
     /** Whether update has been sent to XMOD about file load failure. */
     private Boolean xmodUpdate = false;
 
@@ -82,7 +84,8 @@ public class ExperimentRunner implements PropertyChangeListener {
         this.expLoader = new ExperimentLoader();
         this.expLoader.addObserver(this);
 
-        this.running = false;
+        this.running = new AtomicBoolean(); // initial value false
+        //this.running = false;
     }
 
     /**
@@ -152,7 +155,8 @@ public class ExperimentRunner implements PropertyChangeListener {
      * e.g. false to abort experiment
      */
     public void setRunning(final Boolean flag) {
-        this.running = flag;
+        //this.running = flag;
+        this.running.set(flag);
         return;
     }
     /** Listen for updates from ExperimentLoader.
@@ -201,7 +205,7 @@ public class ExperimentRunner implements PropertyChangeListener {
     public void runExperiment() {
         new Thread(new Runnable() {
             public void run() {
-                if (!running) {
+                if (!running.get()) {
                     try {
                       runMethod();
                     } catch (Exception e) {
@@ -240,7 +244,7 @@ public class ExperimentRunner implements PropertyChangeListener {
                         "", ReportLabel.STATUS);
             return;
         }
-
+/*
         if  (!this.serialPort.isSerialConnected()) {
             updateStatus(Responses.EXPERIMENT_NOT_READY,
                         "Cannot begin experiment as not connected"
@@ -249,6 +253,7 @@ public class ExperimentRunner implements PropertyChangeListener {
                         "", ReportLabel.STATUS);
             return;
         }
+*/
         // Set flag to true
         setRunning(true);
         updateStatus(Responses.EXPERIMENT_RUNNING,
@@ -261,7 +266,7 @@ public class ExperimentRunner implements PropertyChangeListener {
 
         for (int trialIndex = 0; trialIndex < this.expLength; trialIndex++) {
             // to faciliate aborting the experiment
-            if  (!this.running) {
+            if  (!this.running.get()) {
                 System.out.println("Quit running");
                 break;
             }
@@ -286,7 +291,7 @@ public class ExperimentRunner implements PropertyChangeListener {
         this.audioPlayer.stopAudio();
         this.expResulter.printResults();
         //If experiment not aborted
-        if (this.running) {
+        if (this.running.get()) {
             //tells main Xmod instance experiment is finished
             //so it can change window views etc
             this.pcs.firePropertyChange(Actions.FINISH_EXPERIMENT, false, true);
