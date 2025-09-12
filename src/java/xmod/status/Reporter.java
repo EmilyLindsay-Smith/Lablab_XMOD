@@ -4,6 +4,7 @@ package xmod.status;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /** Representation of status.
  * @author ELS
@@ -25,10 +26,10 @@ public class Reporter {
         final int initialCapacity = 8; //Number of categories + 1/3
         final float loadFactor = (float) 0.75;
         // so it prints keys in insertion order not recent access order
-        Boolean accessOrder = false;
+        //Boolean accessOrder = false;
 
-        this.status = new LinkedHashMap<ReportLabel, ObjectReport>(
-            initialCapacity, loadFactor, accessOrder);
+        this.status = new ConcurrentHashMap<ReportLabel, ObjectReport>(
+            initialCapacity, loadFactor); //, accessOrder);
 
         initialiseValues();
     }
