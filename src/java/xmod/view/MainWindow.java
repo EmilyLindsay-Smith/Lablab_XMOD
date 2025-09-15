@@ -367,6 +367,19 @@ public class MainWindow {
         return;
     }
 
+    /** Updates the text.
+     * @param newText new text to show
+     */
+    public void updateToolText(final String newText) {
+        if (newText == "") {
+            return;
+        }
+        this.toolPanelText.setText(newText);
+        this.toolPanelText.setCaretPosition(0);
+        return;
+    }
+
+
     /** Popup to select a TMS file.
      * @return string filename of chosen tms file
      * Note this is called in Xmod.java when a button is called
