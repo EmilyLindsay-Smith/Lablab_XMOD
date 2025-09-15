@@ -57,14 +57,46 @@ public class MainWindow {
     /** Subtitle. */
     private JLabel subtitle;
     /** Central text pane. */
-    private JTextPane text;
-    private JPanel mainPanel;
-    private JPanel secondPanel;
-    private JPanel thirdPanel;
 
+    private JPanel mainPanel;
+    private JPanel toolPanel;
+    private JPanel analyticsPanel;
+
+    /** Main Panel */
+    private JTextPane mainPanelText;
+    private JScrollPane mainPanelScrollPane;
+    private JPanel mainButtonPane;
+    private ArrayList<JButton> mainButtonList;
+    private JButton buttonRunExp;
+    private JButton buttonLoadTMS;
+
+    /** Tool Panel */
+    private JTextPane toolPanelText;
+    private JScrollPane toolPanelScrollPane;
+    private JPanel toolButtonPane;
+    private ArrayList<JButton> toolButtonList;
+    /** Turn monitors on button. */
+    private JButton buttonMonitorOn;
+    /** Turn monitors off button. */
+    private JButton buttonMonitorOff;
+    /** Check connection to serial port button. */
+    private JButton buttonCheckConnection;
+    /** Retrieve info about controller box via serial port button. */
+    private JButton buttonControllerInfo;
+    /** Button to trigger FontWindow GUI to adjust font for experiments. */
+    private JButton buttonCheckFont;
+    /** Button to trigger Test Experiment. */
+    private JButton buttonTestSystem;
+
+    /** Analytics Panel */
+    private JTextPane analyticsPanelText;
+    private JScrollPane analyticsPanelScrollPane;
+    private JPanel analyticsButtonPane;
+    private ArrayList<JButton> analyticsButtonList;
     /**This is the official Oxford University Blue. */
     private static final Color OXFORD_BLUE = new Color(0, 33, 71);
-
+    private Color bg = OXFORD_BLUE;
+    private Color fg = Color.WHITE;
     // Font Settings
     /** Current font. */
     private String currentFontName;
@@ -125,40 +157,43 @@ public class MainWindow {
         this.tabPanel.addTab("Main", this.mainPanel);
 
         // Generate Second Tab
-        this.secondPanel = new JPanel();
-        this.tabPanel.addTab("Tools", this.secondPanel);
+        this.toolPanel = new JPanel();
+        this.tabPanel.addTab("Tools", this.toolPanel);
 
         // Generate Third Tab
-        this.thirdPanel = new JPanel();
-        this.tabPanel.addTab("Analytics", this.thirdPanel);
+        this.analyticsPanel = new JPanel();
+        this.tabPanel.addTab("Analytics", this.analyticsPanel);
         //
 
-        this.mainPanel.add(new JLabel("Main Panel"));
-        this.secondPanel.add(new JLabel("Second Panel"));
+        createMainPanel();
+        setPanelAppearance(this.mainButtonPane, this.mainButtonList, this.mainPanelText);
+        createToolPanel();
+        setPanelAppearance(this.toolButtonPane, this.toolButtonList, this.toolPanelText);
+        createAnalyticsPanel();
+        setPanelAppearance(this.analyticsButtonPane, this.analyticsButtonList, this.analyticsPanelText);
+
     }
 
     /** Sets the colours, fonts and borders of the components. */
     private void setAppearance() {
         this.currentFontName = title.getFont().getFontName();
-        Color bg = OXFORD_BLUE;
-        Color fg = Color.WHITE;
         //Frame Settings
         this.f.setSize(1000, 750);
         this.f.setLocationRelativeTo(null); //window appears in centre of screen
 
         this.f.getRootPane().setBorder(BorderFactory.createEmptyBorder(
                                                                 20, 5, 20, 5));
-        this.f.getRootPane().setBackground(bg);
-        this.f.getContentPane().setBackground(bg);
+        this.f.getRootPane().setBackground(this.bg);
+        this.f.getContentPane().setBackground(this.bg);
         // Header Settings
         this.header.setBorder(BorderFactory.createEmptyBorder(30, 60, 30, 60));
-        this.header.setBackground(bg);
+        this.header.setBackground(this.bg);
         this.title.setFont(new Font(this.currentFontName, Font.BOLD, (
                                 this.currentSize + 10)));
-        this.title.setForeground(fg);
+        this.title.setForeground(this.fg);
         this.subtitle.setFont(new Font(this.currentFontName, Font.BOLD,
                                     (this.currentSize + 8)));
-        this.subtitle.setForeground(fg);
+        this.subtitle.setForeground(this.fg);
 
         // Tab Panel Settings
         this.tabPanel.setFont(new Font(this.currentFontName, Font.PLAIN, (
@@ -166,17 +201,16 @@ public class MainWindow {
 
 
         for (int i=0; i < this.tabPanel.getTabCount(); i++){
-            tabPanel.setBackgroundAt(i, bg);
-            tabPanel.setForegroundAt(i, fg);
+            tabPanel.setBackgroundAt(i, this.bg);
+            tabPanel.setForegroundAt(i, this.fg);
             Component panel = tabPanel.getComponentAt(i);
-            panel.setBackground(bg);
-
+            panel.setBackground(this.bg);
         }
         // Define first panel as selected one
         this.tabPanel.setSelectedIndex(0);
-        this.tabPanel.setBackgroundAt(0, fg);
-        this.tabPanel.setForegroundAt(0, bg);
-        // Change tab bg/fg if selected
+        this.tabPanel.setBackgroundAt(0, this.fg);
+        this.tabPanel.setForegroundAt(0, this.bg);
+        // Change tab this.bg/this.fg if selected
         this.tabPanel.addChangeListener(new ChangeListener(){
             public void stateChanged(ChangeEvent e){
                 int selected = tabPanel.getSelectedIndex();
@@ -192,13 +226,120 @@ public class MainWindow {
             }
         });
 
-       // Text Settings
-        /*
-        this.text.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
-        this.text.setFont(new Font(this.currentFontName, Font.PLAIN,
-                                    this.currentSize - 2));
-        */
+
     }
+
+    private void createMainPanel(){
+        this.mainPanel.setLayout(new BorderLayout());
+        this.mainPanelText = new JTextPane();
+        this.mainPanelText.setText("Welcome to XMOD");
+        this.mainPanelText.setContentType("text/html");
+        this.mainPanelText.setEditable(false);
+        this.mainPanelText.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES,
+                                        true); // ensure font can be updated
+        this.mainPanelScrollPane = new JScrollPane(this.mainPanelText,
+                                        JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+                                        JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        this.buttonLoadTMS = new JButton(Operations.LOAD_TMS);
+        this.buttonRunExp = new JButton(Operations.RUN_EXP);
+
+        this.mainButtonList = new ArrayList<JButton>();
+        this.mainButtonList.add(this.buttonLoadTMS);
+        this.mainButtonList.add(this.buttonRunExp);
+
+        addListener(this.mainButtonList);
+        this.mainButtonPane = new JPanel(new GridLayout(this.mainButtonList.size(), 1, 5, 5));
+        for (JButton button: this.mainButtonList) {
+            this.mainButtonPane.add(button);
+        }
+        this.mainPanel.add(this.mainButtonPane, BorderLayout.WEST);
+        this.mainPanel.add(this.mainPanelScrollPane, BorderLayout.CENTER);
+
+    }
+
+    /**
+     * this.mainButtonPane, this.mainButtonList, this.mainPanelText
+     */
+    private void setPanelAppearance(JPanel buttonPane,
+                                    ArrayList<JButton> buttonList,
+                                    JTextPane panelText ){
+
+        if (null != buttonPane) {
+            buttonPane.setBorder(BorderFactory.createEmptyBorder(
+                                                    0, 15, 0, 15));
+            buttonPane.setBackground(this.bg);
+            }
+
+        if (null != buttonList) {
+            for (JButton button: buttonList) {
+                button.setFont(new Font(this.currentFontName,
+                                            Font.PLAIN, this.currentSize));
+                button.setBackground(this.fg);
+                button.setForeground(this.bg);
+            }
+        }
+        if (null != panelText) {
+            panelText.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
+            panelText.setFont(new Font(this.currentFontName, Font.PLAIN,
+                                        this.currentSize - 2));
+            panelText.setBackground(this.fg);
+            panelText.setForeground(this.bg);
+        }
+    }
+
+    private void createToolPanel(){
+        this.toolPanel.setLayout(new BorderLayout());
+        this.toolPanelText = new JTextPane();
+        this.toolPanelText.setContentType("text/html");
+        this.toolPanelText.setEditable(false);
+        this.toolPanelText.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES,
+                                        true); // ensure font can be updated
+        this.toolPanelText.setText("XMOD Tools");
+        this.toolPanelScrollPane = new JScrollPane(this.toolPanelText,
+                                        JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+                                        JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+        this.buttonMonitorOn = new JButton(Operations.MONITOR_ON);
+        this.buttonMonitorOff = new JButton(Operations.MONITOR_OFF);
+        this.buttonCheckConnection = new JButton(Operations.CHECK_CONNECTION);
+        this.buttonControllerInfo = new JButton(Operations.CONTROLLER_INFO);
+        this.buttonCheckFont = new JButton(Operations.CHECK_FONT);
+        this.buttonTestSystem = new JButton(Operations.TEST);
+
+        this.toolButtonList = new ArrayList<JButton>();
+        this.toolButtonList.add(this.buttonCheckFont);
+        this.toolButtonList.add(this.buttonCheckConnection);
+        this.toolButtonList.add(this.buttonControllerInfo);
+        this.toolButtonList.add(this.buttonMonitorOn);
+        this.toolButtonList.add(this.buttonMonitorOff);
+        this.toolButtonList.add(this.buttonTestSystem);
+
+        addListener(this.toolButtonList);
+        this.toolButtonPane = new JPanel(new GridLayout(this.toolButtonList.size(), 1, 5, 5));
+        for (JButton button: this.toolButtonList) {
+            this.toolButtonPane.add(button);
+        }
+        this.toolPanel.add(this.toolButtonPane, BorderLayout.WEST);
+        this.toolPanel.add(this.toolPanelScrollPane, BorderLayout.CENTER);
+    }
+
+    private void createAnalyticsPanel(){
+        this.analyticsPanel.setLayout(new BorderLayout());
+        this.analyticsPanelText = new JTextPane();
+
+        this.analyticsPanelText.setContentType("text/html");
+        this.analyticsPanelText.setEditable(false);
+        this.analyticsPanelText.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES,
+                                        true); // ensure font can be updated
+        this.analyticsPanelText.setText("Analytics: Coming Soon!");
+        this.analyticsPanelScrollPane = new JScrollPane(this.analyticsPanelText,
+                                        JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+                                        JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+        this.analyticsPanel.add(this.analyticsPanelScrollPane, BorderLayout.CENTER);
+
+    }
+
     /** Makes the main window visible. */
     public void show() {
         f.setVisible(true);
@@ -214,9 +355,48 @@ public class MainWindow {
         this.f.repaint();
     };
 
-    public void updateText(final String newText) {};
-    public String chooseFile() {return "";};
+    /** Updates the text.
+     * @param newText new text to show
+     */
+    public void updateText(final String newText) {
+        if (newText == "") {
+            return;
+        }
+        this.mainPanelText.setText(newText);
+        this.mainPanelText.setCaretPosition(0);
+        return;
+    }
 
+    /** Popup to select a TMS file.
+     * @return string filename of chosen tms file
+     * Note this is called in Xmod.java when a button is called
+     * but method is in this class as it relates to the main window components
+     */
+    public String chooseFile() {
+        JFileChooser fileChooser = new JFileChooser(FileSystemView
+                                    .getFileSystemView().getHomeDirectory());
+        // Ensure only .tms files can be selected
+        fileChooser.setAcceptAllFileFilterUsed(false);
+        FileNameExtensionFilter filter = new FileNameExtensionFilter(
+                                                "TMS Files", "tms");
+        fileChooser.addChoosableFileFilter(filter);
+        int choice = fileChooser.showOpenDialog(null);
+        if (choice == JFileChooser.APPROVE_OPTION) {
+            return fileChooser.getSelectedFile().getAbsolutePath();
+        } else {
+            return Responses.NO_FILE_SELECTED;
+        }
+    }
+
+    /** Adds listeners to the buttons to respond to button clicks.
+     * @param buttonList list of buttons to add listeners to
+     */
+    private void addListener(final ArrayList<JButton> buttonList) {
+        ActionListener listener = e -> handleOperation(e.getActionCommand());
+        for (JButton button : buttonList) {
+            button.addActionListener(listener);
+        }
+    }
     /**
      * Used in Xmod.java to allow the controller to listen to property changes.
      * i.e. so the buttons can trigger different actions
