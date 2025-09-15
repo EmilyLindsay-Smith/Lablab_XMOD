@@ -19,6 +19,8 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 import javax.swing.JTabbedPane;
 
+import java.awt.Component;
+
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 
@@ -58,7 +60,7 @@ public class MainWindow {
     private JTextPane text;
     private JPanel mainPanel;
     private JPanel secondPanel;
-
+    private JPanel thirdPanel;
 
     /**This is the official Oxford University Blue. */
     private static final Color OXFORD_BLUE = new Color(0, 33, 71);
@@ -80,6 +82,8 @@ public class MainWindow {
     public MainWindow() {
         this.generateWindowContents();
         this.setAppearance();
+
+
         // Set up listener to respond to button
         pcs = new PropertyChangeSupport(this);
         this.f.addWindowListener(new WindowAdapter() {
@@ -88,21 +92,23 @@ public class MainWindow {
                         "", Operations.CLOSE_XMOD);
             }
         });
-    };
-    /** Generates window components and layout */
-    private void generateWindowContents() {
-        this.f = new JFrame("XMOD");
-        this.f.setLayout(new BorderLayout());
-
         // Set closing operation to hide and send property change to main
         // Xmod class to handle shutdown
         this.f.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+        // Make frame visible to user
+        this.f.setVisible(true);
+    };
+    /** Generates window components and layout */
+    private void generateWindowContents() {
+        // Generate JFrame
+        this.f = new JFrame("XMOD");
+        this.f.setLayout(new BorderLayout());
 
-                //Set up Header
+        // Generate Header
         this.header = new JPanel();
         this.header.setLayout(new BorderLayout());
 
-        this.title = new JLabel("XMOD 2.0", SwingConstants.CENTER);
+        this.title = new JLabel("XMOD 2.1", SwingConstants.CENTER);
         this.subtitle = new JLabel("Oxford's Language and Brain Lab",
                                     SwingConstants.CENTER);
 
@@ -110,21 +116,28 @@ public class MainWindow {
         this.header.add(this.subtitle, BorderLayout.SOUTH);
         this.f.add(this.header, BorderLayout.NORTH);
 
-
+        // Generate Tabs
         this.tabPanel = new JTabbedPane(SwingConstants.TOP);
+        this.f.add(this.tabPanel);
+
+        // Generate Main Tab
         this.mainPanel = new JPanel();
-        this.mainPanel.add(new JLabel("Main Panel"));
-
-        this.secondPanel = new JPanel();
-        this.secondPanel.add(new JLabel("Second Panel"));
-
         this.tabPanel.addTab("Main", this.mainPanel);
-        this.tabPanel.addTab("Second", this.secondPanel);
-        this.f.add(tabPanel);
-        this.f.setVisible(true);
+
+        // Generate Second Tab
+        this.secondPanel = new JPanel();
+        this.tabPanel.addTab("Tools", this.secondPanel);
+
+        // Generate Third Tab
+        this.thirdPanel = new JPanel();
+        this.tabPanel.addTab("Analytics", this.thirdPanel);
+        //
+
+        this.mainPanel.add(new JLabel("Main Panel"));
+        this.secondPanel.add(new JLabel("Second Panel"));
     }
 
-        /** Sets the colours, fonts and borders of the components. */
+    /** Sets the colours, fonts and borders of the components. */
     private void setAppearance() {
         this.currentFontName = title.getFont().getFontName();
         Color bg = OXFORD_BLUE;
@@ -137,12 +150,9 @@ public class MainWindow {
                                                                 20, 5, 20, 5));
         this.f.getRootPane().setBackground(bg);
         this.f.getContentPane().setBackground(bg);
-        this.f.getContentPane().setForeground(bg);
-
         // Header Settings
         this.header.setBorder(BorderFactory.createEmptyBorder(30, 60, 30, 60));
         this.header.setBackground(bg);
-
         this.title.setFont(new Font(this.currentFontName, Font.BOLD, (
                                 this.currentSize + 10)));
         this.title.setForeground(fg);
@@ -150,22 +160,29 @@ public class MainWindow {
                                     (this.currentSize + 8)));
         this.subtitle.setForeground(fg);
 
-        this.tabPanel.setBackground(bg);
+        // Tab Panel Settings
         this.tabPanel.setFont(new Font(this.currentFontName, Font.PLAIN, (
                                 this.currentSize)));
-        this.tabPanel.setForeground(fg);
 
-        /*
+
+        for (int i=0; i < this.tabPanel.getTabCount(); i++){
+            tabPanel.setBackgroundAt(i, bg);
+            tabPanel.setForegroundAt(i, fg);
+            Component panel = tabPanel.getComponentAt(i);
+            panel.setBackground(bg);
+
+        }
+        // Define first panel as selected one
+        this.tabPanel.setSelectedIndex(0);
         this.tabPanel.setBackgroundAt(0, fg);
         this.tabPanel.setForegroundAt(0, bg);
-        this.tabPanel.setBackgroundAt(1, fg);
-        this.tabPanel.setForegroundAt(1, bg);
-        */
+        // Change tab bg/fg if selected
         this.tabPanel.addChangeListener(new ChangeListener(){
             public void stateChanged(ChangeEvent e){
                 int selected = tabPanel.getSelectedIndex();
                 tabPanel.setBackgroundAt(selected, fg);
                 tabPanel.setForegroundAt(selected, bg);
+
                 for (int i=0; i < tabPanel.getTabCount(); i++){
                     if (i != selected){
                         tabPanel.setBackgroundAt(i, bg);
@@ -175,15 +192,7 @@ public class MainWindow {
             }
         });
 
-        this.mainPanel.setBackground(bg);
-        this.mainPanel.setFont(new Font(this.currentFontName, Font.PLAIN, (
-                                this.currentSize)));
-        this.mainPanel.setForeground(fg);
-        this.secondPanel.setBackground(bg);
-        this.secondPanel.setFont(new Font(this.currentFontName, Font.PLAIN, (
-                                this.currentSize)));
-        this.secondPanel.setForeground(fg);
-        // Text Settings
+       // Text Settings
         /*
         this.text.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
         this.text.setFont(new Font(this.currentFontName, Font.PLAIN,
