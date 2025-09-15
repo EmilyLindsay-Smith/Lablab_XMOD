@@ -17,7 +17,9 @@ import javax.swing.JPanel;
 import javax.swing.JTextPane;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
+import javax.swing.JTabbedPane;
 
+import java.awt.Component;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
@@ -25,6 +27,8 @@ import java.awt.GridLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import javax.swing.filechooser.FileSystemView;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -37,14 +41,15 @@ import java.awt.Font;
 /** MainWindow is the main GUI for the application.
  *
  * @author ELS
- * @version 2.0
- * @since 2025-06-09
+ * @version 2.1
+ * @since 2025-09-15
  */
 
 public class MainWindow {
-    // GUI Components. */
-    /** JFrame. */
+    // Components
+
     private JFrame f;
+    private JTabbedPane tabPanel;
     /** Header panel. */
     private JPanel header;
     /** Title. */
@@ -52,25 +57,24 @@ public class MainWindow {
     /** Subtitle. */
     private JLabel subtitle;
     /** Central text pane. */
-    private JTextPane text;
-    /** Central text pane scroller. */
-    private JScrollPane scrollPane;
-    /** Left hand side buttons. */
-    private JPanel leftButtonPane;
-    /** Right hand side buttons. */
-    private JPanel rightButtonPane;
 
-    // List of buttons to facilitate for loops. */
-    /** Left hand button list. */
-    private ArrayList<JButton> buttonListA;
-    /** Right hand butotn list. */
-    private ArrayList<JButton> buttonListB;
+    private JPanel mainPanel;
+    private JPanel toolPanel;
+    private JPanel analyticsPanel;
 
-    // Buttons. */
-    /** Run Experiment button. */
+    /** Main Panel */
+    private JTextPane mainPanelText;
+    private JScrollPane mainPanelScrollPane;
+    private JPanel mainButtonPane;
+    private ArrayList<JButton> mainButtonList;
     private JButton buttonRunExp;
-    /** Load TMS button. */
     private JButton buttonLoadTMS;
+
+    /** Tool Panel */
+    private JTextPane toolPanelText;
+    private JScrollPane toolPanelScrollPane;
+    private JPanel toolButtonPane;
+    private ArrayList<JButton> toolButtonList;
     /** Turn monitors on button. */
     private JButton buttonMonitorOn;
     /** Turn monitors off button. */
@@ -83,12 +87,16 @@ public class MainWindow {
     private JButton buttonCheckFont;
     /** Button to trigger Test Experiment. */
     private JButton buttonTestSystem;
-    /** Property Change Support. */
-    private PropertyChangeSupport pcs;
 
+    /** Analytics Panel */
+    private JTextPane analyticsPanelText;
+    private JScrollPane analyticsPanelScrollPane;
+    private JPanel analyticsButtonPane;
+    private ArrayList<JButton> analyticsButtonList;
     /**This is the official Oxford University Blue. */
     private static final Color OXFORD_BLUE = new Color(0, 33, 71);
-
+    private Color bg = OXFORD_BLUE;
+    private Color fg = Color.WHITE;
     // Font Settings
     /** Current font. */
     private String currentFontName;
@@ -97,16 +105,18 @@ public class MainWindow {
     /** Current font style. */
     private static int currentStyle = Font.PLAIN;
 
+    /** Property Change Support. */
+    private PropertyChangeSupport pcs;
+
     /**
      * Constructor.
      */
     public MainWindow() {
-        // Generate all the GUI Components and layout
         this.generateWindowContents();
-        // Sets the colours, fonts and borders of the components
         this.setAppearance();
 
-        //Set up listener to respond to button changes
+
+        // Set up listener to respond to button
         pcs = new PropertyChangeSupport(this);
         this.f.addWindowListener(new WindowAdapter() {
             public void windowClosing(final WindowEvent windowEvent) {
@@ -117,159 +127,217 @@ public class MainWindow {
         // Set closing operation to hide and send property change to main
         // Xmod class to handle shutdown
         this.f.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-    }
-
-    /**
-     * Generates the components and their layout.
-     */
+        // Make frame visible to user
+        this.f.setVisible(true);
+    };
+    /** Generates window components and layout */
     private void generateWindowContents() {
-        // Main JFrame
-        this.f = new JFrame();
+        // Generate JFrame
+        this.f = new JFrame("XMOD");
         this.f.setLayout(new BorderLayout());
 
-        //Set up Header
+        // Generate Header
         this.header = new JPanel();
         this.header.setLayout(new BorderLayout());
 
-        this.title = new JLabel("XMOD 2.0", SwingConstants.CENTER);
+        this.title = new JLabel("XMOD 2.1", SwingConstants.CENTER);
         this.subtitle = new JLabel("Oxford's Language and Brain Lab",
                                     SwingConstants.CENTER);
 
         this.header.add(this.title, BorderLayout.NORTH);
         this.header.add(this.subtitle, BorderLayout.SOUTH);
-
-        //Set up Central text pane
-        this.text = new JTextPane();
-        this.text.setContentType("text/html");
-        this.text.setEditable(false);
-        this.text.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES,
-                                        true); // ensure font can be updated
-        this.scrollPane = new JScrollPane(this.text,
-                                        JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-                                        JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-
-        // Instantiate the buttons
-        createButtons();
-        //Add buttons to buttonListA and buttonListB
-        createButtonLists();
-
-        // Add listeners to send property change notification to main Xmod class
-        addListener(this.buttonListA); //left hand buttons
-        addListener(this.buttonListB); //right hand buttons
-
-        //Left Hand Button Pane //rows, cols, hgap, vgap
-        // 2 rows because 2 buttons
-        this.leftButtonPane = new JPanel(new GridLayout(this.buttonListA.size(),
-                                                            1, 5, 5));
-        //Right Hand Button Pane //rows, cols, hgap, vgap
-        // 5 rows because 5 buttons
-        this.rightButtonPane = new JPanel(
-                                    new GridLayout(this.buttonListB.size(),
-                                                    1, 5, 5));
-
-        // Place buttons on the screen
-        for (JButton button: buttonListA) {
-            this.leftButtonPane.add(button);
-        }
-        for (JButton button: buttonListB) {
-            this.rightButtonPane.add(button);
-        }
-
-        //Add all contents to Frame
         this.f.add(this.header, BorderLayout.NORTH);
-        this.f.add(this.scrollPane, BorderLayout.CENTER);
-        this.f.add(this.leftButtonPane, BorderLayout.WEST);
-        this.f.add(this.rightButtonPane, BorderLayout.EAST);
-    }
 
-    /** Creates all the buttons. */
-    private void createButtons() {
-        this.buttonRunExp = new JButton(Operations.RUN_EXP);
-        this.buttonLoadTMS = new JButton(Operations.LOAD_TMS);
-        this.buttonMonitorOn = new JButton(Operations.MONITOR_ON);
-        this.buttonMonitorOff = new JButton(Operations.MONITOR_OFF);
-        this.buttonCheckConnection = new JButton(Operations.CHECK_CONNECTION);
-        this.buttonControllerInfo = new JButton(Operations.CONTROLLER_INFO);
-        this.buttonCheckFont = new JButton(Operations.CHECK_FONT);
-        this.buttonTestSystem = new JButton(Operations.TEST);
-    }
-    /**
-     * Adds buttons to lists.
-     */
-    private void createButtonLists() {
-        // Left hand side buttons
-        this.buttonListA = new ArrayList<JButton>();
-        this.buttonListA.add(this.buttonLoadTMS);
-        this.buttonListA.add(this.buttonRunExp);
+        // Generate Tabs
+        this.tabPanel = new JTabbedPane(SwingConstants.TOP);
+        this.f.add(this.tabPanel);
 
-        // Right hand side buttons
-        this.buttonListB = new ArrayList<JButton>();
-        this.buttonListB.add(this.buttonCheckConnection);
-        this.buttonListB.add(this.buttonControllerInfo);
-        this.buttonListB.add(this.buttonCheckFont);
-        this.buttonListB.add(this.buttonMonitorOn);
-        this.buttonListB.add(this.buttonMonitorOff);
-        this.buttonListB.add(this.buttonTestSystem);
+        // Generate Main Tab
+        this.mainPanel = new JPanel();
+        this.tabPanel.addTab("Main", this.mainPanel);
+
+        // Generate Second Tab
+        this.toolPanel = new JPanel();
+        this.tabPanel.addTab("Tools", this.toolPanel);
+
+        // Generate Third Tab
+        this.analyticsPanel = new JPanel();
+        this.tabPanel.addTab("Analytics", this.analyticsPanel);
+        //
+
+        createMainPanel();
+        setPanelAppearance(this.mainButtonPane, this.mainButtonList, this.mainPanelText);
+        createToolPanel();
+        setPanelAppearance(this.toolButtonPane, this.toolButtonList, this.toolPanelText);
+        createAnalyticsPanel();
+        setPanelAppearance(this.analyticsButtonPane, this.analyticsButtonList, this.analyticsPanelText);
 
     }
 
     /** Sets the colours, fonts and borders of the components. */
     private void setAppearance() {
         this.currentFontName = title.getFont().getFontName();
-
         //Frame Settings
         this.f.setSize(1000, 750);
         this.f.setLocationRelativeTo(null); //window appears in centre of screen
 
         this.f.getRootPane().setBorder(BorderFactory.createEmptyBorder(
                                                                 20, 5, 20, 5));
-        this.f.getRootPane().setBackground(OXFORD_BLUE);
-
+        this.f.getRootPane().setBackground(this.bg);
+        this.f.getContentPane().setBackground(this.bg);
         // Header Settings
         this.header.setBorder(BorderFactory.createEmptyBorder(30, 60, 30, 60));
-        this.header.setBackground(OXFORD_BLUE);
-
-        title.setFont(new Font(this.currentFontName, Font.BOLD, (
+        this.header.setBackground(this.bg);
+        this.title.setFont(new Font(this.currentFontName, Font.BOLD, (
                                 this.currentSize + 10)));
-        title.setForeground(Color.WHITE);
-        subtitle.setFont(new Font(this.currentFontName, Font.BOLD,
+        this.title.setForeground(this.fg);
+        this.subtitle.setFont(new Font(this.currentFontName, Font.BOLD,
                                     (this.currentSize + 8)));
-        subtitle.setForeground(Color.WHITE);
+        this.subtitle.setForeground(this.fg);
 
-        // Text Settings
-        this.text.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
-        this.text.setFont(new Font(this.currentFontName, Font.PLAIN,
-                                    this.currentSize - 2));
+        // Tab Panel Settings
+        this.tabPanel.setFont(new Font(this.currentFontName, Font.PLAIN, (
+                                this.currentSize)));
 
-        // Left Button Pane
-        this.leftButtonPane.setBorder(BorderFactory.createEmptyBorder(
-                                                                0, 15, 0, 15));
-        this.leftButtonPane.setBackground(OXFORD_BLUE);
-        // Right Button Pane
-        this.rightButtonPane.setBorder(BorderFactory.createEmptyBorder(
-                                                                0, 15, 0, 15));
-        this.rightButtonPane.setBackground(OXFORD_BLUE);
-        //Buttons
-        ArrayList<ArrayList<JButton>> buttonLists =
-                                        new ArrayList<ArrayList<JButton>>();
-        Collections.addAll(buttonLists, this.buttonListA, this.buttonListB);
 
-        for (ArrayList<JButton> buttonList : buttonLists) {
+        for (int i=0; i < this.tabPanel.getTabCount(); i++){
+            tabPanel.setBackgroundAt(i, this.bg);
+            tabPanel.setForegroundAt(i, this.fg);
+            Component panel = tabPanel.getComponentAt(i);
+            panel.setBackground(this.bg);
+        }
+        // Define first panel as selected one
+        this.tabPanel.setSelectedIndex(0);
+        this.tabPanel.setBackgroundAt(0, this.fg);
+        this.tabPanel.setForegroundAt(0, this.bg);
+        // Change tab this.bg/this.fg if selected
+        this.tabPanel.addChangeListener(new ChangeListener(){
+            public void stateChanged(ChangeEvent e){
+                int selected = tabPanel.getSelectedIndex();
+                tabPanel.setBackgroundAt(selected, fg);
+                tabPanel.setForegroundAt(selected, bg);
+
+                for (int i=0; i < tabPanel.getTabCount(); i++){
+                    if (i != selected){
+                        tabPanel.setBackgroundAt(i, bg);
+                        tabPanel.setForegroundAt(i, fg);
+                    }
+                }
+            }
+        });
+
+
+    }
+
+    private void createMainPanel(){
+        this.mainPanel.setLayout(new BorderLayout());
+        this.mainPanelText = new JTextPane();
+        this.mainPanelText.setText("Welcome to XMOD");
+        this.mainPanelText.setContentType("text/html");
+        this.mainPanelText.setEditable(false);
+        this.mainPanelText.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES,
+                                        true); // ensure font can be updated
+        this.mainPanelScrollPane = new JScrollPane(this.mainPanelText,
+                                        JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+                                        JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        this.buttonLoadTMS = new JButton(Operations.LOAD_TMS);
+        this.buttonRunExp = new JButton(Operations.RUN_EXP);
+
+        this.mainButtonList = new ArrayList<JButton>();
+        this.mainButtonList.add(this.buttonLoadTMS);
+        this.mainButtonList.add(this.buttonRunExp);
+
+        addListener(this.mainButtonList);
+        this.mainButtonPane = new JPanel(new GridLayout(this.mainButtonList.size(), 1, 5, 5));
+        for (JButton button: this.mainButtonList) {
+            this.mainButtonPane.add(button);
+        }
+        this.mainPanel.add(this.mainButtonPane, BorderLayout.WEST);
+        this.mainPanel.add(this.mainPanelScrollPane, BorderLayout.CENTER);
+
+    }
+
+    /**
+     * this.mainButtonPane, this.mainButtonList, this.mainPanelText
+     */
+    private void setPanelAppearance(JPanel buttonPane,
+                                    ArrayList<JButton> buttonList,
+                                    JTextPane panelText ){
+
+        if (null != buttonPane) {
+            buttonPane.setBorder(BorderFactory.createEmptyBorder(
+                                                    0, 15, 0, 15));
+            buttonPane.setBackground(this.bg);
+            }
+
+        if (null != buttonList) {
             for (JButton button: buttonList) {
                 button.setFont(new Font(this.currentFontName,
-                                         Font.PLAIN, this.currentSize));
+                                            Font.PLAIN, this.currentSize));
+                button.setBackground(this.fg);
+                button.setForeground(this.bg);
             }
+        }
+        if (null != panelText) {
+            panelText.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
+            panelText.setFont(new Font(this.currentFontName, Font.PLAIN,
+                                        this.currentSize - 2));
+            panelText.setBackground(this.fg);
+            panelText.setForeground(this.bg);
         }
     }
 
-    /** Adds listeners to the buttons to respond to button clicks.
-     * @param buttonList list of buttons to add listeners to
-     */
-    private void addListener(final ArrayList<JButton> buttonList) {
-        ActionListener listener = e -> handleOperation(e.getActionCommand());
-        for (JButton button : buttonList) {
-            button.addActionListener(listener);
+    private void createToolPanel(){
+        this.toolPanel.setLayout(new BorderLayout());
+        this.toolPanelText = new JTextPane();
+        this.toolPanelText.setContentType("text/html");
+        this.toolPanelText.setEditable(false);
+        this.toolPanelText.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES,
+                                        true); // ensure font can be updated
+        this.toolPanelText.setText("XMOD Tools");
+        this.toolPanelScrollPane = new JScrollPane(this.toolPanelText,
+                                        JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+                                        JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+        this.buttonMonitorOn = new JButton(Operations.MONITOR_ON);
+        this.buttonMonitorOff = new JButton(Operations.MONITOR_OFF);
+        this.buttonCheckConnection = new JButton(Operations.CHECK_CONNECTION);
+        this.buttonControllerInfo = new JButton(Operations.CONTROLLER_INFO);
+        this.buttonCheckFont = new JButton(Operations.CHECK_FONT);
+        this.buttonTestSystem = new JButton(Operations.TEST);
+
+        this.toolButtonList = new ArrayList<JButton>();
+        this.toolButtonList.add(this.buttonCheckFont);
+        this.toolButtonList.add(this.buttonCheckConnection);
+        this.toolButtonList.add(this.buttonControllerInfo);
+        this.toolButtonList.add(this.buttonMonitorOn);
+        this.toolButtonList.add(this.buttonMonitorOff);
+        this.toolButtonList.add(this.buttonTestSystem);
+
+        addListener(this.toolButtonList);
+        this.toolButtonPane = new JPanel(new GridLayout(this.toolButtonList.size(), 1, 5, 5));
+        for (JButton button: this.toolButtonList) {
+            this.toolButtonPane.add(button);
         }
+        this.toolPanel.add(this.toolButtonPane, BorderLayout.WEST);
+        this.toolPanel.add(this.toolPanelScrollPane, BorderLayout.CENTER);
+    }
+
+    private void createAnalyticsPanel(){
+        this.analyticsPanel.setLayout(new BorderLayout());
+        this.analyticsPanelText = new JTextPane();
+
+        this.analyticsPanelText.setContentType("text/html");
+        this.analyticsPanelText.setEditable(false);
+        this.analyticsPanelText.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES,
+                                        true); // ensure font can be updated
+        this.analyticsPanelText.setText("Analytics: Coming Soon!");
+        this.analyticsPanelScrollPane = new JScrollPane(this.analyticsPanelText,
+                                        JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+                                        JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+        this.analyticsPanel.add(this.analyticsPanelScrollPane, BorderLayout.CENTER);
+
     }
 
     /** Makes the main window visible. */
@@ -285,7 +353,7 @@ public class MainWindow {
     /** Repaints the frame so updates become visible to user. */
     public void repaint() {
         this.f.repaint();
-    }
+    };
 
     /** Updates the text.
      * @param newText new text to show
@@ -294,8 +362,20 @@ public class MainWindow {
         if (newText == "") {
             return;
         }
-        this.text.setText(newText);
-        this.text.setCaretPosition(0);
+        this.mainPanelText.setText(newText);
+        this.mainPanelText.setCaretPosition(0);
+        return;
+    }
+
+    /** Updates the text.
+     * @param newText new text to show
+     */
+    public void updateToolText(final String newText) {
+        if (newText == "") {
+            return;
+        }
+        this.toolPanelText.setText(newText);
+        this.toolPanelText.setCaretPosition(0);
         return;
     }
 
@@ -321,6 +401,15 @@ public class MainWindow {
         }
     }
 
+    /** Adds listeners to the buttons to respond to button clicks.
+     * @param buttonList list of buttons to add listeners to
+     */
+    private void addListener(final ArrayList<JButton> buttonList) {
+        ActionListener listener = e -> handleOperation(e.getActionCommand());
+        for (JButton button : buttonList) {
+            button.addActionListener(listener);
+        }
+    }
     /**
      * Used in Xmod.java to allow the controller to listen to property changes.
      * i.e. so the buttons can trigger different actions
@@ -329,7 +418,7 @@ public class MainWindow {
     public void addObserver(final PropertyChangeListener l) {
         pcs.addPropertyChangeListener(Actions.OPERATION, l);
     }
-    /**
+        /**
      * Handles sending property changes.
      * @param operation name of button pressed
      */
