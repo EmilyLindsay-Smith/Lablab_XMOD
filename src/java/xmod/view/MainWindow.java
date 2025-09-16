@@ -308,6 +308,7 @@ public class MainWindow {
         }
     }
 
+
     private JTextPane createTextPane(final String initialText) {
         JTextPane textPanel = new JTextPane();
         textPanel.setContentType("text/html");
@@ -317,6 +318,7 @@ public class MainWindow {
         textPanel.setText(initialText);
         return textPanel;
     }
+
     private void createToolPanel() {
         this.toolPanel.setLayout(new BorderLayout());
         this.toolPanelText = createTextPane("XmodTools");

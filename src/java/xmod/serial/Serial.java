@@ -223,8 +223,10 @@ public class Serial extends Thread {
             this.send(command);
             /*
             if (sendSuccessUpdate) {
+                /*
                 updateStatus(Responses.SERIAL_CONNECTED, "Sent command to "
                                 + description, "", "");
+                */
             }
             */
             return true;

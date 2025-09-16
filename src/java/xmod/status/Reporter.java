@@ -168,6 +168,7 @@ public class Reporter {
         return output;
     }
 
+
     private String printValues(final ReportLabel key) {
             String output = "";
             ObjectReport values = this.status.get(key);
