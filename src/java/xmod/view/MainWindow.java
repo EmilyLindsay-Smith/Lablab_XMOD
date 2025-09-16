@@ -5,7 +5,6 @@ import xmod.constants.Operations;
 import xmod.status.Responses;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -47,8 +46,9 @@ import java.awt.Font;
 
 public class MainWindow {
     // Components
-
+    /** Main frame. */
     private JFrame f;
+    /** Panel for tabs. */
     private JTabbedPane tabPanel;
     /** Header panel. */
     private JPanel header;
@@ -56,24 +56,36 @@ public class MainWindow {
     private JLabel title;
     /** Subtitle. */
     private JLabel subtitle;
-    /** Central text pane. */
 
+    /** Main Panel. */
     private JPanel mainPanel;
+    /** Tool Panel. */
     private JPanel toolPanel;
+    /** Analytics Panel. */
     private JPanel analyticsPanel;
 
-    /** Main Panel */
+    // Main Panel.
+    /** Main Panel text panel. */
     private JTextPane mainPanelText;
+    /** Main Panel scroll panel. */
     private JScrollPane mainPanelScrollPane;
+    /** Main Panel button panel. */
     private JPanel mainButtonPane;
+    /** Main Panel button list. */
     private ArrayList<JButton> mainButtonList;
+    /** Run Experiment Button. */
     private JButton buttonRunExp;
+    /** Load TMS button. */
     private JButton buttonLoadTMS;
 
-    /** Tool Panel */
+    // Tool Panel */
+    /** Tool Panel text panel. */
     private JTextPane toolPanelText;
+    /** Tool Panel scroll panel. */
     private JScrollPane toolPanelScrollPane;
+    /** Tool Panel button panel. */
     private JPanel toolButtonPane;
+    /** Tool Panel button list. */
     private ArrayList<JButton> toolButtonList;
     /** Turn monitors on button. */
     private JButton buttonMonitorOn;
@@ -88,14 +100,20 @@ public class MainWindow {
     /** Button to trigger Test Experiment. */
     private JButton buttonTestSystem;
 
-    /** Analytics Panel */
+   //Analytics Panel
+    /** Analytics Panel text. */
     private JTextPane analyticsPanelText;
+    /** Analytics Panel scroll panel. */
     private JScrollPane analyticsPanelScrollPane;
+    /** Analytics Panel button panel. */
     private JPanel analyticsButtonPane;
+    /** Analytics Panel button list. */
     private ArrayList<JButton> analyticsButtonList;
     /**This is the official Oxford University Blue. */
     private static final Color OXFORD_BLUE = new Color(0, 33, 71);
+    /** Background Color. */
     private Color bg = OXFORD_BLUE;
+    /** Foreground color. */
     private Color fg = Color.WHITE;
     // Font Settings
     /** Current font. */
@@ -130,7 +148,7 @@ public class MainWindow {
         // Make frame visible to user
         this.f.setVisible(true);
     };
-    /** Generates window components and layout */
+    /** Generates window components and layout. */
     private void generateWindowContents() {
         // Generate JFrame
         this.f = new JFrame("XMOD");
@@ -203,7 +221,7 @@ public class MainWindow {
                                 this.currentSize)));
 
 
-        for (int i=0; i < this.tabPanel.getTabCount(); i++){
+        for (int i = 0; i < this.tabPanel.getTabCount(); i++) {
             tabPanel.setBackgroundAt(i, this.bg);
             tabPanel.setForegroundAt(i, this.fg);
             Component panel = tabPanel.getComponentAt(i);
@@ -214,14 +232,14 @@ public class MainWindow {
         this.tabPanel.setBackgroundAt(0, this.fg);
         this.tabPanel.setForegroundAt(0, this.bg);
         // Change tab this.bg/this.fg if selected
-        this.tabPanel.addChangeListener(new ChangeListener(){
-            public void stateChanged(ChangeEvent e){
+        this.tabPanel.addChangeListener(new ChangeListener() {
+            public void stateChanged(final ChangeEvent e) {
                 int selected = tabPanel.getSelectedIndex();
                 tabPanel.setBackgroundAt(selected, fg);
                 tabPanel.setForegroundAt(selected, bg);
 
-                for (int i=0; i < tabPanel.getTabCount(); i++){
-                    if (i != selected){
+                for (int i = 0; i < tabPanel.getTabCount(); i++) {
+                    if (i != selected) {
                         tabPanel.setBackgroundAt(i, bg);
                         tabPanel.setForegroundAt(i, fg);
                     }
@@ -232,7 +250,7 @@ public class MainWindow {
 
     }
 
-    private void createMainPanel(){
+    private void createMainPanel() {
         this.mainPanel.setLayout(new BorderLayout());
         this.mainPanelText = createTextPane("Welcome to XMOD");
         this.mainPanelScrollPane = new JScrollPane(this.mainPanelText,
@@ -257,11 +275,14 @@ public class MainWindow {
     }
 
     /**
-     * this.mainButtonPane, this.mainButtonList, this.mainPanelText
+     * Set up the panel appearance.
+     * @param buttonPane panel of buttons
+     * @param buttonList list of buttons
+     * @param panelText text panel
      */
-    private void setPanelAppearance(JPanel buttonPane,
-                                    ArrayList<JButton> buttonList,
-                                    JTextPane panelText ){
+    private void setPanelAppearance(final JPanel buttonPane,
+                                    final ArrayList<JButton> buttonList,
+                                    final JTextPane panelText) {
 
         if (null != buttonPane) {
             buttonPane.setBorder(BorderFactory.createEmptyBorder(
@@ -287,7 +308,7 @@ public class MainWindow {
         }
     }
 
-    private JTextPane createTextPane(String initialText){
+    private JTextPane createTextPane(final String initialText) {
         JTextPane textPanel = new JTextPane();
         textPanel.setContentType("text/html");
         textPanel.setEditable(false);
@@ -296,7 +317,7 @@ public class MainWindow {
         textPanel.setText(initialText);
         return textPanel;
     }
-    private void createToolPanel(){
+    private void createToolPanel() {
         this.toolPanel.setLayout(new BorderLayout());
         this.toolPanelText = createTextPane("XmodTools");
         this.toolPanelScrollPane = new JScrollPane(this.toolPanelText,
@@ -328,7 +349,7 @@ public class MainWindow {
         this.toolPanel.add(this.toolPanelScrollPane, BorderLayout.CENTER);
     }
 
-    private void createAnalyticsPanel(){
+    private void createAnalyticsPanel() {
         this.analyticsPanel.setLayout(new BorderLayout());
         this.analyticsPanelText = createTextPane("Analytics: Coming Soon!");
         this.analyticsPanelScrollPane = new JScrollPane(this.analyticsPanelText,

@@ -221,12 +221,12 @@ public class Serial extends Thread {
                                 final Boolean sendSuccessUpdate) {
         try {
             this.send(command);
+            /*
             if (sendSuccessUpdate) {
-                /*
                 updateStatus(Responses.SERIAL_CONNECTED, "Sent command to "
                                 + description, "", "");
-                */
             }
+            */
             return true;
         } catch (SerialNotConnectedException e) {
             // StackTrace not passed on as
