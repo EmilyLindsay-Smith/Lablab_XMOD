@@ -14,8 +14,6 @@ public enum ReportLabel {
     CONNECTION("CONNECTION"),
     /** Font (changed). */
     FONT("FONT");
-    /** Monitors (On/Off). */
-    //MONITORS("MONITORS");
 
     /** String value of enum.
      */

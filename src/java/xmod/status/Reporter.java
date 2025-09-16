@@ -155,7 +155,7 @@ public class Reporter {
     }
 
     /**
-     * Creates a string representation of the status to displaying to user.
+     * Creates a string representation of the status to display to user.
      * To control the visuals, html is used here
      * @return htmlstring representation of the status
      */
@@ -168,7 +168,8 @@ public class Reporter {
         return output;
     }
 
-    private String printValues(ReportLabel key){
+
+    private String printValues(final ReportLabel key) {
             String output = "";
             ObjectReport values = this.status.get(key);
             // check if no values are set
@@ -184,7 +185,7 @@ public class Reporter {
             return output;
     }
     /**
-     * Creates a string representation of the MAIN status to displaying to user.
+     * Creates a string representation of the MAIN status to display to user.
      * To control the visuals, html is used here
      * @return htmlstring representation of the status
      */
@@ -198,7 +199,7 @@ public class Reporter {
 
 
     /**
-     * Creates a string representation of the TOOLS status to displaying to user.
+     * Creates a string representation of the TOOLS status to display to user.
      * To control the visuals, html is used here
      * @return htmlstring representation of the status
      */
@@ -206,9 +207,9 @@ public class Reporter {
         String output = "";
         for (Map.Entry<ReportLabel, ObjectReport> e: this.status.entrySet()) {
             ReportLabel key = e.getKey(); //get name of key
-            if ((key == ReportLabel.STATUS) ||
-                (key == ReportLabel.TMS) ||
-                (key == ReportLabel.AUDIO) ) {
+            if ((key == ReportLabel.STATUS)
+                || (key == ReportLabel.TMS)
+                || (key == ReportLabel.AUDIO)) {
                     continue;
                 }
            output = output + printValues(key);
