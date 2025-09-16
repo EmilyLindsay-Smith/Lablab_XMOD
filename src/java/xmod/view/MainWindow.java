@@ -166,11 +166,14 @@ public class MainWindow {
         //
 
         createMainPanel();
-        setPanelAppearance(this.mainButtonPane, this.mainButtonList, this.mainPanelText);
+        setPanelAppearance(this.mainButtonPane, this.mainButtonList,
+                            this.mainPanelText);
         createToolPanel();
-        setPanelAppearance(this.toolButtonPane, this.toolButtonList, this.toolPanelText);
+        setPanelAppearance(this.toolButtonPane, this.toolButtonList,
+                            this.toolPanelText);
         createAnalyticsPanel();
-        setPanelAppearance(this.analyticsButtonPane, this.analyticsButtonList, this.analyticsPanelText);
+        setPanelAppearance(this.analyticsButtonPane, this.analyticsButtonList,
+                            this.analyticsPanelText);
 
     }
 
@@ -231,12 +234,7 @@ public class MainWindow {
 
     private void createMainPanel(){
         this.mainPanel.setLayout(new BorderLayout());
-        this.mainPanelText = new JTextPane();
-        this.mainPanelText.setText("Welcome to XMOD");
-        this.mainPanelText.setContentType("text/html");
-        this.mainPanelText.setEditable(false);
-        this.mainPanelText.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES,
-                                        true); // ensure font can be updated
+        this.mainPanelText = createTextPane("Welcome to XMOD");
         this.mainPanelScrollPane = new JScrollPane(this.mainPanelText,
                                         JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
                                         JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -248,7 +246,8 @@ public class MainWindow {
         this.mainButtonList.add(this.buttonRunExp);
 
         addListener(this.mainButtonList);
-        this.mainButtonPane = new JPanel(new GridLayout(this.mainButtonList.size(), 1, 5, 5));
+        this.mainButtonPane = new JPanel(new GridLayout(
+                                        this.mainButtonList.size(), 1, 5, 5));
         for (JButton button: this.mainButtonList) {
             this.mainButtonPane.add(button);
         }
@@ -279,7 +278,8 @@ public class MainWindow {
             }
         }
         if (null != panelText) {
-            panelText.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
+            panelText.setBorder(BorderFactory.createEmptyBorder(30, 30,
+                                                                 30, 30));
             panelText.setFont(new Font(this.currentFontName, Font.PLAIN,
                                         this.currentSize - 2));
             panelText.setBackground(this.fg);
@@ -287,14 +287,18 @@ public class MainWindow {
         }
     }
 
+    private JTextPane createTextPane(String initialText){
+        JTextPane textPanel = new JTextPane();
+        textPanel.setContentType("text/html");
+        textPanel.setEditable(false);
+        textPanel.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES,
+                                    true); // ensure font can be updated
+        textPanel.setText(initialText);
+        return textPanel;
+    }
     private void createToolPanel(){
         this.toolPanel.setLayout(new BorderLayout());
-        this.toolPanelText = new JTextPane();
-        this.toolPanelText.setContentType("text/html");
-        this.toolPanelText.setEditable(false);
-        this.toolPanelText.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES,
-                                        true); // ensure font can be updated
-        this.toolPanelText.setText("XMOD Tools");
+        this.toolPanelText = createTextPane("XmodTools");
         this.toolPanelScrollPane = new JScrollPane(this.toolPanelText,
                                         JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
                                         JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -315,7 +319,8 @@ public class MainWindow {
         this.toolButtonList.add(this.buttonTestSystem);
 
         addListener(this.toolButtonList);
-        this.toolButtonPane = new JPanel(new GridLayout(this.toolButtonList.size(), 1, 5, 5));
+        this.toolButtonPane = new JPanel(new GridLayout(
+                                        this.toolButtonList.size(), 1, 5, 5));
         for (JButton button: this.toolButtonList) {
             this.toolButtonPane.add(button);
         }
@@ -325,18 +330,13 @@ public class MainWindow {
 
     private void createAnalyticsPanel(){
         this.analyticsPanel.setLayout(new BorderLayout());
-        this.analyticsPanelText = new JTextPane();
-
-        this.analyticsPanelText.setContentType("text/html");
-        this.analyticsPanelText.setEditable(false);
-        this.analyticsPanelText.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES,
-                                        true); // ensure font can be updated
-        this.analyticsPanelText.setText("Analytics: Coming Soon!");
+        this.analyticsPanelText = createTextPane("Analytics: Coming Soon!");
         this.analyticsPanelScrollPane = new JScrollPane(this.analyticsPanelText,
                                         JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
                                         JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
-        this.analyticsPanel.add(this.analyticsPanelScrollPane, BorderLayout.CENTER);
+        this.analyticsPanel.add(this.analyticsPanelScrollPane,
+                                        BorderLayout.CENTER);
 
     }
 
@@ -358,7 +358,7 @@ public class MainWindow {
     /** Updates the text.
      * @param newText new text to show
      */
-    public void updateText(final String newText) {
+    public void updateMainText(final String newText) {
         if (newText == "") {
             return;
         }

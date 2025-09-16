@@ -13,9 +13,9 @@ public enum ReportLabel {
     /** Connection to control box via serial port. */
     CONNECTION("CONNECTION"),
     /** Font (changed). */
-    FONT("FONT"),
+    FONT("FONT");
     /** Monitors (On/Off). */
-    MONITORS("MONITORS");
+    //MONITORS("MONITORS");
 
     /** String value of enum.
      */

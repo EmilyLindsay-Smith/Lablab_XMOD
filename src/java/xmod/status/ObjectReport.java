@@ -11,8 +11,8 @@ import java.util.Set;
  * Used by other classes to format updates to send to Reporter
  *
  * @author ELS
- * @version 2.0
- * @since 2025-06-09
+ * @version 2.1
+ * @since 2025-09-16
  * KNOWN BUGS:
  */
 public class ObjectReport {
@@ -157,7 +157,6 @@ public class ObjectReport {
      */
     public String toString() {
         String output = "";
-
         //No need for Category Name - this is handled in Reporter
         for (Map.Entry<ReportCategory, ArrayList<String>> e
             : this.report.entrySet()) {
@@ -165,14 +164,6 @@ public class ObjectReport {
             ArrayList<String> values = e.getValue(); // get values
             // check if no values are set
             if (null != values && !values.isEmpty()) {
-                /*
-                output += "<span style="
-                        + "\"display:inline-block;"
-                        + "margin-left:40px;\">"
-                        + "<u>"
-                        + key.getValue()
-                        + ":</u></span><br/>";
-                */
                 output += "<p style="
                         + "\"display:inline-block;"
                         + "margin-left:40px;\">";

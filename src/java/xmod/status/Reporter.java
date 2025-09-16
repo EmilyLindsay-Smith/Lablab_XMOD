@@ -7,8 +7,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /** Representation of status.
  * @author ELS
- * @version 2.0
- * @since 2024-2-25
+ * @version 2.1
+ * @since 2025-09-16
  * BUGS:
  *
  *  */
@@ -71,28 +71,31 @@ public class Reporter {
 
         ObjectReport tmsInitialValue = new ObjectReport(
                                             ReportLabel.TMS);
+        /*
         tmsInitialValue.updateValues(ReportCategory.MESSAGE,
                                     Responses.NO_FILE_SELECTED);
-
+        */
         ObjectReport audioInitialValue = new ObjectReport(
                                             ReportLabel.AUDIO);
+        /*
         audioInitialValue.updateValues(ReportCategory.MESSAGE,
                                         Responses.NO_FILE_SELECTED);
-
+        */
         ObjectReport connectionInitialValue = new ObjectReport(
                                             ReportLabel.CONNECTION);
         ObjectReport fontInitialValue = new ObjectReport(
                                             ReportLabel.FONT);
+        /*
         ObjectReport monitorInitialValue = new ObjectReport(
                                             ReportLabel.MONITORS);
-
+        */
         // Add to status hashmap: categoryName, initialValue
         this.status.put(ReportLabel.STATUS, statusInitialValue);
         this.status.put(ReportLabel.TMS, tmsInitialValue);
         this.status.put(ReportLabel.AUDIO, audioInitialValue);
         this.status.put(ReportLabel.CONNECTION, connectionInitialValue);
         this.status.put(ReportLabel.FONT, fontInitialValue);
-        this.status.put(ReportLabel.MONITORS, monitorInitialValue);
+        //this.status.put(ReportLabel.MONITORS, monitorInitialValue);
     }
 
     /**
@@ -158,10 +161,16 @@ public class Reporter {
      */
     public String toString() {
         String output = "";
-
         for (Map.Entry<ReportLabel, ObjectReport> e: this.status.entrySet()) {
             ReportLabel key = e.getKey(); //get name of key
-            ObjectReport values = e.getValue(); // get values
+             output = output + printValues(key);
+        }
+        return output;
+    }
+
+    private String printValues(ReportLabel key){
+            String output = "";
+            ObjectReport values = this.status.get(key);
             // check if no values are set
             if (null != values && !values.isEmpty()) {
                 output += "<span style=\"font-weight:bold\">"
@@ -172,6 +181,37 @@ public class Reporter {
                 output += values.toString();
                 output = output + "</span>";
             }
+            return output;
+    }
+    /**
+     * Creates a string representation of the MAIN status to displaying to user.
+     * To control the visuals, html is used here
+     * @return htmlstring representation of the status
+     */
+    public String toStringMain() {
+        String output = "";
+        output = output + printValues(ReportLabel.STATUS);
+        output = output + printValues(ReportLabel.TMS);
+        output = output + printValues(ReportLabel.AUDIO);
+        return output;
+    }
+
+
+    /**
+     * Creates a string representation of the TOOLS status to displaying to user.
+     * To control the visuals, html is used here
+     * @return htmlstring representation of the status
+     */
+    public String toStringTool() {
+        String output = "";
+        for (Map.Entry<ReportLabel, ObjectReport> e: this.status.entrySet()) {
+            ReportLabel key = e.getKey(); //get name of key
+            if ((key == ReportLabel.STATUS) ||
+                (key == ReportLabel.TMS) ||
+                (key == ReportLabel.AUDIO) ) {
+                    continue;
+                }
+           output = output + printValues(key);
         }
         return output;
     }

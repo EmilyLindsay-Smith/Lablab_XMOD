@@ -22,8 +22,8 @@ import java.beans.PropertyChangeSupport;
  * Uses jSerialComm's SerialPort class
  *
  * @author ELS
- * @version 2.0
- * @since 2025-06-09
+ * @version 2.1
+ * @since 2025-09-16
  * KNOWN BUGS:
  */
 
@@ -157,10 +157,6 @@ public class Serial extends Thread {
         selectPort();
         if (this.serialPort == null) { // if port not identified yet
             if (repeatInt > 0) {
-                String updateMsg = Utils.getTime()
-                            + ": Trying to connect to serial port ... ";
-                updateStatus(Responses.SERIAL_UNCONNECTED,
-                    updateMsg, "", "");
                 Utils.pause(this.WAIT_DURATION);
                 int decrementedRepeatInt = repeatInt - 1;
                 connectToPort(decrementedRepeatInt);
@@ -191,12 +187,7 @@ public class Serial extends Thread {
             this.serialConnected = true; //only update here as mark of success
             return;
          } else {
-            String errorMessage = "Serial Port Unavailable: "
-            + "Could not open connection to control box.";
             if (repeatInt > 0) {
-                String updateMsg = "Trying to connect to serial port...";
-                updateStatus(Responses.SERIAL_UNCONNECTED,
-                    updateMsg, "", "");
                 Utils.pause(this.WAIT_DURATION);
                 int decrementedRepeatInt = repeatInt - 1;
                 connectToPort(decrementedRepeatInt);
@@ -231,8 +222,10 @@ public class Serial extends Thread {
         try {
             this.send(command);
             if (sendSuccessUpdate) {
+                /*
                 updateStatus(Responses.SERIAL_CONNECTED, "Sent command to "
                                 + description, "", "");
+                */
             }
             return true;
         } catch (SerialNotConnectedException e) {

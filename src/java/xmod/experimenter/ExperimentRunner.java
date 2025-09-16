@@ -23,8 +23,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * ExperimentRunner class controls running the experiment.
  * @author ELS
- * @version 2.0
- * @since 2025-01-10
+ * @version 2.1
+ * @since 2025-09-16
  * BUGS:
 
  */
@@ -244,7 +244,7 @@ public class ExperimentRunner implements PropertyChangeListener {
                         "", ReportLabel.STATUS);
             return;
         }
-/*
+
         if  (!this.serialPort.isSerialConnected()) {
             updateStatus(Responses.EXPERIMENT_NOT_READY,
                         "Cannot begin experiment as not connected"
@@ -253,7 +253,7 @@ public class ExperimentRunner implements PropertyChangeListener {
                         "", ReportLabel.STATUS);
             return;
         }
-*/
+
         // Set flag to true
         setRunning(true);
         updateStatus(Responses.EXPERIMENT_RUNNING,
