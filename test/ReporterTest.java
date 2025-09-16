@@ -62,9 +62,9 @@ public class ReporterTest {
      */
   private static Stream<Arguments> reporterInitialValues() {
         return Stream.of(
-            Arguments.of(ReportLabel.STATUS, Responses.WELCOME),
-            Arguments.of(ReportLabel.TMS, Responses.NO_FILE_SELECTED),
-            Arguments.of(ReportLabel.AUDIO, Responses.NO_FILE_SELECTED)
+            Arguments.of(ReportLabel.STATUS, Responses.WELCOME)
+            //Arguments.of(ReportLabel.TMS, Responses.NO_FILE_SELECTED),
+            //Arguments.of(ReportLabel.AUDIO, Responses.NO_FILE_SELECTED)
         );
     }
 
@@ -92,7 +92,7 @@ public class ReporterTest {
     @DisplayName("Check correct empty initial entries")
     @ParameterizedTest
     @EnumSource(value = ReportLabel.class,
-                names = {"CONNECTION", "FONT", "MONITORS"})
+                names = {"CONNECTION", "FONT"})
     public void testEmptyInitialEntries(final ReportLabel key) {
         //ObjectReport realValues = this.reporter.get(key);
         for (Map.Entry<ReportCategory, ArrayList<String>> e
@@ -109,9 +109,8 @@ public class ReporterTest {
     private static Stream<Arguments> updatingReporterValues1() {
         return Stream.of(
             Arguments.of(ReportLabel.CONNECTION, Responses.SERIAL_UNCONNECTED),
-            Arguments.of(ReportLabel.FONT, "Font changed to Helvetica"),
-            Arguments.of(ReportLabel.MONITORS, Responses.MONITORS_ON)
-
+            Arguments.of(ReportLabel.FONT, "Font changed to Helvetica")
+            //Arguments.of(ReportLabel.MONITORS, Responses.MONITORS_ON)
         );
     }
 

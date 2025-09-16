@@ -358,7 +358,7 @@ public class MainWindow {
     /** Updates the text.
      * @param newText new text to show
      */
-    public void updateText(final String newText) {
+    public void updateMainText(final String newText) {
         if (newText == "") {
             return;
         }

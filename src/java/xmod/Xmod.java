@@ -28,8 +28,8 @@ import java.beans.PropertyChangeEvent;
 /** Xmod is the controller class for the whole application.
  *
  * @author ELS
- * @version 2.0
- * @since 2025-06-09
+ * @version 2.1
+ * @since 2025-09-16
  */
 
 public class Xmod implements PropertyChangeListener {
@@ -295,6 +295,7 @@ public class Xmod implements PropertyChangeListener {
     /** Aborts the experiment. */
     private void abortExperiment() {
         this.experimentRunner.setRunning(false); // abort experiment runner
+
     }
 
     /** Tests the system. */
@@ -379,9 +380,10 @@ public class Xmod implements PropertyChangeListener {
         EventQueue.invokeLater(new Runnable() {
           @Override
             public void run() {
-                String newText = reporter.toString();
-                mainWindow.updateText(newText);
-                mainWindow.repaint();
+                String mainNewText = reporter.toStringMain();
+                String toolNewText = reporter.toStringTool();
+                mainWindow.updateMainText(mainNewText);
+                mainWindow.updateToolText(toolNewText);
             }
         });
     }
