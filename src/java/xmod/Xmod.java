@@ -354,7 +354,6 @@ public class Xmod implements PropertyChangeListener {
         );
         //NB: 0 = options[0] .: start experiment
         // 1 = options[1] .: cancel experiment
-        System.out.println(choice);
         return choice;
     }
 
