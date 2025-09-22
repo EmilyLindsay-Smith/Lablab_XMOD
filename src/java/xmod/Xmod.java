@@ -294,6 +294,7 @@ public class Xmod implements PropertyChangeListener {
 
     /** Aborts the experiment. */
     private void abortExperiment() {
+        this.expRunner.setRunning(false);
         ObjectReport abortReport =  createReport(ReportLabel.STATUS,
                                 "Aborting experiment... please wait...\n"
                                 + "if experiment won't exit please "
