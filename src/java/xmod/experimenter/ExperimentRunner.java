@@ -229,6 +229,7 @@ public class ExperimentRunner implements PropertyChangeListener {
      */
     public void runMethod() { //throws SerialBytesReceivedException {
         // CHECK EVERYTHING IS READY
+
         if  (!this.experimentLoaded) {
             updateStatus(Responses.EXPERIMENT_NOT_READY,
                         "Cannot begin experiment as no experiment loaded",
@@ -285,6 +286,7 @@ public class ExperimentRunner implements PropertyChangeListener {
                 // collects button pressed and reaction time for all 16 boxes
                 this.expResulter.collectTrialResults(reaction, trialIndex);
             } catch (SerialBytesReceivedException e) {
+                this.running.set(false);
                 break; // quit the experiment running
             }
         }

@@ -295,7 +295,15 @@ public class Xmod implements PropertyChangeListener {
     /** Aborts the experiment. */
     private void abortExperiment() {
         this.experimentRunner.setRunning(false); // abort experiment runner
-
+        ObjectReport abortReport =  createReport(ReportLabel.STATUS,
+                                "Aborting experiment... please wait...",
+                                "",
+                                "",
+                                "");
+        updateStatus(abortReport);
+        this.audioPlayer.stopAudio();
+        this.mainWindow.show();
+        this.expWindow.hide();
     }
 
     /** Tests the system. */
