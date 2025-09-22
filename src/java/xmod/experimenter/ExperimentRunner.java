@@ -294,7 +294,7 @@ public class ExperimentRunner implements PropertyChangeListener {
     }
 
 
-    /** Exit the experiment */
+    /** Exit the experiment. */
     public void endExperiment() {
         this.audioPlayer.stopAudio();
         this.expResulter.printResults();

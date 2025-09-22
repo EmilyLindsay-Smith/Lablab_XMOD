@@ -359,7 +359,7 @@ public class MainWindow {
         this.toolButtonList = new ArrayList<JButton>();
         this.toolButtonList.add(this.buttonCheckFont);
         //this.toolButtonList.add(this.buttonTestSystem);
-        //this.toolButtonList.add(this.buttonTestAudio);
+        this.toolButtonList.add(this.buttonTestAudio);
 
 
         addListener(this.toolButtonList);
@@ -466,6 +466,15 @@ private void createConnectionPanel() {
         return;
     }
 
+    /** Update test audio button text. */
+    public void updateTestAudio() {
+        if (this.buttonTestAudio.getText() == Operations.TEST_AUDIO) {
+            this.buttonTestAudio.setText(Operations.STOP_TEST_AUDIO);
+        } else {
+            this.buttonTestAudio.setText(Operations.TEST_AUDIO);
+        }
+        return;
+    }
     /** Popup to select a TMS file.
      * @return string filename of chosen tms file
      * Note this is called in Xmod.java when a button is called
