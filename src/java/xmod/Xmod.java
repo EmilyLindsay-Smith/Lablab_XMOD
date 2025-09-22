@@ -380,9 +380,17 @@ public class Xmod implements PropertyChangeListener {
         EventQueue.invokeLater(new Runnable() {
           @Override
             public void run() {
-                String mainNewText = reporter.toStringMain();
-                String toolNewText = reporter.toStringTool();
-                mainWindow.updateMainText(mainNewText);
+                StringBuilder mainNewText = new StringBuilder(
+                                    reporter.printValues(ReportLabel.STATUS));
+                mainNewText.append(reporter.printValues(ReportLabel.TMS));
+                mainNewText.append(reporter.printValues(ReportLabel.AUDIO));
+
+                String connectionNewText = reporter.printValues(
+                                            ReportLabel.CONNECTION);
+                String toolNewText = reporter.printValues(ReportLabel.FONT);
+
+                mainWindow.updateMainText(mainNewText.toString());
+                mainWindow.updateConnectionText(connectionNewText);
                 mainWindow.updateToolText(toolNewText);
             }
         });

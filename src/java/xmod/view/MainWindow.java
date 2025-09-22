@@ -63,6 +63,8 @@ public class MainWindow {
     private JPanel toolPanel;
     /** Analytics Panel. */
     private JPanel analyticsPanel;
+    /** Connection Panel. */
+    private JPanel connectionPanel;
 
     // Main Panel.
     /** Main Panel text panel. */
@@ -99,6 +101,18 @@ public class MainWindow {
     private JButton buttonCheckFont;
     /** Button to trigger Test Experiment. */
     private JButton buttonTestSystem;
+    /** Button to trigger Test Audio. */
+    private JButton buttonTestAudio;
+
+   //Connection Panel
+    /** connection Panel text. */
+    private JTextPane connectionPanelText;
+    /** connection Panel scroll panel. */
+    private JScrollPane connectionPanelScrollPane;
+    /** connection Panel button panel. */
+    private JPanel connectionButtonPane;
+    /** connection Panel button list. */
+    private ArrayList<JButton> connectionButtonList;
 
    //Analytics Panel
     /** Analytics Panel text. */
@@ -109,6 +123,10 @@ public class MainWindow {
     private JPanel analyticsButtonPane;
     /** Analytics Panel button list. */
     private ArrayList<JButton> analyticsButtonList;
+
+
+
+
     /**This is the official Oxford University Blue. */
     private static final Color OXFORD_BLUE = new Color(0, 33, 71);
     /** Background Color. */
@@ -119,7 +137,7 @@ public class MainWindow {
     /** Current font. */
     private String currentFontName;
     /** Current font size. */
-    private int currentSize = 18;
+    private int currentSize = 24;
     /** Current font style. */
     private static int currentStyle = Font.PLAIN;
 
@@ -175,10 +193,14 @@ public class MainWindow {
         this.tabPanel.addTab("Main", this.mainPanel);
 
         // Generate Second Tab
+        this.connectionPanel = new JPanel();
+        this.tabPanel.addTab("Connection", this.connectionPanel);
+
+        // Generate Third Tab
         this.toolPanel = new JPanel();
         this.tabPanel.addTab("Tools", this.toolPanel);
 
-        // Generate Third Tab
+        // Generate Fourth Tab
         this.analyticsPanel = new JPanel();
         this.tabPanel.addTab("Analytics", this.analyticsPanel);
         //
@@ -189,6 +211,10 @@ public class MainWindow {
         createToolPanel();
         setPanelAppearance(this.toolButtonPane, this.toolButtonList,
                             this.toolPanelText);
+
+        createConnectionPanel();
+        setPanelAppearance(this.connectionButtonPane, this.connectionButtonList,
+                            this.connectionPanelText);
         createAnalyticsPanel();
         setPanelAppearance(this.analyticsButtonPane, this.analyticsButtonList,
                             this.analyticsPanelText);
@@ -326,20 +352,15 @@ public class MainWindow {
                                         JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
                                         JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
-        this.buttonMonitorOn = new JButton(Operations.MONITOR_ON);
-        this.buttonMonitorOff = new JButton(Operations.MONITOR_OFF);
-        this.buttonCheckConnection = new JButton(Operations.CHECK_CONNECTION);
-        this.buttonControllerInfo = new JButton(Operations.CONTROLLER_INFO);
         this.buttonCheckFont = new JButton(Operations.CHECK_FONT);
         this.buttonTestSystem = new JButton(Operations.TEST);
+        this.buttonTestAudio = new JButton(Operations.TEST_AUDIO);
 
         this.toolButtonList = new ArrayList<JButton>();
         this.toolButtonList.add(this.buttonCheckFont);
-        this.toolButtonList.add(this.buttonCheckConnection);
-        this.toolButtonList.add(this.buttonControllerInfo);
-        this.toolButtonList.add(this.buttonMonitorOn);
-        this.toolButtonList.add(this.buttonMonitorOff);
-        this.toolButtonList.add(this.buttonTestSystem);
+        //this.toolButtonList.add(this.buttonTestSystem);
+        //this.toolButtonList.add(this.buttonTestAudio);
+
 
         addListener(this.toolButtonList);
         this.toolButtonPane = new JPanel(new GridLayout(
@@ -349,6 +370,37 @@ public class MainWindow {
         }
         this.toolPanel.add(this.toolButtonPane, BorderLayout.WEST);
         this.toolPanel.add(this.toolPanelScrollPane, BorderLayout.CENTER);
+    }
+
+private void createConnectionPanel() {
+        this.connectionPanel.setLayout(new BorderLayout());
+        this.connectionPanelText = createTextPane("");
+        this.connectionPanelScrollPane = new JScrollPane(
+                                        this.connectionPanelText,
+                                        JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+                                        JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+        this.buttonMonitorOn = new JButton(Operations.MONITOR_ON);
+        this.buttonMonitorOff = new JButton(Operations.MONITOR_OFF);
+        this.buttonCheckConnection = new JButton(Operations.CHECK_CONNECTION);
+        this.buttonControllerInfo = new JButton(Operations.CONTROLLER_INFO);
+
+        this.connectionButtonList = new ArrayList<JButton>();
+        this.connectionButtonList.add(this.buttonCheckConnection);
+        this.connectionButtonList.add(this.buttonControllerInfo);
+        this.connectionButtonList.add(this.buttonMonitorOn);
+        this.connectionButtonList.add(this.buttonMonitorOff);
+
+        addListener(this.connectionButtonList);
+        this.connectionButtonPane = new JPanel(new GridLayout(
+                                        this.connectionButtonList.size(),
+                                        1, 5, 5));
+        for (JButton button: this.connectionButtonList) {
+            this.connectionButtonPane.add(button);
+        }
+        this.connectionPanel.add(this.connectionButtonPane, BorderLayout.WEST);
+        this.connectionPanel.add(this.connectionPanelScrollPane,
+                                     BorderLayout.CENTER);
     }
 
     private void createAnalyticsPanel() {
@@ -402,6 +454,17 @@ public class MainWindow {
         return;
     }
 
+    /** Updates the text.
+     * @param newText new text to show
+     */
+    public void updateConnectionText(final String newText) {
+        if (newText == "") {
+            return;
+        }
+        this.connectionPanelText.setText(newText);
+        this.connectionPanelText.setCaretPosition(0);
+        return;
+    }
 
     /** Popup to select a TMS file.
      * @return string filename of chosen tms file
