@@ -467,10 +467,10 @@ private void createConnectionPanel() {
     }
 
     /** Update test audio button text. */
-    public void updateTestAudio(){
+    public void updateTestAudio() {
         if (this.buttonTestAudio.getText() == Operations.TEST_AUDIO) {
             this.buttonTestAudio.setText(Operations.STOP_TEST_AUDIO);
-        }else{
+        } else {
             this.buttonTestAudio.setText(Operations.TEST_AUDIO);
         }
         return;

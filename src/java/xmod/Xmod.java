@@ -261,7 +261,7 @@ public class Xmod implements PropertyChangeListener {
         int proceed = remindUser();
         if (proceed == 0) {
             this.experimentRunner.runExperiment();
-        };
+        }
     };
 
     /** Calls serialPort to turn on the experiment monitors. */
@@ -334,16 +334,17 @@ public class Xmod implements PropertyChangeListener {
      * @return 0 if user cancels, 1 if user is ready to proceed
     */
     private int remindUser() {
-        Object[] options = { "Start Experiment", "Cancel" };
+        Object[] options = {"Start Experiment", "Cancel"};
         int choice = JOptionPane.showOptionDialog(
             null, //if ParentComponent = null, center on screen
-            "<html><ul>"+
-            "<li> Is your volume set to max (NOT MUTE)? </li> " +
-            "<li> Have you checked the connection to the control box? </li>" +
-            "<li> Have you checked all participants can hear the test audio?</li>" +
-            "<li> Have you checked the font and font size works? </li>" +
-            "</ul></html>" +
-            "Are you ready to start the experiment?", // Message to display
+            "<html><ul>"
+            + "<li> Is your volume set to max (NOT MUTE)? </li> "
+            + "<li> Have you checked the connection to the control box? </li>"
+            + "<li> Have you checked all participants can hear the test audio?"
+            + "</li>"
+            + "<li> Have you checked the font and font size works? </li>"
+            + "</ul></html>"
+            + "Are you ready to start the experiment?", // Message to display
             "Final XMOD Checklist", // Dialog title
             JOptionPane.OK_CANCEL_OPTION, // Option Type
             JOptionPane.PLAIN_MESSAGE, // Message type

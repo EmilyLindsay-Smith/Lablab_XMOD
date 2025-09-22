@@ -190,14 +190,14 @@ public class AudioPlayer extends Thread {
     /** Play Audio Repeatedly.
      * @param filename name of wav file to play
     */
-    public void loopAudio(String filename) {
+    public void loopAudio(final String filename) {
         if (this.loopRunning != null && this.loopRunning) {
             this.loopRunning = false;
             return;
         }
         this.loopRunning = true;
-        new Thread(new Runnable () {
-            public void run () {
+        new Thread(new Runnable() {
+            public void run() {
             loop(filename);
             return;
             }
@@ -205,12 +205,12 @@ public class AudioPlayer extends Thread {
 
     }
 
-    private void loop (String filename) {
+    private void loop(final String filename) {
         try {
-            AudioInputStream inputStream = AudioSystem.getAudioInputStream(
+            AudioInputStream loopInputStream = AudioSystem.getAudioInputStream(
             new File(filename));
             this.clip = AudioSystem.getClip();
-            this.clip.open(inputStream);
+            this.clip.open(loopInputStream);
             this.clip.loop(Clip.LOOP_CONTINUOUSLY);
         } catch (UnsupportedOperationException e) {
             String stackTrace = Utils.getStackTrace(e);
@@ -219,14 +219,14 @@ public class AudioPlayer extends Thread {
                         "", stackTrace);
             this.loopRunning = false;
             return;
-        } catch (LineUnavailableException e ) {
+        } catch (LineUnavailableException e) {
             String stackTrace = Utils.getStackTrace(e);
             updateStatus(Responses.AUDIO_ERROR,
                     "Could not play test audio due to error",
                     "", stackTrace);
             this.loopRunning = false;
             return;
-        } catch (IOException e ){
+        } catch (IOException e) {
             String stackTrace = Utils.getStackTrace(e);
             updateStatus(Responses.AUDIO_ERROR,
                         "Could not play audio file due to error",
