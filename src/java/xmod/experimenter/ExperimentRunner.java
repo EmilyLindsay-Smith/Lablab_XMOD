@@ -290,6 +290,12 @@ public class ExperimentRunner implements PropertyChangeListener {
                 break; // quit the experiment running
             }
         }
+        endExperiment();
+    }
+
+
+    /** Exit the experiment */
+    public void endExperiment() {
         this.audioPlayer.stopAudio();
         this.expResulter.printResults();
         //If experiment not aborted
@@ -308,7 +314,6 @@ public class ExperimentRunner implements PropertyChangeListener {
         }
         this.expWindow.hide();
     }
-
     /**
      * To allow main Xmod instance to listen for updates.
      * @param l listener
