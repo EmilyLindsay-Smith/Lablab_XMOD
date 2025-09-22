@@ -168,8 +168,13 @@ public class Reporter {
         return output;
     }
 
-
-    private String printValues(final ReportLabel key) {
+    /**
+     * Creates a string of the key in the status status to display to user.
+     * To control the visuals, html is used here
+     * @param key status[key]
+     * @return htmlstring representation of the status
+     */
+    public String printValues(final ReportLabel key) {
             String output = "";
             ObjectReport values = this.status.get(key);
             // check if no values are set

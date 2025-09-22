@@ -226,7 +226,7 @@ public class Serial extends Thread {
                 /*
                 updateStatus(Responses.SERIAL_CONNECTED, "Sent command to "
                                 + description, "", "");
-                */
+
             }
             */
             return true;

@@ -25,6 +25,8 @@ public final class Operations {
     /** Close the Xmod application. */
     public static final String CLOSE_XMOD = "CLOSE XMOD";
      /** Run the sample experiment. */
-    public static final String TEST = "TEST SYSTEM";
+    public static final String TEST = "RUN TEST EXPERIMENT";
+     /** Run the sample experiment. */
+    public static final String TEST_AUDIO = "PLAY TEST AUDIO";
 
 }
