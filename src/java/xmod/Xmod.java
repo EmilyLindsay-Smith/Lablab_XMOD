@@ -25,6 +25,8 @@ import javax.swing.SwingUtilities;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
 
+import javax.swing.JOptionPane;
+
 /** Xmod is the controller class for the whole application.
  *
  * @author ELS
@@ -139,9 +141,13 @@ public class Xmod implements PropertyChangeListener {
                 case Operations.CHECK_FONT:
                     operationCheckFont(); break;
                 case Operations.CLOSE_XMOD:
-                    operationCloseXmod();
+                    operationCloseXmod(); break;
                 case Operations.TEST:
-                    operationTestSystem();
+                    operationTestSystem(); break;
+                case Operations.TEST_AUDIO:
+                    operationTestAudio(); break;
+                case Operations.STOP_TEST_AUDIO:
+                    operationTestAudio(); break;
                 default: break;
            }
         } else if (actionType == Actions.UPDATE) {
@@ -252,7 +258,10 @@ public class Xmod implements PropertyChangeListener {
     }
 
     private void operationRunExp() {
-        this.experimentRunner.runExperiment();
+        int proceed = remindUser();
+        if (proceed == 0) {
+            this.experimentRunner.runExperiment();
+        };
     };
 
     /** Calls serialPort to turn on the experiment monitors. */
@@ -294,7 +303,7 @@ public class Xmod implements PropertyChangeListener {
 
     /** Aborts the experiment. */
     private void abortExperiment() {
-        this.expRunner.setRunning(false);
+        this.experimentRunner.setRunning(false);
         ObjectReport abortReport =  createReport(ReportLabel.STATUS,
                                 "Aborting experiment... please wait...\n"
                                 + "if experiment won't exit please "
@@ -303,16 +312,51 @@ public class Xmod implements PropertyChangeListener {
                                 "",
                                 "");
         updateStatus(abortReport);
-        this.expRunner.endExperiment();
+        this.experimentRunner.endExperiment();
     }
 
     /** Tests the system. */
     private void operationTestSystem() {
         String testFile = "../test/testFiles/charlie_short.tms";
         loadTMSFile(testFile);
-        operationRunExp();
+        this.experimentRunner.runExperiment();
         return;
     }
+
+    /** Tests the audio. */
+    private void operationTestAudio() {
+        String audioFile = "../assets/Arpeggio.wav";
+        this.audioPlayer.loopAudio(audioFile);
+        this.mainWindow.updateTestAudio();
+    }
+
+    /** Creates reminder popup.
+     * @return 0 if user cancels, 1 if user is ready to proceed
+    */
+    private int remindUser() {
+        Object[] options = { "Start Experiment", "Cancel" };
+        int choice = JOptionPane.showOptionDialog(
+            null, //if ParentComponent = null, center on screen
+            "<html><ul>"+
+            "<li> Is your volume set to max (NOT MUTE)? </li> " +
+            "<li> Have you checked the connection to the control box? </li>" +
+            "<li> Have you checked all participants can hear the test audio?</li>" +
+            "<li> Have you checked the font and font size works? </li>" +
+            "</ul></html>" +
+            "Are you ready to start the experiment?", // Message to display
+            "Final XMOD Checklist", // Dialog title
+            JOptionPane.OK_CANCEL_OPTION, // Option Type
+            JOptionPane.PLAIN_MESSAGE, // Message type
+            null, // Custom icon
+            options, // Custom options array
+            options[0] // default selection
+        );
+        //NB: 0 = options[0] .: start experiment
+        // 1 = options[1] .: cancel experiment
+        System.out.println(choice);
+        return choice;
+    }
+
 
     /* ***** METHODS RELATED TO UPDATING THE WINDOWS/TEXT/FONT ************/
 
@@ -336,8 +380,6 @@ public class Xmod implements PropertyChangeListener {
         this.fontWindow.hide();
         return;
     }
-
-
 
      /**
      * Send updates to main Xmod.java.
