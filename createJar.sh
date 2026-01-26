@@ -40,8 +40,10 @@ fi
 
 mkdir -p dist
 
-xmodJar="../dist/Xmod-2.0.jar"
+xmodJar="../dist/Xmod-2.1.jar"
 manifest="../dist/XmodManifest.mf"
+
+cp -r assets bin
 
 cd bin
 {

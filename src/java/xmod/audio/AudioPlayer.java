@@ -207,8 +207,11 @@ public class AudioPlayer extends Thread {
 
     private void loop(final String filename) {
         try {
+            //AudioInputStream loopInputStream = AudioSystem.getAudioInputStream(
+            //new File(filename));
             AudioInputStream loopInputStream = AudioSystem.getAudioInputStream(
-            new File(filename));
+                getClass().getResource(filename)
+            );
             this.clip = AudioSystem.getClip();
             this.clip.open(loopInputStream);
             this.clip.loop(Clip.LOOP_CONTINUOUSLY);
