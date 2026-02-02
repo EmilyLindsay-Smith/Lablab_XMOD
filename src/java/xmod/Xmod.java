@@ -1,6 +1,7 @@
 package xmod;
 
 import xmod.audio.AudioPlayer;
+import xmod.audio.AudioLoopPlayer;
 import xmod.view.FontWindow;
 import xmod.view.ExperimentWindow;
 import xmod.view.MainWindow;
@@ -51,6 +52,8 @@ public class Xmod implements PropertyChangeListener {
     private ExperimentRunner experimentRunner;
     /** AudioPlayer to play audio file. */
     private AudioPlayer audioPlayer;
+    /** AudioLoopPlayer to play audio loop file. */
+    private AudioLoopPlayer audioLoopPlayer;
      /**
      * Constructor.
      * @param aMainWindow MainWindow object
@@ -67,7 +70,8 @@ public class Xmod implements PropertyChangeListener {
         final Reporter aReporter,
         final Serial aSerialPort,
         final ExperimentRunner expRunner,
-        final AudioPlayer aAudioPlayer) {
+        final AudioPlayer aAudioPlayer,
+        final AudioLoopPlayer aAudioLoopPlayer) {
 
         //Initialise window variables
         this.mainWindow = aMainWindow;
@@ -78,6 +82,7 @@ public class Xmod implements PropertyChangeListener {
         this.serialPort = aSerialPort;
         this.experimentRunner = expRunner;
         this.audioPlayer = aAudioPlayer;
+        this.audioLoopPlayer = aAudioLoopPlayer;
         // Set MainWindow Report
         updateWindowText();
     }
@@ -96,6 +101,7 @@ public class Xmod implements PropertyChangeListener {
                 Reporter reporter = new Reporter();
                 Serial serialPort = new Serial();
                 AudioPlayer audioPlayer = new AudioPlayer();
+                AudioLoopPlayer audioLoopPlayer = new AudioLoopPlayer();
                 ExperimentRunner experimentRunner = new ExperimentRunner(
                                                         serialPort,
                                                         expWindow,
@@ -103,7 +109,7 @@ public class Xmod implements PropertyChangeListener {
 
                 Xmod xmod = new Xmod(mainWindow, expWindow, fontWindow,
                                 reporter, serialPort, experimentRunner,
-                                audioPlayer);
+                                audioPlayer, audioLoopPlayer);
                 // Add observers to respond to buttons/key strokes/error reports
                 mainWindow.addObserver(xmod);
                 expWindow.addObserver(xmod);
@@ -111,6 +117,7 @@ public class Xmod implements PropertyChangeListener {
                 serialPort.addObserver(xmod);
                 experimentRunner.addObserver(xmod);
                 audioPlayer.addObserver(xmod);
+                audioLoopPlayer.addObserver(xmod);
                 // Show main Window
                 mainWindow.show();
             }
@@ -326,7 +333,7 @@ public class Xmod implements PropertyChangeListener {
     /** Tests the audio. */
     private void operationTestAudio() {
         String audioFile = "/assets/Arpeggio.wav";
-        this.audioPlayer.loopAudio(audioFile);
+        this.audioLoopPlayer.loopAudio(audioFile);
         this.mainWindow.updateTestAudio();
     }
 
@@ -435,13 +442,17 @@ public class Xmod implements PropertyChangeListener {
                 mainNewText.append(reporter.printValues(ReportLabel.TMS));
                 mainNewText.append(reporter.printValues(ReportLabel.AUDIO));
 
-                String connectionNewText = reporter.printValues(
-                                            ReportLabel.CONNECTION);
-                String toolNewText = reporter.printValues(ReportLabel.FONT);
+                StringBuilder connectionNewText = new StringBuilder(
+                    reporter.printValues(ReportLabel.CONNECTION));
+
+                StringBuilder toolNewText = new StringBuilder(
+                    reporter.printValues(ReportLabel.FONT));
+                toolNewText.append(
+                    reporter.printValues(ReportLabel.AUDIO_LOOP));
 
                 mainWindow.updateMainText(mainNewText.toString());
-                mainWindow.updateConnectionText(connectionNewText);
-                mainWindow.updateToolText(toolNewText);
+                mainWindow.updateConnectionText(connectionNewText.toString());
+                mainWindow.updateToolText(toolNewText.toString());
             }
         });
     }

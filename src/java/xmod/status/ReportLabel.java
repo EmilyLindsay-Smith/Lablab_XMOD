@@ -10,6 +10,8 @@ public enum ReportLabel {
     TMS("TMS"),
     /** Audio file to play during experiment. */
     AUDIO("AUDIO"),
+    /** Audio file to test audio working. */
+    AUDIO_LOOP("AUDIO_LOOP"),
     /** Connection to control box via serial port. */
     CONNECTION("CONNECTION"),
     /** Font (changed). */
