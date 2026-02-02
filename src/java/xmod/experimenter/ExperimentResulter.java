@@ -46,6 +46,8 @@ public class ExperimentResulter {
     /** Item to show on screen for each trial (extracted from expLoader). */
     private String[] screenItems;
 
+    /** Array holding if participant exists at that box. */
+    private Boolean[] boxInUse;
     /** Array holding character key pressed for each reaction. */
     private String[][] cKey;
     /** Array holding numeric key pressed for each reaction. */
@@ -181,6 +183,8 @@ public class ExperimentResulter {
      * instantiate the arrays to hold the results.
      */
     public void createResultArrays() {
+        this.boxInUse = new Boolean[this.NUM_BOXES];
+        Arrays.fill(this.boxInUse, false);
         this.cKey = new String[this.NUM_BOXES][this.expLength];
         this.nKey = new String[this.NUM_BOXES][this.expLength];
         this.rFlag = new Boolean[this.NUM_BOXES][this.expLength];
@@ -233,16 +237,19 @@ public class ExperimentResulter {
                                 final int currentIndex) {
         switch (output) {
             case 1:
+                this.boxInUse[boxNo] = true;
                 this.cKey[boxNo][currentIndex] = "L";
                 this.nKey[boxNo][currentIndex] = "1";
                 this.rFlag[boxNo][currentIndex] = true;
                 break;
             case 2:
+                this.boxInUse[boxNo] = true;
                 this.cKey[boxNo][currentIndex] = "R";
                 this.nKey[boxNo][currentIndex] = "3";
                 this.rFlag[boxNo][currentIndex] = true;
                 break;
             case 3:
+                this.boxInUse[boxNo] = true;
                 this.cKey[boxNo][currentIndex] = "M";
                 this.nKey[boxNo][currentIndex] = "2";
                 this.rFlag[boxNo][currentIndex] = true;
@@ -304,6 +311,9 @@ public class ExperimentResulter {
         String results = codehead;
         for (int trialIndex = 0; trialIndex < this.expLength; trialIndex++) {
             for (int boxNo = 0; boxNo < this.NUM_BOXES; boxNo++) {
+                if (!this.boxInUse[boxNo]) {
+                    continue;
+                }
                 if (null != this.rFlag[boxNo][trialIndex]) {
                     results = results + Integer.toString(trialIndex + 1)
                             + Typesetting.TAB
