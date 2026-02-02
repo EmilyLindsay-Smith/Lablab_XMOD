@@ -77,6 +77,8 @@ public class Reporter {
         */
         ObjectReport audioInitialValue = new ObjectReport(
                                             ReportLabel.AUDIO);
+        ObjectReport audioLoopInitialValue = new ObjectReport(
+                                            ReportLabel.AUDIO_LOOP);
         /*
         audioInitialValue.updateValues(ReportCategory.MESSAGE,
                                         Responses.NO_FILE_SELECTED);
@@ -93,6 +95,7 @@ public class Reporter {
         this.status.put(ReportLabel.STATUS, statusInitialValue);
         this.status.put(ReportLabel.TMS, tmsInitialValue);
         this.status.put(ReportLabel.AUDIO, audioInitialValue);
+        this.status.put(ReportLabel.AUDIO_LOOP, audioLoopInitialValue);
         this.status.put(ReportLabel.CONNECTION, connectionInitialValue);
         this.status.put(ReportLabel.FONT, fontInitialValue);
         //this.status.put(ReportLabel.MONITORS, monitorInitialValue);

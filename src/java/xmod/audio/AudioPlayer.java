@@ -7,8 +7,6 @@ import xmod.status.ReportLabel;
 import xmod.status.Responses;
 import xmod.utils.Utils;
 
-import java.io.File;
-
 import java.nio.file.Files;
 //import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -24,7 +22,7 @@ import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.UnsupportedAudioFileException;
-import javax.sound.sampled.Clip;
+
 // For reporting errors to GUI
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -61,10 +59,7 @@ public class AudioPlayer extends Thread {
     /** Dataline info. */
     private DataLine.Info info;
 
-    /** Boolean for running continous test audio. */
-    private Boolean loopRunning;
-    /** Test audio clip. */
-    private Clip clip;
+
     /**
      * AudioLoader Constructor.
      */
@@ -99,7 +94,8 @@ public class AudioPlayer extends Thread {
      * Loads audio file.
      * ELS CHECK LIKELY EXCEPTIONS TO CATCH THEM
      */
-    private void setUpPlayer() {
+    public void setUpPlayer() {
+        this.audioLoaded = false;
         if (null == this.audioFilePath || !isAudioValid(this.audioFilePath)) {
             return;
         }
@@ -187,77 +183,7 @@ public class AudioPlayer extends Thread {
         }, "AUDIO PLAYER").start();
     }
 
-    /** Play Audio Repeatedly.
-     * @param filename name of wav file to play
-    */
-    public void loopAudio(final String filename) {
-        if (this.loopRunning != null && this.loopRunning) {
-            this.loopRunning = false;
-            return;
-        }
-        this.loopRunning = true;
-        new Thread(new Runnable() {
-            public void run() {
-            loop(filename);
-            return;
-            }
-        }, "LOOP PLAYER").start();
-
-    }
-
-    private void loop(final String filename) {
-        try {
-            //AudioInputStream loopInputStream = AudioSystem.getAudioInputStream(
-            //new File(filename));
-            AudioInputStream loopInputStream = AudioSystem.getAudioInputStream(
-                getClass().getResource(filename)
-            );
-            this.clip = AudioSystem.getClip();
-            this.clip.open(loopInputStream);
-            this.clip.loop(Clip.LOOP_CONTINUOUSLY);
-        } catch (UnsupportedOperationException e) {
-            String stackTrace = Utils.getStackTrace(e);
-            updateStatus(Responses.FILE_LOAD_FAILURE,
-                        "Could not load test audio due to UnsupportedOperation",
-                        "", stackTrace);
-            this.loopRunning = false;
-            return;
-        } catch (LineUnavailableException e) {
-            String stackTrace = Utils.getStackTrace(e);
-            updateStatus(Responses.AUDIO_ERROR,
-                    "Could not play test audio due to error",
-                    "", stackTrace);
-            this.loopRunning = false;
-            return;
-        } catch (IOException e) {
-            String stackTrace = Utils.getStackTrace(e);
-            updateStatus(Responses.AUDIO_ERROR,
-                        "Could not play audio file due to error",
-                        "", stackTrace);
-            this.loopRunning = false;
-            return;
-        } catch (UnsupportedAudioFileException e) {
-            String stackTrace = Utils.getStackTrace(e);
-            updateStatus(Responses.FILE_LOAD_FAILURE,
-                        "Could not load audio file due to "
-                    + "unsupported audio file error",
-                    "", stackTrace);
-            this.loopRunning = false;
-            return;
-        }
-
-        while (this.loopRunning) {
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();  //set the flag back to true
-            }
-        }
-        this.clip.stop();
-        return;
-    }
-    /**
-     * Plays audio file.
+    /** Plays audio file.
      */
     private void play() {
         if (!this.audioLoaded) {

@@ -1,0 +1,27 @@
+Title: Installation Instructions for XMOD
+Author: ELS
+Date: 26/01/2026
+----------------------------------------------------
+#1 Copy Jar
+Copy dist/Xmod-2.1.jar to desired location
+
+#2 Install Java
+Visit https://www.oracle.com/java/technologies/downloads/
+Download the JDK 25 installer suitable for your computer
+e.g. ARM64 DMG Installer
+Double click on the .dmg to open the wizard
+Follow the wizard instructions
+Note you will need admin rights to install Java
+
+#3 Run Jar
+Double click Xmod-2.1.jar file
+Allow JavaLaunder to access files
+
+If Mac refuses to open Jar file due to malware concerns:
+	"Apple could not verify "Smod-2.1.jar' is free of malware that may harm your Mac or compromise your privacy'
+Click 'Done'
+Go to Privavy & Security settings > Security
+The file should be listed here with a buttton saying 'Open Anyway'
+Click 'Open Anyway'
+Provide your password
+
