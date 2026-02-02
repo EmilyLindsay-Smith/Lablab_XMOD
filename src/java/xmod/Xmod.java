@@ -332,8 +332,7 @@ public class Xmod implements PropertyChangeListener {
 
     /** Tests the audio. */
     private void operationTestAudio() {
-        String audioFile = "/assets/Arpeggio.wav";
-        this.audioLoopPlayer.loopAudio(audioFile);
+        this.audioLoopPlayer.loopAudio();
         this.mainWindow.updateTestAudio();
     }
 

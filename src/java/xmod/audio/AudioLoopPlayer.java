@@ -1,6 +1,7 @@
 package xmod.audio;
 
 import xmod.constants.Actions;
+import xmod.constants.Locations;
 import xmod.status.ObjectReport;
 import xmod.status.ReportCategory;
 import xmod.status.ReportLabel;
@@ -15,6 +16,9 @@ import javax.sound.sampled.Clip;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
+
+import java.util.concurrent.atomic.AtomicBoolean;
+
 // For reporting errors to GUI
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -31,63 +35,68 @@ public class AudioLoopPlayer extends Thread {
     /** PCS to handle sending updates. */
     private PropertyChangeSupport pcs;
     /** Boolean for running continous test audio. */
-    private Boolean loopRunning;
+    private AtomicBoolean loopRunning;
     /** Test audio clip. */
     private Clip clip;
+    /** Test audio input stream. */
+    private AudioInputStream loopInputStream;
+    /** Audio file location. */
+    private String audioFile;
 
     /** Constructor */
     public AudioLoopPlayer() {
         pcs = new PropertyChangeSupport(this);
+        this.audioFile = Locations.TEST_AUDIO_LOCATION;
+        this.loopRunning = new AtomicBoolean(false);
+//        setLoopRunning(false);
     }
 
+    private void setLoopRunning(final Boolean flag) {
+        this.loopRunning.set(flag);
+        return;
+    }
     /** Play Audio Repeatedly.
      * @param filename name of wav file to play
     */
-    public void loopAudio(final String filename) {
-        if (this.loopRunning != null && this.loopRunning) {
-            this.loopRunning = false;
+    public void loopAudio() {
+        if (isRunning() != null && isRunning()) {
+            setLoopRunning(false);
             return;
         }
-        this.loopRunning = true;
+        setLoopRunning(true);
         new Thread(new Runnable() {
             public void run() {
-            loop(filename);
+            loop();
             return;
             }
         }, "LOOP PLAYER").start();
-
     }
 
-    private void loop(final String filename) {
+    /** Returns true if this.loopRunning is true
+     * i.e. if the audio is playing
+     */
+    public Boolean isRunning() {
+        return this.loopRunning.get();
+    }
+
+    /** Returns name of AudioFile
+     */
+    public String getAudioFile() {
+        return this.audioFile;
+    }
+
+    /** Plays the audio in a loop */
+    private void loop() {
         try {
-            //AudioInputStream loopInputStream = AudioSystem.getAudioInputStream(
-            //new File(filename));
-            AudioInputStream loopInputStream = AudioSystem.getAudioInputStream(
-                getClass().getResource(filename)
+            this.loopInputStream = AudioSystem.getAudioInputStream(
+                getClass().getResource(this.audioFile)
             );
-            this.clip = AudioSystem.getClip();
-            this.clip.open(loopInputStream);
-            this.clip.loop(Clip.LOOP_CONTINUOUSLY);
-        } catch (UnsupportedOperationException e) {
+        } catch (NullPointerException e){
             String stackTrace = Utils.getStackTrace(e);
             updateStatus(Responses.FILE_LOAD_FAILURE,
-                        "Could not load test audio due to UnsupportedOperation",
+                        "Could not load test audio as audioFile name null",
                         "", stackTrace);
-            this.loopRunning = false;
-            return;
-        } catch (LineUnavailableException e) {
-            String stackTrace = Utils.getStackTrace(e);
-            updateStatus(Responses.AUDIO_ERROR,
-                    "Could not play test audio due to error",
-                    "", stackTrace);
-            this.loopRunning = false;
-            return;
-        } catch (IOException e) {
-            String stackTrace = Utils.getStackTrace(e);
-            updateStatus(Responses.AUDIO_ERROR,
-                        "Could not play audio file due to error",
-                        "", stackTrace);
-            this.loopRunning = false;
+            setLoopRunning(false);
             return;
         } catch (UnsupportedAudioFileException e) {
             String stackTrace = Utils.getStackTrace(e);
@@ -95,11 +104,49 @@ public class AudioLoopPlayer extends Thread {
                         "Could not load audio file due to "
                     + "unsupported audio file error",
                     "", stackTrace);
-            this.loopRunning = false;
+            setLoopRunning(false);
+            return;
+        } catch (IOException e) {
+            String stackTrace = Utils.getStackTrace(e);
+            updateStatus(Responses.AUDIO_ERROR,
+                        "Could not play audio file due to error",
+                        "", stackTrace);
+            setLoopRunning(false);
+            return;
+        };
+
+        try {
+            //AudioInputStream loopInputStream = AudioSystem.getAudioInputStream(
+            //new File(filename));
+            this.clip = AudioSystem.getClip();
+            this.clip.open(this.loopInputStream);
+            this.clip.loop(Clip.LOOP_CONTINUOUSLY);
+            System.out.println("Running audio");
+            setLoopRunning(true);
+        } catch (UnsupportedOperationException e) {
+            String stackTrace = Utils.getStackTrace(e);
+            updateStatus(Responses.FILE_LOAD_FAILURE,
+                        "Could not load test audio due to UnsupportedOperation",
+                        "", stackTrace);
+            setLoopRunning(false);
+            return;
+        } catch (LineUnavailableException e) {
+            String stackTrace = Utils.getStackTrace(e);
+            updateStatus(Responses.AUDIO_ERROR,
+                    "Could not play test audio due to error",
+                    "", stackTrace);
+            setLoopRunning(false);
+            return;
+        } catch (IOException e) {
+            String stackTrace = Utils.getStackTrace(e);
+            updateStatus(Responses.AUDIO_ERROR,
+                        "Could not play audio file due to error",
+                        "", stackTrace);
+            setLoopRunning(false);
             return;
         }
 
-        while (this.loopRunning) {
+        while (isRunning()) {
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
