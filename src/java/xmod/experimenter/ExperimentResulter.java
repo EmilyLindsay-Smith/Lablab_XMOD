@@ -14,6 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import java.util.Arrays;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
@@ -201,14 +202,14 @@ public class ExperimentResulter {
      * @return the number corresponding to the pressed key for that box
      */
     private int getOutput(final byte[] reaction, final int box) {
-        int maskOne = 3;
-        int maskTwo = 12;
-        int maskThree = 48;
-        int maskFour = 192;
-        int shiftOne = 0;
-        int shiftTwo = 2;
-        int shiftThree = 4;
-        int shiftFour = 6;
+        final int maskOne = 3;
+        final int maskTwo = 12;
+        final int maskThree = 48;
+        final int maskFour = 192;
+        final int shiftOne = 0;
+        final int shiftTwo = 2;
+        final int shiftThree = 4;
+        final int shiftFour = 6;
 
 
         if (null == reaction) {
@@ -218,7 +219,7 @@ public class ExperimentResulter {
                                 reaction[2], reaction[3]};
         int[] masks = {maskOne, maskTwo, maskThree, maskFour};
         int[] shiftRights = {shiftOne, shiftTwo, shiftThree, shiftFour};
-        int boxDivisor = 4;
+        final int boxDivisor = 4;
         int pressedKey = pressedKeys[(int) ((box) / boxDivisor)];
         int x = (box) % boxDivisor;
         int mask = masks[x];
@@ -274,17 +275,17 @@ public class ExperimentResulter {
         if (null != reaction && cKey[boxNo][index] != ".") {
             //int x = (currentIndex * 2) + 3 - 1;
             // which byte look at in reaction array
-            int x = ((boxNo + 1) * 2) + 2;
+            final int x = ((boxNo + 1) * 2) + 2;
             // box 0 should look at reaction[4..5],
             // box 1 should look at reaction[6..7],
             // box 15 should look at reaction[34..35]
-            int lowByte = (int) reaction[x]; // need ascii value
+            final int lowByte = (int) reaction[x]; // need ascii value
             //Handle overflow when number above 220 truncated to 8 bits
             if (lowByte < 0) {
                 lowByte += 256;
             }
             // need ascii value
-            int highByteMultiplier = 256;
+            final int highByteMultiplier = 256;
             int highByte = (int) reaction[x + 1] * highByteMultiplier;
             int reactionTime = highByte + lowByte
                                                 - this.tReactionOffset[index];
