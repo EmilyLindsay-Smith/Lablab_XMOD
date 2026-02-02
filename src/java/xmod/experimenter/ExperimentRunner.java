@@ -52,11 +52,11 @@ public class ExperimentRunner implements PropertyChangeListener {
     /** Whether the experiment is currently running. */
     //private Boolean running = false;
     private AtomicBoolean running;
-    /** Whether this object has run the experiment previously */
+    /** Whether this object has run the experiment previously. */
     private AtomicBoolean previouslyRun;
     /** Whether update has been sent to XMOD about file load failure. */
     private Boolean xmodUpdate = false;
-    /** File location */
+    /** File location. */
     private String expFile;
     /** timeout from RT start. */
     private int[] tReactionTimeout;
@@ -87,7 +87,7 @@ public class ExperimentRunner implements PropertyChangeListener {
         this.expLoader = new ExperimentLoader();
         this.expLoader.addObserver(this);
         this.running = new AtomicBoolean(); // initial value false
-        this.previouslyRun = new AtomicBoolean();// initial value false
+        this.previouslyRun = new AtomicBoolean(); // initial value false
     }
 
     /**
@@ -153,7 +153,7 @@ public class ExperimentRunner implements PropertyChangeListener {
     }
 
     /** Reload the experiment if previously loaded. */
-    private void reloadExperiment(){
+    private void reloadExperiment() {
         setUpExperiment(this.expFile);
         return;
     }

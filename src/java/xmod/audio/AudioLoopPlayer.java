@@ -43,7 +43,7 @@ public class AudioLoopPlayer extends Thread {
     /** Audio file location. */
     private String audioFile;
 
-    /** Constructor */
+    /** Constructor. */
     public AudioLoopPlayer() {
         pcs = new PropertyChangeSupport(this);
         this.audioFile = Locations.TEST_AUDIO_LOCATION;
@@ -56,7 +56,6 @@ public class AudioLoopPlayer extends Thread {
         return;
     }
     /** Play Audio Repeatedly.
-     * @param filename name of wav file to play
     */
     public void loopAudio() {
         if (isRunning() != null && isRunning()) {
@@ -72,26 +71,27 @@ public class AudioLoopPlayer extends Thread {
         }, "LOOP PLAYER").start();
     }
 
-    /** Returns true if this.loopRunning is true
-     * i.e. if the audio is playing
+    /** Returns true if this.loopRunning is true.
+     * @return true if the audio is playing
      */
     public Boolean isRunning() {
         return this.loopRunning.get();
     }
 
-    /** Returns name of AudioFile
+    /** Returns name of AudioFile.
+     * @return name of audio file
      */
     public String getAudioFile() {
         return this.audioFile;
     }
 
-    /** Plays the audio in a loop */
+    /** Plays the audio in a loop. */
     private void loop() {
         try {
             this.loopInputStream = AudioSystem.getAudioInputStream(
                 getClass().getResource(this.audioFile)
             );
-        } catch (NullPointerException e){
+        } catch (NullPointerException e) {
             String stackTrace = Utils.getStackTrace(e);
             updateStatus(Responses.FILE_LOAD_FAILURE,
                         "Could not load test audio as audioFile name null",
@@ -113,11 +113,9 @@ public class AudioLoopPlayer extends Thread {
                         "", stackTrace);
             setLoopRunning(false);
             return;
-        };
+        }
 
         try {
-            //AudioInputStream loopInputStream = AudioSystem.getAudioInputStream(
-            //new File(filename));
             this.clip = AudioSystem.getClip();
             this.clip.open(this.loopInputStream);
             this.clip.loop(Clip.LOOP_CONTINUOUSLY);

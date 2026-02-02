@@ -63,6 +63,7 @@ public class Xmod implements PropertyChangeListener {
      * @param aSerialPort Serial Object
      * @param expRunner ExperimentRunner Object
      * @param aAudioPlayer AudioPLayer Object
+     * @param aAudioLoopPlayer AudioLoopPlayer object
      */
     Xmod(final MainWindow aMainWindow,
         final ExperimentWindow aExpWindow,
