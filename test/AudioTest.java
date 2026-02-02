@@ -61,11 +61,31 @@ class AudioTest {
         player.loadAudio(this.realFile);
         try {
             player.playAudio();
-            Utils.pause(5000);
+            Utils.pause(500);
             player.stopAudio();
             Assertions.assertEquals(true, true, "The audio should play");
         } catch (Exception e) {
             Assertions.assertEquals(false, true, "Error in playing the audio");
         }
     }
+
+    @DisplayName("Check audio playing twice")
+    @Test
+    public void checkPlaying2() {
+        player = new AudioPlayer();
+        player.loadAudio(this.realFile);
+        try {
+            player.playAudio();
+            Utils.pause(500);
+            player.stopAudio();
+            player.playAudio();
+            Utils.pause(500);
+            player.stopAudio();
+            Assertions.assertEquals(true, true, "The audio should play again");
+        } catch (Exception e) {
+            Assertions.assertEquals(false, true,
+                "Error in playing the audio twice");
+        }
+    }
+
 }
