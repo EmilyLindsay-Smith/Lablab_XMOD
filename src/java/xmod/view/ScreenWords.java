@@ -8,7 +8,7 @@ package xmod.view;
 
 public final class ScreenWords {
     /** Default font size. */
-    static final int DEFAULT_FONT_SIZE = 50;
+    static final int DEFAULT_FONT_SIZE = 150;
     /** Default font. */
     static final String DEFAULT_FONT = "Times New Roman";
 
