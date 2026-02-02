@@ -96,7 +96,7 @@ public class AudioPlayer extends Thread {
      * Loads audio file.
      * ELS CHECK LIKELY EXCEPTIONS TO CATCH THEM
      */
-    private void setUpPlayer() {
+    public void setUpPlayer() {
         this.audioLoaded = false;
         if (null == this.audioFilePath || !isAudioValid(this.audioFilePath)) {
             return;

@@ -234,7 +234,7 @@ public class Xmod implements PropertyChangeListener {
         return;
     }
 
-    private void checkExperimentReady() {
+    private Boolean checkExperimentReady() {
         Boolean ready = true;
         String updateAdv = "";
         ObjectReport report;
@@ -262,13 +262,19 @@ public class Xmod implements PropertyChangeListener {
         this.reporter.clearValues(ReportLabel.STATUS);
         updateStatus(report);
         updateWindowText();
+        return ready;
     }
 
     private void operationRunExp() {
+        Boolean ready = checkExperimentReady();
+        if (!ready) {
+            return;
+        }
         int proceed = remindUser();
         if (proceed == 0) {
             this.experimentRunner.runExperiment();
         }
+        return;
     };
 
     /** Calls serialPort to turn on the experiment monitors. */

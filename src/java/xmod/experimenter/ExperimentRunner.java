@@ -279,6 +279,7 @@ public class ExperimentRunner implements PropertyChangeListener {
         if (this.previouslyRun.get()) {
             try {
                 setUpExperiment(this.expFile);
+                this.audioPlayer.setUpPlayer();
             } catch (NullPointerException e) {
                 updateStatus(Responses.EXPERIMENT_NOT_READY,
                         "Experiment not loaded correctly",
