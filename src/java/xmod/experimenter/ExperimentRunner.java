@@ -52,9 +52,12 @@ public class ExperimentRunner implements PropertyChangeListener {
     /** Whether the experiment is currently running. */
     //private Boolean running = false;
     private AtomicBoolean running;
+    /** Whether this object has run the experiment previously */
+    private AtomicBoolean previouslyRun;
     /** Whether update has been sent to XMOD about file load failure. */
     private Boolean xmodUpdate = false;
-
+    /** File location */
+    private String expFile;
     /** timeout from RT start. */
     private int[] tReactionTimeout;
     /** offset from start to start recording RT. */
@@ -83,9 +86,8 @@ public class ExperimentRunner implements PropertyChangeListener {
         this.audioPlayer = aAudioPlayer;
         this.expLoader = new ExperimentLoader();
         this.expLoader.addObserver(this);
-
         this.running = new AtomicBoolean(); // initial value false
-        //this.running = false;
+        this.previouslyRun = new AtomicBoolean();// initial value false
     }
 
     /**
@@ -94,8 +96,9 @@ public class ExperimentRunner implements PropertyChangeListener {
      *  @param filename tms filepath
      */
     public void setUpExperiment(final String filename) {
+        this.expFile = filename;
         Boolean nextStep = false;
-        Boolean loaded = this.expLoader.loadFile(filename);
+        Boolean loaded = this.expLoader.loadFile(this.expFile);
         // Load TMS File
         if (loaded) {
             this.expLoader.parseFile();
@@ -147,6 +150,23 @@ public class ExperimentRunner implements PropertyChangeListener {
      */
     public Boolean isExperimentLoaded() {
         return this.experimentLoaded;
+    }
+
+    /** Reload the experiment if previously loaded. */
+    private void reloadExperiment(){
+        setUpExperiment(this.expFile);
+        return;
+    }
+
+    /** Sets the previouslyRun flag.
+     * Needed to tell if exp needs reloading before running
+     * @param flag boolean for the running flag
+     * e.g. false to abort experiment
+     */
+    public void setPreviouslyRun(final Boolean flag) {
+        //this.running = flag;
+        this.previouslyRun.set(flag);
+        return;
     }
 
     /** Sets the running flag.
@@ -254,8 +274,21 @@ public class ExperimentRunner implements PropertyChangeListener {
                         "", ReportLabel.STATUS);
             return;
         }
-
+        // Should reload exp including new ExperimentResulter if run previously
+        // If no
+        if (this.previouslyRun.get()) {
+            try {
+                setUpExperiment(this.expFile);
+            } catch (NullPointerException e) {
+                updateStatus(Responses.EXPERIMENT_NOT_READY,
+                        "Experiment not loaded correctly",
+                        "Please try again",
+                        "", ReportLabel.STATUS);
+                return;
+            }
+        }
         // Set flag to true
+        setPreviouslyRun(true);
         setRunning(true);
         updateStatus(Responses.EXPERIMENT_RUNNING,
                         "", "Press ESC key to abort", "",
