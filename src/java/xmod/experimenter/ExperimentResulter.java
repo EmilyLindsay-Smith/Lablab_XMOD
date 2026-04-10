@@ -279,7 +279,7 @@ public class ExperimentResulter {
             // box 0 should look at reaction[4..5],
             // box 1 should look at reaction[6..7],
             // box 15 should look at reaction[34..35]
-            final int lowByte = (int) reaction[x]; // need ascii value
+            int lowByte = (int) reaction[x]; // need ascii value
             //Handle overflow when number above 220 truncated to 8 bits
             if (lowByte < 0) {
                 lowByte += 256;
