@@ -47,9 +47,10 @@ cp -r assets bin
 
 cd bin
 {
+rm -rf $manifest
 manifestText="Manifest-Version: 1.0\nBuilt-By: Emily Lindsay-Smith\n"
 manifestText="${manifestText}Class-Path: .\nMain-Class: xmod/Xmod\n"
-echo $manifestText > $manifest
+echo -e $manifestText >> $manifest
 jar cmf $manifest $xmodJar *
 
 } || (echo "Failed to create ${xmodJar}"; exit)
