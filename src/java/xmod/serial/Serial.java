@@ -39,7 +39,7 @@ public class Serial extends Thread {
     /** Serial port connection to controller box. */
     private SerialPort serialPort = null;
     /** duration of waiting for control box bytesAvailable() > 0. */
-    private static final int PAUSE_DURATION = 40;
+    private static final int PAUSE_DURATION = 1;
     /** duration of pause being looking for serial to connect to. */
     private static final int WAIT_DURATION = 1000;
     /** Port Parameters: Baud Rate. */
@@ -270,9 +270,11 @@ public class Serial extends Thread {
             for (int j = this.GET_SOURCE; j <= this.GET_KEYS; j++) {
                 Boolean sent = sendCommand(j, "retrieve controller info",
                                             false);
+                Utils.pause(40);
                 if (sent) {
                     serialInfo = serialInfo + "<br/>" + receive();
                 }
+
             }
         } catch (SerialBytesReceivedException e) {
             String updateMsg = "Could not retrieve controller info"
