@@ -317,15 +317,21 @@ public class Xmod implements PropertyChangeListener {
 
     /** Aborts the experiment. */
     private void abortExperiment() {
-        this.experimentRunner.setRunning(false);
         ObjectReport abortReport =  createReport(ReportLabel.STATUS,
-                                "Aborting experiment... please wait...\n"
+                                "Aborting experiment... please wait..."
                                 + "if experiment won't exit please "
                                 + "force quit XMOD",
                                 "",
                                 "",
                                 "");
         updateStatus(abortReport);
+        updateWindowText();
+        /* This causes a serial port exception that triggers
+        this.experimentRunner.setRunning(false);
+        This forces the experiment to abort even if it is hanging waiting for
+        data from the serial port
+        */
+        this.serialPort.close();
         this.experimentRunner.endExperiment();
     }
 
