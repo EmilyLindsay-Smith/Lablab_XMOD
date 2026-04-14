@@ -37,7 +37,8 @@ public final class ScreenWords {
             "স্বতন্ত্রতা",
             "مرحبا",
             "হ্যালো",
-            "Здравствуйте"
+            "Здравствуйте",
+            "钢铁侠"
             };
         return words;
     }
